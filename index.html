@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; media-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'" />
+  <meta name="description" content="アニメ（ジョジョ／呪術廻戦）のキャラクター名・わざ名をならべかえて、ひらがなとカタカナを楽しく覚えよう！小学生の五十音トレーニングゲーム。" />
+  <title>五十音クエスト | アニメではじめる ひらがな・カタカナ</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23ffd23f'/%3E%3Ccircle cx='32' cy='32' r='24' fill='%23161333'/%3E%3Ctext x='32' y='43' font-size='30' text-anchor='middle' fill='%23ffd23f' font-family='sans-serif' font-weight='900'%3E五%3C/text%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700;900&family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css?v=9" />
+</head>
+<body>
+
+  <!-- 背景に浮かぶ大きなかな（装飾） -->
+  <div class="bg-kana" aria-hidden="true">
+    <span style="--x:4%;  --d:0s;  --s:7rem;  --r:-12deg">あ</span>
+    <span style="--x:12%; --d:-6s; --s:5rem;  --r:8deg">ア</span>
+    <span style="--x:22%; --d:-2s; --s:9rem;  --r:15deg">ザ</span>
+    <span style="--x:32%; --d:-9s; --s:4.5rem;--r:-6deg">呪</span>
+    <span style="--x:44%; --d:-4s; --s:8rem;  --r:10deg">お</span>
+    <span style="--x:54%; --d:-11s;--s:5.5rem;--r:-14deg">ド</span>
+    <span style="--x:63%; --d:-1s; --s:6.5rem;--r:6deg">オ</span>
+    <span style="--x:72%; --d:-7s; --s:4rem;  --r:-9deg">ラ</span>
+    <span style="--x:80%; --d:-3s; --s:7.5rem;--r:18deg">き</span>
+    <span style="--x:90%; --d:-8s; --s:5rem;  --r:-16deg">ン</span>
+    <span style="--x:16%; --d:-12s;--s:6rem;  --r:12deg">ン</span>
+    <span style="--x:86%; --d:-5s; --s:8.5rem;--r:-4deg">ム</span>
+  </div>
+
+  <!-- アイコン定義（使い回し） -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4 6.2 20.5l1.1-6.5L2.6 9.4l6.5-.9L12 2.6z"/></symbol>
+      <symbol id="i-flame" viewBox="0 0 24 24"><path d="M12 2s1 3-1 5.5S7.5 11.5 8 14a4.5 4.5 0 0 0 9 .3c.2-1.7-.5-3-1.6-4.4-.9 1.2-2.2 1.6-3.1 1 2.5-3.6.6-6.6-.3-9z"/></symbol>
+      <symbol id="i-gear" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zM19.4 13.5l1.3 1-1.8 3-1.6-.5a8 8 0 0 1-1.6 1l-.3 1.7h-3l-.3-1.7a8 8 0 0 1-1.6-1l-1.6.5-1.8-3 1.3-1a8 8 0 0 1 0-2l-1.3-1 1.8-3 1.6.5a8 8 0 0 1 1.6-1l.3-1.7h3l.3 1.7a8 8 0 0 1 1.6 1l1.6-.5 1.8 3-1.3 1a8 8 0 0 1 0 2z"/></symbol>
+      <symbol id="i-lock" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M7 11V8a5 5 0 0 1 10 0v3M6 11h12a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2z"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" d="M4 12.5 9.5 18 20 6.5"/></symbol>
+      <symbol id="i-back" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="M15 5l-7 7 7 7"/></symbol>
+      <symbol id="i-arrow-right" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></symbol>
+      <symbol id="i-speaker" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M4 9v6h4l5 4V5L8 9H4z"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M17 9.5a4 4 0 0 1 0 5M19.5 7a8 8 0 0 1 0 10"/></symbol>
+      <symbol id="i-pencil" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M4 20l1-4L16.5 4.5a2.1 2.1 0 0 1 3 3L8 19l-4 1z"/></symbol>
+      <symbol id="i-close" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" d="M6 6l12 12M18 6 6 18"/></symbol>
+      <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2 5 13h5l-1 9 8-11h-5l1-9z"/></symbol>
+      <symbol id="i-book" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 5.5A2.5 2.5 0 0 1 7.5 3H19v15H7.5A2.5 2.5 0 0 0 5 20.5V5.5z"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M5 20.5V5.5M9 7h6M9 11h4"/></symbol>
+      <symbol id="i-cards" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M8 3h11a1.5 1.5 0 0 1 1.5 1.5V16"/><rect x="3.5" y="6.5" width="13" height="15" rx="1.5" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+      <symbol id="i-timer" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M9 2h6M12 8v5l3 2"/><circle cx="12" cy="14" r="8" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+      <symbol id="i-grid" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"/></symbol>
+      <symbol id="i-sword" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M4 20l3.5-.8L19 7.7a2 2 0 0 0-2.8-2.8L4.8 16.4 4 20zM13.5 6.5l4 4"/></symbol>
+      <symbol id="i-crown" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M4 17.5 5.6 8.5 11 13l1-6 1 6 5.4-4.5L20 17.5z"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M4 20.5h16"/></symbol>
+      <symbol id="i-coin" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#ffd23f" stroke="#a16207" stroke-width="1.7"/><path d="M12 7.2l1.45 2.95 3.2.45-2.35 2.25.55 3.2L12 16.9l-2.85 1.55.55-3.2-2.35-2.25 3.2-.45z" fill="#a16207"/></symbol>
+      <symbol id="i-flag" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M6 21V4"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M6 5h12l-2.5 4L18 13H6"/></symbol>
+      <symbol id="i-bell" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M13.7 21a2 2 0 0 1-3.4 0"/></symbol>
+      <symbol id="i-heart" viewBox="0 0 24 24"><path fill="currentColor" d="M12 21.2s-8.4-5.1-10.8-10C-.2 7.4 2.6 3.6 6.7 3.6c2.5 0 4.1 1.3 5.3 3.1 1.2-1.8 2.8-3.1 5.3-3.1 4.1 0 6.9 3.8 5.5 7.6-2.4 4.9-10.8 10-10.8 10z"/></symbol>
+    </defs>
+  </svg>
+
+  <!-- ============ ヘッダー ============ -->
+  <header class="topbar">
+    <button class="logo" id="logoHome" aria-label="ホームへもどる" data-i18n-aria="nav.home">
+      <span class="logo-mark">五</span>
+      <span class="logo-text">
+        <span class="logo-title">五十音クエスト</span>
+        <span class="logo-sub">ANIME KANA QUEST</span>
+      </span>
+    </button>
+
+    <div class="top-stats">
+      <div class="chip chip-rank" title="プレイヤーランク" data-i18n-title="rank.tip">
+        <span class="chip-rank-icon"><svg><use href="#i-bolt"/></svg></span>
+        <span class="chip-rank-body">
+          <span class="chip-rank-name" id="hdrRankName">五十音みならい</span>
+          <span class="xpbar" role="progressbar" aria-label="ランクゲージ" data-i18n-aria="aria.rankGauge"><span class="xpbar-fill" id="hdrXpFill"></span></span>
+        </span>
+      </div>
+      <div class="chip chip-coin" title="コイン（あそぶと あつまるよ）" data-i18n-title="coins.tip">
+        <svg class="chip-icon coin-icon-fill"><use href="#i-coin"/></svg>
+        <span id="hdrCoins">0</span>
+      </div>
+      <div class="chip chip-stars" title="あつめた星" data-i18n-title="stars.tip">
+        <svg class="chip-icon star-icon"><use href="#i-star"/></svg>
+        <span id="hdrStars">0</span>
+      </div>
+      <div class="chip chip-correct" title="累計正解数" data-i18n-title="correct.tip">
+        <svg class="chip-icon"><use href="#i-check"/></svg>
+        <span id="hdrCorrect">0</span>
+      </div>
+      <button class="icon-btn icon-badge-btn" id="btnMissions" aria-label="ミッションをひらく" data-i18n-aria="missions.bell">
+        <svg><use href="#i-bell"/></svg>
+        <span class="badge-dot" id="missionBadge" hidden>0</span>
+      </button>
+      <button class="lang-toggle" id="btnLangToggle" aria-label="言語を切り替える" data-i18n="lang.toggle" data-i18n-aria="lang.toggleAria">中文</button>
+      <button class="icon-btn" id="btnSettings" aria-label="せってい" data-i18n-aria="settings.open">
+        <svg><use href="#i-gear"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="app">
+
+    <!-- ============ ホーム ============ -->
+    <section class="screen active" id="screen-home" aria-label="ホーム" data-i18n-aria="aria.sectionHome">
+      <div class="home-inner">
+
+        <!-- ヒーロー -->
+        <div class="hero panel">
+          <div class="hero-glow" aria-hidden="true"></div>
+          <div class="hero-text">
+            <div class="hero-badge"><span class="hero-badge-dot"></span><span data-i18n="hero.badge">アニメではじめる ひらがな×カタカナ</span></div>
+            <h1 class="hero-title">五十音<br /><span class="hero-title-accent">クエスト</span></h1>
+            <p class="hero-sub">
+              <span data-i18n="hero.sub1">『ジョジョの奇妙な冒険』『呪術廻戦』の</span><br />
+              <span data-i18n="hero.sub2">キャラクター名・わざ名が</span><strong data-i18n="hero.sub2b">バラバラ</strong><br />
+              <span data-i18n="hero.sub3">正しい順番にならべかえて、五十音をマスターしよう。</span>
+            </p>
+            <div class="hero-cta">
+              <button class="btn btn-gold btn-big" data-nav="listening" style="--d:0s">
+                <svg><use href="#i-speaker"/></svg><span data-i18n="hero.cta.play">いますぐ あそぶ</span>
+              </button>
+              <button class="btn btn-ghost" data-nav="chart">
+                <svg><use href="#i-grid"/></svg><span data-i18n="hero.cta.chart">五十音表をみる</span>
+              </button>
+            </div>
+            <ul class="hero-features">
+              <li><svg><use href="#i-check"/></svg><span id="heroFeat1">JOJO＆呪術廻戦 全59問</span></li>
+              <li><svg><use href="#i-check"/></svg><span data-i18n="hero.feat2">ミッション＆ガチャで コインあつめ</span></li>
+              <li><svg><use href="#i-check"/></svg><span data-i18n="hero.feat3">ごほうびカード12枚</span></li>
+            </ul>
+          </div>
+
+          <div class="hero-art" aria-hidden="true">
+            <svg viewBox="0 0 360 360" class="hero-svg" role="img" aria-label="五十音クエストのシンボルアート" data-i18n-aria="aria.heroArt">
+              <defs>
+                <radialGradient id="artGlow" cx="50%" cy="45%" r="55%">
+                  <stop offset="0%" stop-color="#ffe98a" stop-opacity="0.9"/>
+                  <stop offset="45%" stop-color="#ffb03a" stop-opacity="0.25"/>
+                  <stop offset="100%" stop-color="#ffb03a" stop-opacity="0"/>
+                </radialGradient>
+                <linearGradient id="artGold" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stop-color="#fff6c8"/><stop offset=".45" stop-color="#ffd23f"/><stop offset="1" stop-color="#e07b12"/>
+                </linearGradient>
+                <linearGradient id="artPurple" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#b388ff"/><stop offset="1" stop-color="#5b2bd9"/>
+                </linearGradient>
+              </defs>
+              <circle cx="180" cy="168" r="150" fill="url(#artGlow)"/>
+              <circle cx="180" cy="168" r="118" fill="#16133a" stroke="#ffd23f" stroke-opacity="0.35" stroke-width="2" stroke-dasharray="6 10" class="art-spin"/>
+              <circle cx="180" cy="168" r="88" fill="url(#artPurple)" opacity="0.28"/>
+              <text x="180" y="228" text-anchor="middle" class="art-go" fill="url(#artGold)" stroke="#3a2503" stroke-width="3" paint-order="stroke">五</text>
+              <!-- まわりをまわるかな -->
+              <g class="art-orbit">
+                <text x="180" y="38"  class="art-orb orb-gold">ア</text>
+                <text x="292" y="96"  class="art-orb orb-red">ザ</text>
+                <text x="316" y="216" class="art-orb orb-cyan">ル</text>
+                <text x="236" y="308" class="art-orb orb-gold">ド</text>
+                <text x="124" y="308" class="art-orb orb-purple">ワ</text>
+                <text x="44"  y="216" class="art-orb orb-red">オ</text>
+                <text x="68"  y="96"  class="art-orb orb-cyan">ラ</text>
+              </g>
+              <!-- 稲妻とキラキラ -->
+              <path d="M268 118l-13 20h12l-7 16 18-21h-12l8-15z" fill="#ffd23f" opacity="0.95"/>
+              <path d="M84 150l-8 13h8l-5 11 12-14h-8l6-10z" fill="#38e1ff" opacity="0.9"/>
+              <path class="art-twinkle" d="M180 34l3.2 8 8 3.2-8 3.2-3.2 8-3.2-8-8-3.2 8-3.2z" fill="#ffffff"/>
+              <path class="art-twinkle t2" d="M300 260l2.2 5.5 5.5 2.2-5.5 2.2-2.2 5.5-2.2-5.5-5.5-2.2 5.5-2.2z" fill="#ffd23f"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- プロフィール＆ランク -->
+        <div class="profile panel">
+          <div class="profile-id">
+            <div class="avatar" aria-hidden="true"><span>あ</span></div>
+            <div class="profile-name-wrap">
+              <div class="profile-name-row">
+                <span class="profile-name" id="homePlayerName">クエスター</span>
+                <button class="mini-icon-btn" id="btnEditName" aria-label="名前を変更する" data-i18n-aria="profile.editName"><svg><use href="#i-pencil"/></svg></button>
+              </div>
+              <div class="profile-rank" id="homeRankName">五十音みならい</div>
+              <form class="name-edit" id="nameEditForm" hidden>
+                <input type="text" id="nameInput" maxlength="14" autocomplete="off" aria-label="新しい名前" data-i18n-aria="aria.newName" />
+                <button type="submit" class="btn btn-gold btn-small"><span data-i18n="profile.saveName">保存</span></button>
+              </form>
+            </div>
+          </div>
+          <div class="profile-rank-progress">
+            <div class="xpbar big" role="progressbar" aria-label="次のランクまで" data-i18n-aria="aria.nextRankGauge"><span class="xpbar-fill" id="homeXpFill"></span></div>
+            <div class="profile-xp-text" id="homeXpText">0 XP</div>
+          </div>
+          <div class="profile-stats">
+            <div class="pstat"><span class="pstat-num" id="homeCorrect">0</span><span class="pstat-label" data-i18n="profile.correct">正解</span></div>
+            <div class="pstat"><span class="pstat-num" id="homeBestStreak">0</span><span class="pstat-label" data-i18n="profile.bestStreak">最高連勝</span></div>
+            <div class="pstat"><span class="pstat-num" id="homeStars">0</span><span class="pstat-label" data-i18n="profile.stars">星</span></div>
+            <div class="pstat"><span class="pstat-num" id="homeCards">0/12</span><span class="pstat-label" data-i18n="profile.cards">カード</span></div>
+          </div>
+        </div>
+
+        <!-- デイリーチャレンジバナー -->
+        <button class="daily-banner" id="dailyBanner" data-nav="daily">
+          <span class="daily-art" aria-hidden="true">
+            <svg viewBox="0 0 96 96"><circle cx="48" cy="48" r="44" fill="#1b1030" stroke="#ffd23f" stroke-opacity="0.4" stroke-width="2" stroke-dasharray="4 6"/><text x="48" y="62" text-anchor="middle" font-size="34" font-weight="900" fill="#ffd23f" font-family="'Zen Maru Gothic',sans-serif">挑</text></svg>
+          </span>
+          <span class="daily-body">
+            <span class="daily-kicker" data-i18n="daily.kicker">きょうの デイリーチャレンジ</span>
+            <span class="daily-title" id="dailyTitle">5問勝負で 特別ボーナス！</span>
+            <span class="daily-desc" id="dailyDesc">正解数にかかわらず クリアで +50 XP ＆ 星をゲット。</span>
+            <span class="daily-streak" id="dailyStreakText"><svg><use href="#i-flame"/></svg>0日連続</span>
+          </span>
+          <span class="daily-cta" id="dailyCta">はじめる<svg><use href="#i-arrow-right"/></svg></span>
+        </button>
+
+        <!-- ミッション・ストリップ -->
+        <button class="mission-strip" id="missionStrip" data-nav="missions">
+          <span class="mission-strip-icon"><svg><use href="#i-flag"/></svg></span>
+          <span class="mission-strip-body">
+            <span class="mission-strip-kicker" data-i18n="strip.kicker">ミッション</span>
+            <span class="mission-strip-text" id="missionStripText">あたらしいミッションが まってるよ</span>
+          </span>
+          <span class="mission-strip-cta" id="missionStripCta"><span data-i18n="strip.cta">みる</span><svg><use href="#i-arrow-right"/></svg></span>
+        </button>
+
+        <!-- モード選択 -->
+        <div class="mode-grid">
+          <button class="mode-card accent-pink" data-nav="listening">
+            <span class="mode-icon"><svg><use href="#i-speaker"/></svg></span>
+            <span class="mode-name" data-i18n="mode.listening.name">ききとりチャレンジ</span>
+            <span class="mode-desc" data-i18n="mode.listening.desc">耳できいて、ばらばらになった かなを 正しい じゅんばんに ならべよう。ハートは3つ！</span>
+            <span class="mode-meta" data-i18n="mode.listening.meta">制限時間なし・ハート3つ</span>
+          </button>
+
+          <button class="mode-card accent-gold" data-nav="practice">
+            <span class="mode-icon"><svg><use href="#i-sword"/></svg></span>
+            <span class="mode-name" data-i18n="mode.practice.name">ならべかえ れんしゅう</span>
+            <span class="mode-desc" data-i18n="mode.practice.desc">レベル・作品をえらんで じっくり練習。平仮名／片仮名もきりかえられる。</span>
+            <span class="mode-meta" data-i18n="mode.practice.meta">無限にあそべる</span>
+          </button>
+
+          <button class="mode-card accent-red" data-nav="timeattack">
+            <span class="mode-icon"><svg><use href="#i-timer"/></svg></span>
+            <span class="mode-name" data-i18n="mode.ta.name">タイムアタック</span>
+            <span class="mode-desc" data-i18n="mode.ta.desc">60秒で 何問とけるかな？連続正解で高得点＆星ゲット！</span>
+            <span class="mode-meta"><span data-i18n="mode.ta.metaLabel">ベストスコア</span> <strong id="taBestChip">0</strong> pt</span>
+          </button>
+
+          <button class="mode-card accent-cyan" data-nav="chart">
+            <span class="mode-icon"><svg><use href="#i-grid"/></svg></span>
+            <span class="mode-name" data-i18n="mode.chart.name">ごじゅうおん表</span>
+            <span class="mode-desc" data-i18n="mode.chart.desc">タップすると おとが きこえる！ひらがな・カタカナ・だくおん・ようおん。</span>
+            <span class="mode-meta" data-i18n="mode.chart.meta">発音つき 音声ガイド</span>
+          </button>
+
+          <button class="mode-card accent-purple" data-nav="collection">
+            <span class="mode-icon"><svg><use href="#i-cards"/></svg></span>
+            <span class="mode-name" data-i18n="mode.collection.name">コレクション</span>
+            <span class="mode-desc" data-i18n="mode.collection.desc">正解数で ごほうびカードが アンロック！コインガチャもひける。</span>
+            <span class="mode-meta"><strong id="collectionChip">0</strong><span data-i18n="mode.collection.metaSuffix"> / 12 枚ゲット</span></span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ クイズ（れんしゅう／タイムアタック／デイリー 共通） ============ -->
+    <section class="screen" id="screen-quiz" aria-label="クイズ" data-i18n-aria="aria.sectionQuiz">
+      <div class="quiz-inner">
+
+        <div class="quiz-topbar">
+          <button class="btn btn-ghost btn-small" id="quizBack"><svg><use href="#i-back"/></svg><span data-i18n="quiz.back">もどる</span></button>
+          <div class="quiz-top-center">
+            <span class="quiz-mode-label" id="quizModeLabel">ならべかえ れんしゅう</span>
+            <span class="quiz-progress" id="quizProgress"></span>
+          </div>
+          <div class="quiz-top-right">
+            <div class="hearts" id="quizHearts" role="status" aria-label="のこりハート" data-i18n-aria="listening.heartsAria" hidden></div>
+            <div class="chip chip-streak" id="quizStreakChip" title="連続正解" data-i18n-title="quiz.streakTitle">
+              <svg class="chip-icon flame-icon"><use href="#i-flame"/></svg><span id="quizStreak">0</span>
+            </div>
+            <div class="chip chip-score" id="quizScoreChip" hidden title="スコア" data-i18n-title="quiz.scoreTitle"><svg class="chip-icon"><use href="#i-bolt"/></svg><span id="quizScore">0</span></div>
+            <div class="chip chip-timer" id="quizTimerChip" hidden title="残り時間" data-i18n-title="quiz.timerTitle"><svg class="chip-icon"><use href="#i-timer"/></svg><span id="quizTimer">60</span></div>
+          </div>
+        </div>
+
+        <!-- セットアップ（れんしゅうモードのみ） -->
+        <div class="panel quiz-setup" id="setupPanel">
+          <h2 class="setup-title"><svg class="setup-title-icon" aria-hidden="true"><use id="setupTitleUse" href="#i-sword"/></svg><span id="setupTitleText">出題セッティング</span></h2>
+          <div class="setup-group">
+            <span class="setup-label" data-i18n="setup.work">作品</span>
+            <div class="seg" id="animeChips" role="radiogroup" aria-label="作品フィルター" data-i18n-aria="aria.animeFilter">
+              <button class="seg-btn is-active" data-value="all" role="radio" aria-checked="true"><span data-i18n="setup.all">ぜんぶ</span></button>
+              <button class="seg-btn" data-value="jojo" role="radio" aria-checked="false"><span class="dot dot-jojo"></span><span data-i18n="setup.jojo">ジョジョ</span></button>
+              <button class="seg-btn" data-value="jjk" role="radio" aria-checked="false"><span class="dot dot-jjk"></span><span data-i18n="setup.jjk">呪術廻戦</span></button>
+            </div>
+          </div>
+          <div class="setup-group">
+            <span class="setup-label" data-i18n="setup.level">むずかしさ</span>
+            <div class="seg" id="levelChips" role="radiogroup" aria-label="レベルフィルター" data-i18n-aria="aria.levelFilter">
+              <button class="seg-btn is-active" data-value="0" role="radio" aria-checked="true"><span data-i18n="setup.all">ぜんぶ</span></button>
+              <button class="seg-btn" data-value="1" role="radio" aria-checked="false"><span data-i18n="setup.lv1">Lv.1 やさしい</span></button>
+              <button class="seg-btn" data-value="2" role="radio" aria-checked="false"><span data-i18n="setup.lv2">Lv.2 ふつう</span></button>
+              <button class="seg-btn" data-value="3" role="radio" aria-checked="false"><span data-i18n="setup.lv3">Lv.3 むずかしい</span></button>
+            </div>
+          </div>
+          <div class="setup-group">
+            <span class="setup-label" data-i18n="setup.script">もじ</span>
+            <div class="seg" id="scriptChips" role="radiogroup" aria-label="文字の種類" data-i18n-aria="aria.scriptFilter">
+              <button class="seg-btn is-active" data-value="katakana" role="radio" aria-checked="true"><span data-i18n="setup.katakana">カタカナ</span></button>
+              <button class="seg-btn" data-value="hiragana" role="radio" aria-checked="false"><span data-i18n="setup.hiragana">ひらがな</span></button>
+            </div>
+          </div>
+          <div class="setup-lock-note" id="dailyLockNote" hidden data-i18n="setup.lockNote">きょうの5問は ぜんぶの中から えらばれるよ。「もじ」だけ えらべる！</div>
+          <div class="setup-note" data-i18n="setup.note">ヒント文をよんで、文字タイルを正しい順番にタップしよう。「・」は動かないよ。</div>
+          <button class="btn btn-gold btn-big btn-start" id="btnStartQuiz"><span id="startBtnText">スタート</span><svg><use href="#i-arrow-right"/></svg></button>
+        </div>
+
+        <!-- プレイエリア -->
+        <div class="quiz-play" id="playPanel" hidden>
+          <div class="clue-card panel" id="clueCard">
+            <div class="clue-tags">
+              <span class="tag" id="clueTagAnime">JOJO</span>
+              <span class="tag tag-type" id="clueTagType">わざ</span>
+              <span class="tag tag-level" id="clueTagLevel">Lv.1</span>
+              <span class="tag tag-golden" id="goldenTag" hidden>キラキラ問題</span>
+            </div>
+            <p class="clue-desc" id="clueDesc">DIOのスタンド。</p>
+            <button class="hint-toggle" id="btnHint" aria-expanded="false">
+              <svg><use href="#i-book"/></svg><span id="btnHintText">ヒント：ローマ字をみる</span>
+            </button>
+            <button class="hint-toggle kana-replay" id="btnKanaReplay" hidden>
+              <svg><use href="#i-speaker"/></svg><span data-i18n="play.replay">なまえを きく</span>
+            </button>
+            <p class="clue-romaji" id="clueRomaji" hidden></p>
+          </div>
+
+          <div class="slots-wrap" id="slotsWrap" aria-label="こたえのマス"></div>
+          <div class="tile-pool" id="tilePool" aria-label="文字タイル"></div>
+          <p class="quiz-feedback" id="quizFeedback" role="status" aria-live="polite"></p>
+
+          <!-- 答え合わせパネル -->
+          <div class="reveal panel" id="revealPanel" hidden>
+            <div class="reveal-verdict" id="revealVerdict"><svg><use href="#i-check"/></svg><span data-i18n="reveal.correct">せいかい！</span></div>
+            <div class="reveal-kana" id="revealKana">ザ・ワールド</div>
+            <div class="reveal-label" id="revealLabel">ザ・ワールド</div>
+            <div class="reveal-en" id="revealEn">The World</div>
+            <p class="reveal-desc" id="revealDesc">DIOのスタンド。</p>
+            <div class="reveal-xp" id="revealXp">+12 XP</div>
+            <div class="reveal-actions">
+              <button class="btn btn-ghost btn-small" id="btnSpeak"><svg><use href="#i-speaker"/></svg><span data-i18n="reveal.speak">よみあげ</span></button>
+              <button class="btn btn-gold" id="btnNext"><span id="btnNextText">つぎへ</span><svg><use href="#i-arrow-right"/></svg></button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ============ 五十音表 ============ -->
+    <section class="screen" id="screen-chart" aria-label="ごじゅうおん表" data-i18n-aria="aria.sectionChart">
+      <div class="chart-inner">
+        <div class="section-head">
+          <h2 class="section-title"><span class="section-title-icon chart-icon"><svg><use href="#i-grid"/></svg></span><span data-i18n="chart.title">ごじゅうおん表</span></h2>
+          <p class="section-sub" data-i18n="chart.sub">マスをタップすると 発音がきこえるよ。「だくおん」「ようおん」も チャレンジしよう。</p>
+        </div>
+        <div class="chart-tabs" role="tablist" aria-label="文字の種類" data-i18n-aria="aria.scriptFilter">
+          <button class="chart-tab is-active" id="chartTabHiragana" role="tab" aria-selected="true"><span data-i18n="chart.hiragana">ひらがな</span></button>
+          <button class="chart-tab" id="chartTabKatakana" role="tab" aria-selected="false"><span data-i18n="chart.katakana">カタカナ</span></button>
+        </div>
+        <div id="chartContainer" class="chart-sections"></div>
+      </div>
+    </section>
+
+    <!-- ============ コレクション ============ -->
+    <section class="screen" id="screen-collection" aria-label="コレクション" data-i18n-aria="aria.sectionCollection">
+      <div class="collection-inner">
+        <div class="section-head collection-head">
+          <div>
+            <h2 class="section-title"><span class="section-title-icon card-icon"><svg><use href="#i-cards"/></svg></span><span data-i18n="collection.title">コレクション</span></h2>
+            <p class="section-sub" data-i18n="collection.sub">正解数で ごほうびカードが アンロックされるよ。コインで ガチャも ひける！</p>
+          </div>
+          <button class="btn btn-gacha" id="btnGacha">
+            <svg class="gacha-btn-icon"><use href="#i-cards"/></svg>
+            <span class="gacha-btn-text"><span data-i18n="gacha.title">おたからボックス</span><small class="gacha-btn-cost"><svg class="coin-icon"><use href="#i-coin"/></svg>120</small></span>
+          </button>
+        </div>
+        <div class="collection-progress panel">
+          <div class="collection-progress-top">
+            <span class="collection-count"><strong id="collectionCount">0</strong> <span data-i18n="collection.progressSuffix">/ 12 枚</span></span>
+            <span class="collection-next" id="collectionNext">つぎのカードまで あと1問</span>
+          </div>
+          <div class="collection-bar"><span class="collection-bar-fill" id="collectionFill"></span></div>
+        </div>
+        <div class="collection-grid" id="collectionGrid"></div>
+      </div>
+    </section>
+
+    <!-- ============ ミッション ============ -->
+    <section class="screen" id="screen-missions" aria-label="ミッション" data-i18n-aria="aria.sectionMissions">
+      <div class="missions-inner">
+        <div class="quiz-topbar">
+          <button class="btn btn-ghost btn-small" id="missionsBack"><svg><use href="#i-back"/></svg><span data-i18n="quiz.back">もどる</span></button>
+          <div class="quiz-top-center">
+            <span class="quiz-mode-label" data-i18n="mission.title">ミッション</span>
+            <span class="quiz-progress" data-i18n="mission.topNote">かんりょうした分だけ コインが もらえる！</span>
+          </div>
+          <div class="chip chip-coin" title="コイン残高" data-i18n-title="coins.tip">
+            <svg class="chip-icon coin-icon-fill"><use href="#i-coin"/></svg>
+            <span id="missionsCoins">0</span>
+          </div>
+        </div>
+        <div class="section-head">
+          <h2 class="section-title"><span class="section-title-icon flag-icon"><svg><use href="#i-flag"/></svg></span><span data-i18n="mission.title">ミッション</span></h2>
+          <p class="section-sub" data-i18n="mission.sub">あそびながら ミッションを クリアしよう。うけとると コインが もらえるよ。</p>
+        </div>
+        <div class="seg mission-tabs" id="missionTabs" role="tablist" aria-label="ミッションのしめきり" data-i18n-aria="aria.missionTabs">
+          <button class="seg-btn is-active" data-filter="all" role="tab" aria-checked="true"><span data-i18n="mission.tabAll">ぜんぶ</span></button>
+          <button class="seg-btn" data-filter="claimable" role="tab" aria-checked="false"><span data-i18n="mission.tabClaimable">うけとれる</span></button>
+          <button class="seg-btn" data-filter="done" role="tab" aria-checked="false"><span data-i18n="mission.tabDone">かんりょう</span></button>
+        </div>
+        <div id="missionList" class="mission-list"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="app-footer">
+    <p data-i18n="footer.copy">五十音クエスト — スマホ・タブレット・PCであそべます</p>
+    <p class="footer-note" data-i18n="footer.note">『ジョジョの奇妙な冒険』『呪術廻戦』の登場人物・技名等は各作品の権利者に帰属します。本作は非公式の学習用ファンメイドアプリです。</p>
+  </footer>
+
+  <!-- ============ 結果モーダル ============ -->
+  <div class="modal" id="resultModal" role="dialog" aria-modal="true" aria-labelledby="resultTitle" hidden>
+    <div class="modal-backdrop" data-close-result></div>
+    <div class="modal-card result-card">
+      <div class="result-stamp" id="resultStamp" hidden><span data-i18n="result.stamp">クリア！</span></div>
+      <h3 class="result-title" id="resultTitle">けっか発表！</h3>
+      <p class="result-sub" id="resultSub"></p>
+      <div class="result-stars" id="resultStars" aria-label="獲得した星" data-i18n-aria="aria.resultStars">
+        <svg class="result-star" data-star="1"><use href="#i-star"/></svg>
+        <svg class="result-star" data-star="2"><use href="#i-star"/></svg>
+        <svg class="result-star" data-star="3"><use href="#i-star"/></svg>
+      </div>
+      <dl class="result-stats" id="resultStats"></dl>
+      <div class="result-actions">
+        <button class="btn btn-ghost" id="btnResultHome"><span data-i18n="result.home">ホームへ</span></button>
+        <button class="btn btn-gold" id="btnResultRetry">もう一回<svg><use href="#i-arrow-right"/></svg></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 設定モーダル ============ -->
+  <div class="modal" id="settingsModal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle" hidden>
+    <div class="modal-backdrop" data-close-settings></div>
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3 class="modal-title" id="settingsTitle"><svg><use href="#i-gear"/></svg><span data-i18n="settings.title">せってい</span></h3>
+        <button class="icon-btn" data-close-settings aria-label="とじる"><svg><use href="#i-close"/></svg></button>
+      </div>
+      <div class="settings-body">
+        <label class="switch-row">
+          <span class="switch-text"><span class="switch-name" data-i18n="settings.sound">効果音</span><span class="switch-desc" data-i18n="settings.soundDesc">せいかい・まちがいの音をならす</span></span>
+          <input type="checkbox" class="switch-input" id="toggleSound" /><span class="switch" aria-hidden="true"></span>
+        </label>
+        <label class="switch-row">
+          <span class="switch-text"><span class="switch-name" data-i18n="settings.voice">よみあげ音声</span><span class="switch-desc" data-i18n="settings.voiceDesc">せいかい後に かなを よみあげる</span></span>
+          <input type="checkbox" class="switch-input" id="toggleVoice" /><span class="switch" aria-hidden="true"></span>
+        </label>
+        <div class="settings-lang">
+          <span class="switch-text"><span class="switch-name" data-i18n="settings.lang">言語 / Language</span></span>
+          <div class="seg lang-switch" role="radiogroup" aria-label="Language / 言語">
+            <button class="seg-btn lang-switch-btn is-active" data-locale="ja" role="radio" aria-checked="true"><span data-i18n="settings.langJa">日本語</span></button>
+            <button class="seg-btn lang-switch-btn" data-locale="zh" role="radio" aria-checked="false"><span data-i18n="settings.langZh">中文</span></button>
+          </div>
+        </div>
+        <div class="settings-danger">
+          <p class="settings-danger-text" data-i18n="settings.resetDesc">セーブデータ（XP・コイン・カード・ベストスコア）をすべて消します。</p>
+          <button class="btn btn-danger" id="btnResetSave" data-i18n="settings.reset">データをリセットする</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ カード詳細モーダル ============ -->
+  <div class="modal" id="cardModal" role="dialog" aria-modal="true" aria-labelledby="cardModalName" hidden>
+    <div class="modal-backdrop" data-close-card></div>
+    <div class="modal-card card-detail-card" id="cardDetailFrame">
+      <button class="icon-btn card-detail-close" id="btnCloseCard" aria-label="とじる"><svg><use href="#i-close"/></svg></button>
+      <div class="card-detail-rarity" id="cardModalRarity">SSR</div>
+      <div class="card-detail-icon" id="cardModalIcon"></div>
+      <h3 class="card-detail-name" id="cardModalName">ザ・ワールド</h3>
+      <p class="card-detail-desc" id="cardModalDesc"></p>
+      <p class="card-detail-condition" id="cardModalCondition"></p>
+    </div>
+  </div>
+
+  <!-- ============ おたからボックス（ガチャ） ============ -->
+  <div class="modal" id="gachaModal" role="dialog" aria-modal="true" aria-labelledby="gachaTitle" hidden>
+    <div class="modal-backdrop" data-close-gacha></div>
+    <div class="modal-card gacha-card">
+      <button class="icon-btn gacha-close" id="btnGachaClose" aria-label="とじる"><svg><use href="#i-close"/></svg></button>
+      <h3 class="gacha-title" id="gachaTitle"><svg><use href="#i-bolt"/></svg><span data-i18n="gacha.title">おたからボックス</span></h3>
+      <p class="gacha-sub" id="gachaPullNote">未入手のカードから ランダムで1枚！</p>
+      <div class="gacha-balance"><svg class="coin-icon"><use href="#i-coin"/></svg><span id="gachaCoins">0</span> <span data-i18n="gacha.coins">コイン</span></div>
+
+      <div class="gacha-stage" id="gachaStage">
+        <div class="gacha-box" id="gachaBox" role="img" aria-label="たからばこ">
+          <svg viewBox="0 0 220 190" class="gacha-chest-svg" aria-hidden="true">
+            <defs>
+              <linearGradient id="chestWood" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#7c2d12"/>
+              </linearGradient>
+              <linearGradient id="chestLid" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#d97706"/><stop offset="1" stop-color="#92400e"/>
+              </linearGradient>
+              <radialGradient id="chestGlow" cx="50%" cy="45%" r="55%">
+                <stop offset="0" stop-color="#ffe98a" stop-opacity="0.95"/><stop offset="1" stop-color="#ffe98a" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+            <circle cx="110" cy="88" r="70" fill="url(#chestGlow)" class="chest-glow"/>
+            <rect x="30" y="88" width="160" height="76" rx="12" fill="url(#chestWood)" stroke="#451a03" stroke-width="3"/>
+            <path d="M30 100a12 12 0 0 1 12-12h136a12 12 0 0 1 12 12v14H30z" fill="url(#chestLid)" stroke="#451a03" stroke-width="3"/>
+            <rect x="96" y="82" width="28" height="34" rx="6" fill="#ffd23f" stroke="#a16207" stroke-width="3"/>
+            <circle cx="110" cy="99" r="5.5" fill="#a16207"/>
+            <path class="crack crack-1" d="M58 96 L74 118 L64 138 L80 158" fill="none" stroke="#2a0e02" stroke-width="4" stroke-linecap="round"/>
+            <path class="crack crack-2" d="M150 92 L138 116 L156 134 L144 156" fill="none" stroke="#2a0e02" stroke-width="4" stroke-linecap="round"/>
+            <path class="crack crack-3" d="M104 90 L116 112 L102 130 L118 150" fill="none" stroke="#2a0e02" stroke-width="5" stroke-linecap="round"/>
+            <path class="chest-shine" d="M48 106l14-8 6 10-14 8z" fill="#ffffff" opacity="0.25"/>
+          </svg>
+        </div>
+        <p class="gacha-hint" data-i18n="gacha.hint">ボタンを おすと ひびが はいるよ！</p>
+      </div>
+
+      <div class="gacha-reward" id="gachaReward" hidden>
+        <div class="gacha-rays" aria-hidden="true"></div>
+        <div class="gacha-reward-icon" id="gachaRewardIcon"></div>
+        <div class="gacha-reward-rarity rarity-ssr" id="gachaRewardRarity">SSR</div>
+        <div class="gacha-reward-name" id="gachaRewardName">ザ・ワールド</div>
+        <div class="gacha-reward-kind" id="gachaRewardKind">カードを 1まい ゲット！</div>
+      </div>
+
+      <div class="gacha-actions">
+        <button class="btn btn-gold btn-big gacha-pull-btn" id="btnGachaPull"><svg><use href="#i-bolt"/></svg><span data-i18n="gacha.pull">ひらく！</span><svg class="coin-icon"><use href="#i-coin"/></svg><span class="gacha-pull-cost">120</span></button>
+        <div class="gacha-again-row" id="gachaAgainRow" hidden>
+          <button class="btn btn-ghost" id="btnGachaCollection"><span data-i18n="gacha.viewCollection">コレクションをみる</span></button>
+          <button class="btn btn-gold" id="btnGachaAgain">もう一回</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ ランクアップ祝典 ============ -->
+  <div class="modal" id="levelupModal" role="dialog" aria-modal="true" aria-labelledby="levelupTitle" hidden>
+    <div class="modal-backdrop" data-close-levelup></div>
+    <div class="modal-card levelup-card">
+      <div class="levelup-rays" aria-hidden="true"></div>
+      <div class="levelup-kicker" data-i18n="levelup.kicker">ランクアップ！！</div>
+      <div class="levelup-badge"><svg><use href="#i-bolt"/></svg></div>
+      <h3 class="levelup-rank" id="levelupRank">かなのたまご</h3>
+      <p class="levelup-sub" data-i18n="levelup.sub">さらに つよくなった！</p>
+      <div class="levelup-rewards">
+        <span class="levelup-reward"><svg class="coin-icon"><use href="#i-coin"/></svg>+25</span>
+        <span class="levelup-reward"><svg class="star-icon"><use href="#i-star"/></svg>+1</span>
+      </div>
+      <button class="btn btn-gold btn-big" id="btnLevelupOk"><span data-i18n="levelup.ok">ありがとう！</span><svg><use href="#i-arrow-right"/></svg></button>
+    </div>
+  </div>
+
+  <!-- わざ発動カットイン（正解したときに全画面で演出） -->
+  <div class="waza-cutin" id="wazaCutin" hidden aria-hidden="true">
+    <div class="waza-cutin-speed"></div>
+    <div class="waza-cutin-flash"></div>
+    <svg class="waza-cutin-art" viewBox="0 0 1280 720" preserveAspectRatio="xMidYMid slice" focusable="false">
+      <defs>
+        <radialGradient id="haloGrad" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#ffe98a" stop-opacity="0"/>
+          <stop offset="72%" stop-color="#ffd23f" stop-opacity="0"/>
+          <stop offset="86%" stop-color="#ffd23f" stop-opacity="0.9"/>
+          <stop offset="100%" stop-color="#b388ff" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="goldGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#fff6c8"/>
+          <stop offset="38%" stop-color="#ffd23f" stop-opacity="0.85"/>
+          <stop offset="100%" stop-color="#ffd23f" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="violetGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#e6d6ff"/>
+          <stop offset="38%" stop-color="#8b5cf6" stop-opacity="0.85"/>
+          <stop offset="100%" stop-color="#8b5cf6" stop-opacity="0"/>
+        </radialGradient>
+        <linearGradient id="goldFlame" x1="0" y1="1" x2="0" y2="0">
+          <stop offset="0" stop-color="#ff8a00" stop-opacity="0.15"/>
+          <stop offset="55%" stop-color="#ffb03a" stop-opacity="0.7"/>
+          <stop offset="100%" stop-color="#fff6c8" stop-opacity="0.95"/>
+        </linearGradient>
+        <linearGradient id="violetFlame" x1="0" y1="1" x2="0" y2="0">
+          <stop offset="0" stop-color="#3b1d8f" stop-opacity="0.15"/>
+          <stop offset="55%" stop-color="#8b5cf6" stop-opacity="0.7"/>
+          <stop offset="100%" stop-color="#e6d6ff" stop-opacity="0.95"/>
+        </linearGradient>
+        <linearGradient id="rimGold" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#fff2b0"/><stop offset="1" stop-color="#ffb03a"/>
+        </linearGradient>
+        <linearGradient id="rimViolet" x1="1" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#e6d6ff"/><stop offset="1" stop-color="#38e1ff"/>
+        </linearGradient>
+      </defs>
+
+      <!-- 背後的破損光輪 -->
+      <circle class="cutin-halo" cx="905" cy="322" r="218" fill="url(#haloGrad)"/>
+      <circle class="cutin-halo cutin-halo-dash" cx="905" cy="322" r="158" fill="none" stroke="#ffd23f" stroke-opacity="0.55" stroke-width="6" stroke-dasharray="40 26"/>
+
+      <!-- 雙色衝擊波：右金／左紫 -->
+      <path class="cutin-flame" d="M905 668 C1015 575 1005 435 1085 330 C1125 262 1115 175 1175 80 C1188 210 1252 268 1222 388 C1268 366 1262 488 1185 565 C1138 616 1052 668 905 672 Z" fill="url(#goldFlame)" opacity="0.6"/>
+      <path class="cutin-flame cutin-flame-l" d="M905 668 C795 575 805 435 725 330 C685 262 695 175 635 80 C622 210 558 268 588 388 C542 366 548 488 625 565 C672 616 758 668 905 672 Z" fill="url(#violetFlame)" opacity="0.6"/>
+
+      <!-- 手中的氣勁 -->
+      <circle cx="620" cy="168" r="46" fill="url(#violetGlow)" class="cutin-orb"/>
+      <circle cx="1190" cy="168" r="46" fill="url(#goldGlow)" class="cutin-orb"/>
+
+      <!-- 閃電 -->
+      <g class="cutin-bolt" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M1052 208 L1108 296 L1076 300 L1150 420" stroke="#ffe873" stroke-width="7"/>
+        <path d="M1052 208 L1108 296 L1076 300 L1150 420" stroke="#fffdf0" stroke-width="2.2" stroke-opacity="0.9"/>
+        <path d="M1146 178 L1186 252 L1156 256 L1214 332" stroke="#ffd23f" stroke-width="4.5" stroke-opacity="0.9"/>
+      </g>
+      <g class="cutin-bolt cutin-bolt-violet" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M758 208 L702 296 L734 300 L660 420" stroke="#c99cff" stroke-width="7"/>
+        <path d="M758 208 L702 296 L734 300 L660 420" stroke="#f3eaff" stroke-width="2.2" stroke-opacity="0.9"/>
+        <path d="M664 178 L624 252 L654 256 L596 332" stroke="#8b5cf6" stroke-width="4.5" stroke-opacity="0.9"/>
+      </g>
+
+      <!-- 主角剪影（背影・雙手張開） -->
+      <path d="M852 292 L636 148 L606 202 L830 342 Z" fill="#141030"/>
+      <path d="M958 292 L1174 148 L1204 202 L980 342 Z" fill="#141030"/>
+      <circle cx="618" cy="172" r="23" fill="#1a1636" stroke="#b388ff" stroke-opacity="0.7" stroke-width="2"/>
+      <circle cx="1192" cy="172" r="23" fill="#1a1636" stroke="#ffd23f" stroke-opacity="0.7" stroke-width="2"/>
+      <path d="M838 292 C812 370 762 470 692 618 L736 636 L764 576 L796 652 L834 596 L868 660 L902 606 L936 658 L968 596 L1002 646 L1030 566 C1002 462 988 372 966 292 Q902 262 838 292 Z" fill="#151130" stroke="rgba(255,255,255,0.05)" stroke-width="1.5"/>
+      <path d="M878 244 L932 244 L928 290 Q905 300 882 290 Z" fill="#151130"/>
+      <circle cx="905" cy="216" r="30" fill="#1a1636"/>
+      <path d="M862 214 L824 156 L862 176 L854 116 L890 156 L884 90 L916 130 L930 62 L946 136 L980 82 L972 156 L1028 114 L994 182 Q928 168 862 214 Z" fill="#0d0b1e"/>
+
+      <!-- 邊緣光 -->
+      <g fill="none" stroke-linecap="round">
+        <path d="M1174 148 L1204 202 L980 342" stroke="url(#rimGold)" stroke-width="5" stroke-opacity="0.95"/>
+        <path d="M966 292 C988 372 1002 462 1030 566" stroke="url(#rimGold)" stroke-width="6" stroke-opacity="0.9"/>
+        <path d="M930 62 L946 136 L980 82" stroke="url(#rimGold)" stroke-width="4" stroke-opacity="0.8"/>
+        <path d="M636 148 L606 202 L830 342" stroke="url(#rimViolet)" stroke-width="5" stroke-opacity="0.95"/>
+        <path d="M838 292 C812 370 762 470 692 618" stroke="url(#rimViolet)" stroke-width="6" stroke-opacity="0.9"/>
+        <path d="M884 90 L916 130 L930 62" stroke="url(#rimViolet)" stroke-width="4" stroke-opacity="0.8"/>
+      </g>
+
+      <!-- 火花星 -->
+      <g fill="#ffffff">
+        <path class="cutin-twinkle" d="M620 118l2.6 6.4 6.4 2.6-6.4 2.6-2.6 6.4-2.6-6.4-6.4-2.6 6.4-2.6z"/>
+        <path class="cutin-twinkle t2" d="M1190 120l2.2 5.4 5.4 2.2-5.4 2.2-2.2 5.4-2.2-5.4-5.4-2.2 5.4-2.2z" fill="#ffd23f"/>
+        <path class="cutin-twinkle t3" d="M905 60l2.4 5.8 5.8 2.4-5.8 2.4-2.4 5.8-2.4-5.8-5.8-2.4 5.8-2.4z" fill="#e6d6ff"/>
+      </g>
+
+      <!-- 碎石 -->
+      <g opacity="0.9">
+        <polygon points="770,258 780,250 776,266" fill="#b388ff"/>
+        <polygon points="700,360 712,352 708,372" fill="#8b5cf6"/>
+        <polygon points="1050,250 1062,242 1058,262" fill="#ffd23f"/>
+        <polygon points="1120,430 1132,422 1128,442" fill="#ffb03a"/>
+        <polygon points="830,140 840,132 836,152" fill="#ffffff"/>
+        <polygon points="1000,150 1010,142 1006,162" fill="#ffd23f"/>
+        <polygon points="740,480 752,472 748,492" fill="#c99cff"/>
+        <polygon points="1100,330 1112,322 1108,342" fill="#fff6c8"/>
+      </g>
+
+      <!-- 地面光 -->
+      <ellipse cx="792" cy="670" rx="215" ry="17" fill="#8b5cf6" opacity="0.35"/>
+      <ellipse cx="1035" cy="670" rx="215" ry="17" fill="#ffb03a" opacity="0.35"/>
+    </svg>
+    <div class="waza-cutin-vignette"></div>
+    <div class="waza-cutin-body">
+      <div class="waza-cutin-kicker"><svg class="waza-cutin-kicker-icon"><use href="#i-bolt"/></svg><span data-i18n="cutin.kicker">わざ はっどう！</span></div>
+      <div class="waza-cutin-name" id="wazaCutinName">ザ・ワールド</div>
+      <div class="waza-cutin-label" id="wazaCutinLabel">ザ・ワールド</div>
+      <div class="waza-cutin-en" id="wazaCutinEn">THE WORLD</div>
+    </div>
+    <span class="waza-cutin-skip" data-i18n="cutin.skip">タップで スキップ</span>
+  </div>
+
+  <!-- コンボ・大字スプラッシュ -->
+  <div class="fx-splash" id="fxSplash" hidden aria-hidden="true">
+    <div class="fx-splash-text" id="fxSplashText">5れんさ!!</div>
+    <div class="fx-splash-sub" id="fxSplashSub">すごい！！</div>
+  </div>
+
+  <!-- トースト -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- 紙吹雪コンテナ -->
+  <div class="confetti-layer" id="confettiLayer" aria-hidden="true"></div>
+
+  <script src="js/i18n.js?v=5"></script>
+  <script src="js/data.js?v=8"></script>
+  <script src="js/store.js?v=6"></script>
+  <script src="js/voice-manifest.js?v=2"></script>
+  <script src="js/audio.js?v=6"></script>
+  <script src="js/fx.js?v=4"></script>
+  <script src="js/quiz.js?v=11"></script>
+  <script src="js/chart.js?v=3"></script>
+  <script src="js/collection.js?v=5"></script>
+  <script src="js/missions.js?v=4"></script>
+  <script src="js/gacha.js?v=4"></script>
+  <script src="js/app.js?v=8"></script>
+</body>
+</html>
