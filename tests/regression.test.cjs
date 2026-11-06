@@ -8,7 +8,7 @@ const vm = require('node:vm');
 const root = path.join(__dirname, '..');
 
 function boot({ audio = false, effects = false } = {}) {
-  const elements = new Map(), jobs = new Map(), spoken = [], packs = [];
+  const elements = new Map(), jobs = new Map(), spoken = [], packs = [], tones = [];
   let now = Date.now(), timerId = 0;
   class Element {
     constructor() {
@@ -89,16 +89,20 @@ function boot({ audio = false, effects = false } = {}) {
   const schedule = (fn, ms, repeat = false) => {
     const id = ++timerId; jobs.set(id, { fn, at: now + ms, ms, repeat }); return id;
   };
-  class MockAudio {
-    constructor(file) { this.file = file; this.paused = false; packs.push(this); }
-    play() { return new Promise((_, reject) => { this.reject = reject; }); }
+  class MockAudio extends Element {
+    constructor(file) { super(); this.file = file; this.paused = true; this.plays = 0; packs.push(this); }
+    play() { this.paused = false; this.plays++; return new Promise((resolve, reject) => { this.resolve = resolve; this.reject = reject; }); }
     pause() { this.paused = true; }
   }
   const context = vm.createContext({
     console, document, navigator: { language: 'zh-TW' },
     localStorage: { getItem() { return null; }, setItem() {}, removeItem() {} },
     location: { reload() {} },
-    window: { scrollTo() {}, speechSynthesis: { cancel() {}, speak: u => spoken.push(u.text), getVoices: () => [] } },
+    window: { scrollTo() {}, AudioContext: class {
+      currentTime = 0;
+      createOscillator() { return { frequency: { setValueAtTime() {} }, connect() { return { connect() {} }; }, start() { tones.push(1); }, stop() {} }; }
+      createGain() { return { gain: { setValueAtTime() {}, linearRampToValueAtTime() {}, exponentialRampToValueAtTime() {} } }; }
+    }, speechSynthesis: { cancel() {}, speak: u => spoken.push(u.text), getVoices: () => [] } },
     Audio: MockAudio, SpeechSynthesisUtterance: function(text) { this.text = text; },
     Date: class extends Date { static now() { return now; } },
     setTimeout: (fn, ms) => schedule(fn, ms), clearTimeout: id => jobs.delete(id),
@@ -110,7 +114,7 @@ function boot({ audio = false, effects = false } = {}) {
     vm.runInContext(fs.readFileSync(filename, 'utf8'), context, { filename });
   };
   for (const name of ['i18n', 'data', 'store', 'voice-manifest']) load(name);
-  if (audio) load('audio'); else run('const AudioKit = { play() {}, speak() {}, stopVoice() {}, shout() {} };');
+  if (audio) load('audio'); else run('const AudioKit = { init() {}, setMusic() {}, syncSettings() {}, play() {}, speak() {}, stopVoice() {}, shout() {} };');
   if (effects) load('fx');
   else run('const FX = { confetti() {}, coinRain() {}, comboSplash() {}, prepareAttack() {}, stopCutin() {}, wazaCutin({onDone}) { onDone(); } };');
   for (const name of ['quiz', 'chart', 'collection', 'missions', 'gacha', 'app']) load(name);
@@ -126,7 +130,7 @@ function boot({ audio = false, effects = false } = {}) {
     }
     now = end;
   };
-  return { run, get, tick, spoken, packs, document };
+  return { run, get, tick, spoken, packs, tones, document };
 }
 
 function begin(env, mode = 'practice') {
@@ -394,4 +398,61 @@ test('a full attack keeps Tab inside its continue control', () => {
   let prevented = false;
   e.document.fire('keydown', { key: 'Tab', preventDefault() { prevented = true; } });
   assert.equal(prevented, true);
+});
+
+test('MP3 effects take priority and missing files fall back once, then use synthesis directly', async () => {
+  const e = boot({ audio: true }); e.run("AudioKit.play('correct')");
+  const clip = e.packs.at(-1);
+  assert.equal(clip.file, 'assets/sfx/correct.mp3');
+  assert.equal(e.tones.length, 0);
+  clip.fire('error'); clip.reject(new Error('missing')); await Promise.resolve();
+  assert.equal(e.tones.length, 3);
+  const requests = e.packs.length; e.run("AudioKit.play('correct')");
+  assert.equal(e.packs.length, requests);
+  assert.equal(e.tones.length, 6);
+});
+
+test('MP3 timeout falls back without replaying after a late rejection', async () => {
+  const e = boot({ audio: true }); e.run("AudioKit.play('click')");
+  const clip = e.packs.at(-1); e.tick(1500);
+  assert.equal(e.tones.length, 1); assert.equal(clip.paused, true);
+  clip.reject(new Error('late')); await Promise.resolve();
+  assert.equal(e.tones.length, 1);
+});
+
+test('muting stops MP3 effects and suppresses delayed synthesis', async () => {
+  const e = boot({ audio: true }); e.run("AudioKit.play('wrong')");
+  const clip = e.packs.at(-1);
+  e.get('toggleSound').checked = false; e.get('toggleSound').fire('change');
+  assert.equal(clip.paused, true);
+  clip.reject(new Error('cancelled')); e.tick(2000); await Promise.resolve();
+  assert.equal(e.tones.length, 0);
+});
+
+test('BGM starts on interaction, loops, switches screens and has an independent saved toggle', () => {
+  const e = boot({ audio: true }); assert.equal(e.packs.length, 0);
+  e.document.fire('pointerdown'); const home = e.packs.at(-1);
+  assert.equal(home.file, 'assets/bgm/home.mp3'); assert.equal(home.loop, true);
+  e.run("App.go('timeattack')"); const battle = e.packs.at(-1);
+  assert.equal(home.paused, true); assert.equal(battle.file, 'assets/bgm/timeattack.mp3');
+  e.get('toggleBgm').checked = false; e.get('toggleBgm').fire('change');
+  assert.equal(battle.paused, true); assert.equal(e.run('SaveStore.data.bgm'), false);
+  e.get('toggleBgm').checked = true; e.get('toggleBgm').fire('change');
+  assert.equal(e.packs.at(-1).file, 'assets/bgm/timeattack.mp3');
+});
+
+test('BGM pauses when hidden, resumes when visible, and missing music stays silent', async () => {
+  const e = boot({ audio: true }); e.document.fire('pointerdown'); const clip = e.packs.at(-1);
+  clip.resolve(); await Promise.resolve();
+  e.document.hidden = true; e.document.fire('visibilitychange'); assert.equal(clip.paused, true);
+  e.document.hidden = false; e.document.fire('visibilitychange'); assert.equal(clip.paused, false);
+  clip.fire('error'); clip.reject(new Error('missing')); await Promise.resolve();
+  const count = e.packs.length; e.document.fire('pointerdown');
+  assert.equal(e.packs.length, count); assert.equal(e.tones.length, 0);
+});
+
+test('daily replay completion still shows the clear stamp', () => {
+  const e = boot(); e.run('SaveStore.recordDailyClear(3)'); begin(e, 'daily');
+  for (let i = 0; i < 5; i++) { answer(e); e.get('btnNext').fire(); }
+  assert.equal(e.get('resultStamp').hidden, false);
 });
