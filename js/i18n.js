@@ -223,6 +223,8 @@ const I18N = (() => {
       /* 設定 */
       'settings.title': 'せってい',
       'settings.sound': '効果音',
+      'settings.bgm': 'BGM',
+      'settings.bgmDesc': '背景音楽をならす（音楽ファイルがある場合）',
       'settings.soundDesc': 'せいかい・まちがいの音をならす',
       'settings.voice': 'よみあげ音声',
       'settings.voiceDesc': 'せいかい後に かなを よみあげる',
@@ -470,6 +472,8 @@ const I18N = (() => {
       /* 設定 */
       'settings.title': '設定',
       'settings.sound': '音效',
+      'settings.bgm': '背景音樂',
+      'settings.bgmDesc': '播放背景音樂（補上音樂檔後啟用）',
       'settings.soundDesc': '播放答對／答錯的音效',
       'settings.voice': '朗讀發音',
       'settings.voiceDesc': '答對後朗讀假名',

@@ -456,3 +456,45 @@ test('daily replay completion still shows the clear stamp', () => {
   for (let i = 0; i < 5; i++) { answer(e); e.get('btnNext').fire(); }
   assert.equal(e.get('resultStamp').hidden, false);
 });
+
+test('successful MP3 playback never also triggers synthesized audio', async () => {
+  const e = boot({ audio: true }); e.run("AudioKit.play('cutin')");
+  const clip = e.packs.at(-1); clip.resolve(); await Promise.resolve(); e.tick(2000);
+  clip.fire('ended'); assert.equal(e.tones.length, 0);
+});
+
+test('autoplay rejection allows a later MP3 retry and never marks the file missing', async () => {
+  const e = boot({ audio: true }); e.run("AudioKit.play('click')");
+  const error = new Error('gesture required'); error.name = 'NotAllowedError';
+  e.packs.at(-1).reject(error); await Promise.resolve(); await Promise.resolve();
+  const count = e.packs.length; e.run("AudioKit.play('click')");
+  assert.equal(e.packs.length, count + 1); assert.equal(e.tones.length, 1);
+});
+
+test('an old BGM failure cannot stop the newly selected track', async () => {
+  const e = boot({ audio: true }); e.document.fire('pointerdown'); const old = e.packs.at(-1);
+  e.run("App.go('practice')"); const current = e.packs.at(-1);
+  old.fire('error'); old.reject(new Error('old request')); await Promise.resolve();
+  assert.equal(current.file, 'assets/bgm/quiz.mp3'); assert.equal(current.paused, false);
+});
+
+test('old saves default BGM on and preserve an explicit off setting', () => {
+  const e = boot(); assert.equal(e.run('sanitizeSave({}).bgm'), true);
+  assert.equal(e.run('sanitizeSave({ bgm: false }).bgm'), false);
+});
+
+test('listening game over retains earnings and cannot add perfect coins', () => {
+  const e = boot(); begin(e, 'listening'); answer(e); e.get('btnNext').fire();
+  const coins = e.run('SaveStore.data.coins');
+  for (let i = 0; i < 3; i++) { answer(e, true); e.tick(800); }
+  assert.equal(e.run('Quiz.state.locked'), 'done');
+  assert.equal(e.run('SaveStore.data.coins'), coins);
+  assert.equal(e.get('resultStamp').hidden, true);
+});
+
+test('an invalid question id still exits safely through the empty-pool guard', () => {
+  const e = boot(); begin(e); answer(e);
+  e.run("Quiz.state.pool = ['missing-question']"); e.get('btnNext').fire();
+  assert.equal(e.run('Quiz.state.locked'), 'done');
+  assert.equal(e.get('screen-home').classList.contains('active'), true);
+});

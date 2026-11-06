@@ -513,27 +513,26 @@ const Quiz = (() => {
     }
   }
 
-  function listeningResultRows(perfect) {
+  function listeningResultRows() {
     return [
       [I18N.t('listening.correctCount'), I18N.t('result.correctCount', { n: state.sessionCorrect })],
       [I18N.t('listening.bestCombo'), `x${state.sessionMaxCombo}`],
       [I18N.t('result.miss'), I18N.t('result.missCount', { n: state.sessionMistakes })],
       [I18N.t('result.xp'), `+${state.sessionXP}`],
-      [I18N.t('result.coins'), `+${state.sessionCoins}${perfect ? I18N.t('result.perfect') : ''}`],
+      [I18N.t('result.coins'), `+${state.sessionCoins}`],
     ];
   }
 
   // ききとりチャレンジ：ハートが尽きたらゲームオーバー
   function showListeningGameOver() {
     stop();
-    const perfect = perfectBonusIfAny();
     showResult(() => ({
       title: I18N.t('listening.gameOver'),
       sub: I18N.t('listening.overSub'),
       stars: 0,
       stamp: false,
       retryLabel: 'result.retry',
-      rows: listeningResultRows(perfect),
+      rows: listeningResultRows(),
     }));
     App.refreshHeader();
   }
@@ -717,7 +716,7 @@ const Quiz = (() => {
       stamp: false,
       retryLabel: 'result.retryQuit',
       rows: isListening
-        ? listeningResultRows(0)
+        ? listeningResultRows()
         : [
             [I18N.t('result.correct'), I18N.t('result.correctCount', { n: state.sessionCorrect })],
             [I18N.t('result.miss'), I18N.t('result.missCount', { n: state.sessionMistakes })],

@@ -25,6 +25,7 @@ node --test --experimental-test-coverage tests/regression.test.cjs
 - [2026-11-05 程式盤點與修復證據](docs/AUDIT-2026-11-05.md)
 - [2026-11-06 外部盤點複查與修復](docs/REVIEW-2026-11-06.md)
 - [版面升級建議與四種方向](docs/UI-UPGRADE.md)
+- [BGM 路徑與補檔清單](assets/bgm/README.md) · [14 種 MP3 音效補檔清單](assets/sfx/README.md)
 
 ## 多語介面
 
@@ -71,6 +72,7 @@ node --test --experimental-test-coverage tests/regression.test.cjs
 - XP・プレイヤーランク（五十音みならい→傳説の日本語つかい）、連續正解（れんさ）與最高紀錄
 - **音声パック（Fish Audio）**：59 題共用 58 個假名讀音 MP3 音檔（`assets/voice/*.mp3`，約 1.4 MB）。作品別音色與語氣：JOJO → `5a8e46f1b94c4351aebb8a66b113cec5`（平順朗讀）；呪術廻戦 → `827be896a6954a8199ce4b2baad6af36`（**[shouting] 喊技語氣**，像叫招式一樣大聲，不像平鋪念稿）。模型：`s2.1-pro-free`；溫度／語速：JOJO 0.92x、呪術廻戦 1.0x。播放遵循「設定 → よみあげ音声」開關；檔案缺失或播放失敗時自動切換為瀏覽器語音合成（ja-JP）
 - Web Audio API 合成音效 + 瀏覽器語音合成（ja-JP）朗讀（語音パックが無い場合のフォールバック）
+- 可選 MP3 音效優先使用 `assets/sfx/` 的同名檔案，缺檔回到既有合成音效；`assets/bgm/` 預留首頁、一般遊玩、限時挑戰三首循環音樂，缺檔保持安靜。背景音樂、音效、朗讀皆可獨立開關
 - 進度（XP・星星・卡牌・每日挑戰紀錄）保存在瀏覽器 localStorage
 
 ## 檔案結構
@@ -80,6 +82,8 @@ gojuon-quest/
 ├── index.html        # 所有畫面（首頁／クイズ／ミッション／五十音表／コレクション／結算／設定）
 ├── css/style.css     # 全部樣式（含響應式與減少動態偏好）
 ├── assets/voice/     # Fish Audio 生成的読み上げ音声（58個MP3・約1.4MB）
+├── assets/bgm/       # 選填 home.mp3 / quiz.mp3 / timeattack.mp3
+├── assets/sfx/       # 選填 click.mp3 / correct.mp3 等14種事件音效
 ├── tools/            # 開發用工具（generate-voice-pack.js：声音包生成スクリプト）
 ├── js/data.js        # 題庫・金幣/任務資料・ランク・五十音表（新增題目或任務請改這裡）
 ├── js/quiz.js        # クイズ引擎（れんしゅう／ききとりチャレンジ／タイムアタック／デイリー 共用。ききとりは音声出題・ハート制・無限連擊）

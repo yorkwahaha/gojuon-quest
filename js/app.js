@@ -56,6 +56,8 @@ const App = (() => {
       el.classList.toggle('active', el.id === screenId);
     });
     currentScreen = screenId;
+    AudioKit.setMusic(screenId === 'screen-quiz'
+      ? (Quiz.state.mode === 'timeattack' ? 'timeattack' : 'quiz') : 'home');
     window.scrollTo(0, 0);
     if (screenId === 'screen-collection') Collection.refresh();
     if (screenId === 'screen-home') renderHome();
@@ -179,6 +181,7 @@ const App = (() => {
 
   function init() {
     SaveStore.load();
+    AudioKit.init();
     // ロケール初期化（保存値優先、なければブラウザ言語）
     I18N.init();
     I18N.onLocaleChange(applyLocale);
@@ -224,6 +227,7 @@ const App = (() => {
     $('btnSettings').addEventListener('click', () => {
       AudioKit.play('click');
       $('toggleSound').checked = SaveStore.data.sound;
+      $('toggleBgm').checked = SaveStore.data.bgm;
       $('toggleVoice').checked = SaveStore.data.voice;
       openModal('settingsModal');
     });
@@ -233,7 +237,13 @@ const App = (() => {
     $('toggleSound').addEventListener('change', (e) => {
       SaveStore.data.sound = e.target.checked;
       SaveStore.save();
+      AudioKit.syncSettings();
       if (e.target.checked) AudioKit.play('correct');
+    });
+    $('toggleBgm').addEventListener('change', (e) => {
+      SaveStore.data.bgm = e.target.checked;
+      SaveStore.save();
+      AudioKit.syncSettings();
     });
     $('toggleVoice').addEventListener('change', (e) => {
       SaveStore.data.voice = e.target.checked;

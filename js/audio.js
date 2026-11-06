@@ -104,9 +104,96 @@ const AudioKit = (() => {
     },
   };
 
+  // Optional files. A failed file is retried after the next page reload.
+  const missingEffects = new Set();
+  const activeEffects = new Map();
+
   function play(name) {
-    if (!SaveStore.data || !SaveStore.data.sound) return;
-    if (sfx[name]) sfx[name]();
+    if (!SaveStore.data || !SaveStore.data.sound || !Object.hasOwn(sfx, name)) return;
+    if (missingEffects.has(name)) { sfx[name](); return; }
+    let audio;
+    try { audio = new Audio(`assets/sfx/${name}.mp3`); }
+    catch (_) { sfx[name](); return; }
+    let settled = false;
+    let timer;
+    function finish(fallback = false, missing = false) {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      activeEffects.delete(audio);
+      if (missing) missingEffects.add(name);
+      if (fallback) {
+        audio.pause();
+        if (SaveStore.data.sound && !document.hidden) sfx[name]();
+      }
+    }
+    activeEffects.set(audio, () => { finish(); audio.pause(); });
+    audio.addEventListener('ended', () => finish());
+    audio.addEventListener('error', () => finish(true, true));
+    timer = setTimeout(() => finish(true, true), 1500);
+    audio.play().then(() => clearTimeout(timer)).catch(error => {
+      finish(true, error.name === 'NotSupportedError');
+    });
+  }
+
+  const musicFiles = { home: 'assets/bgm/home.mp3', quiz: 'assets/bgm/quiz.mp3', timeattack: 'assets/bgm/timeattack.mp3' };
+  const missingMusic = new Set();
+  let musicName = 'home';
+  let music = null;
+  let interacted = false;
+
+  function syncMusic() {
+    if (!interacted || !SaveStore.data.bgm || document.hidden) {
+      if (music) music.pause();
+      return;
+    }
+    if (missingMusic.has(musicName)) return;
+    if (!music) {
+      const name = musicName;
+      try { music = new Audio(musicFiles[name]); } catch (_) { return; }
+      music.loop = true;
+      music.volume = 0.16;
+      const clip = music;
+      clip.addEventListener('error', () => {
+        missingMusic.add(name);
+        clip.pause();
+        if (music === clip) music = null;
+      });
+    }
+    if (!music.paused) return;
+    const clip = music;
+    clip.play().catch(error => {
+      if (music !== clip) return;
+      clip.pause();
+      if (error.name === 'NotSupportedError') {
+        missingMusic.add(musicName);
+        music = null;
+      }
+    });
+  }
+
+  function setMusic(name) {
+    if (!Object.hasOwn(musicFiles, name)) return;
+    if (musicName !== name) {
+      if (music) music.pause();
+      music = null;
+      musicName = name;
+    }
+    syncMusic();
+  }
+
+  function syncSettings() {
+    if (!SaveStore.data.sound || document.hidden) {
+      activeEffects.forEach(cancel => cancel());
+    }
+    syncMusic();
+  }
+
+  function init() {
+    const activate = () => { interacted = true; syncMusic(); };
+    document.addEventListener('pointerdown', activate);
+    document.addEventListener('keydown', activate);
+    document.addEventListener('visibilitychange', syncSettings);
   }
 
   // ---- 読み上げ ----
@@ -193,5 +280,5 @@ const AudioKit = (() => {
     window.speechSynthesis.speak(u);
   }
 
-  return { play, speak, shout, stopVoice };
+  return { init, setMusic, syncSettings, play, speak, shout, stopVoice };
 })();

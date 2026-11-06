@@ -25,6 +25,7 @@ const DEFAULT_SAVE = {
   missionsClaimed: [],   // 受け取り済みミッションID
   gachaPulls: 0,         // ガチャを引いた回数
   sound: true,           // 効果音
+  bgm: true,             // 背景音楽（optional MP3）
   voice: true,           // 読み上げ音声
 };
 
@@ -60,6 +61,7 @@ function sanitizeSave(raw) {
   });
 
   fresh.sound = bool(raw.sound, true);
+  fresh.bgm = bool(raw.bgm, true);
   fresh.voice = bool(raw.voice, true);
   fresh.lastDaily =
     typeof raw.lastDaily === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(raw.lastDaily)
