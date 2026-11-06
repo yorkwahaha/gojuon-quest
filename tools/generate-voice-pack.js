@@ -12,6 +12,7 @@
    ============================================================ */
 const fs = require('fs');
 const path = require('path');
+const vm = require('node:vm');
 
 const ROOT = path.join(__dirname, '..');
 const OUT_DIR = path.join(ROOT, 'assets', 'voice');
@@ -40,7 +41,7 @@ if (onlyArg && !VOICES[onlyArg]) {
 
 // data.js から QUESTIONS を評価して取り出す（ローカルの信頼できるファイルのみ）
 const dataSrc = fs.readFileSync(path.join(ROOT, 'js', 'data.js'), 'utf8');
-const QUESTIONS = eval(`${dataSrc}; QUESTIONS`);
+const QUESTIONS = vm.runInNewContext(`${dataSrc}\nQUESTIONS`, {}, { filename: 'js/data.js' });
 
 const apiKey = process.env.FISH_API_KEY;
 if (!apiKey) {
@@ -58,7 +59,8 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
   for (const q of QUESTIONS) {
     const rel = `assets/voice/${q.id}.mp3`;
-    if (!manifest[q.kana]) manifest[q.kana] = rel;
+    if (manifest[q.kana]) continue;
+    manifest[q.kana] = rel;
     if (onlyArg && q.anime !== onlyArg) continue;
 
     const target = path.join(OUT_DIR, `${q.id}.mp3`);

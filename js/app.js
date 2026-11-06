@@ -6,6 +6,48 @@
 const App = (() => {
   const $ = (id) => document.getElementById(id);
   let currentScreen = 'screen-home';
+  const modalStack = [];
+  const modalReturnFocus = new Map();
+
+  function focusScreen() {
+    const target = $(currentScreen).querySelector('button');
+    if (target) target.focus();
+  }
+
+  function modalTargets(modal) {
+    return Array.from(modal.querySelectorAll('button, a[href], input, select, textarea, [tabindex]'))
+      .filter((el) => !el.disabled && el.tabIndex >= 0 && el.getClientRects().length > 0);
+  }
+
+  function openModal(id) {
+    const modal = $(id);
+    if (!modal.hidden) return;
+    modalReturnFocus.set(id, document.activeElement);
+    modal.hidden = false;
+    modalStack.push(id);
+    modal.tabIndex = -1;
+    (modalTargets(modal)[0] || modal).focus();
+  }
+
+  function closeModal(id) {
+    const modal = $(id);
+    if (modal.hidden) return;
+    const wasTop = modalStack[modalStack.length - 1] === id;
+    modal.hidden = true;
+    const index = modalStack.indexOf(id);
+    if (index !== -1) modalStack.splice(index, 1);
+    const previous = modalReturnFocus.get(id);
+    modalReturnFocus.delete(id);
+    if (!wasTop) return;
+    if (previous && previous.isConnected && !previous.disabled && previous.getClientRects().length > 0) {
+      previous.focus();
+    } else if (modalStack.length) {
+      const top = $(modalStack[modalStack.length - 1]);
+      (modalTargets(top)[0] || top).focus();
+    } else {
+      focusScreen();
+    }
+  }
 
   /* ---------- 画面遷移 ---------- */
   function showScreen(screenId) {
@@ -17,6 +59,7 @@ const App = (() => {
     window.scrollTo(0, 0);
     if (screenId === 'screen-collection') Collection.refresh();
     if (screenId === 'screen-home') renderHome();
+    if (!modalStack.length) focusScreen();
   }
 
   function go(target) {
@@ -109,7 +152,7 @@ const App = (() => {
   function showLevelUp(rankUp) {
     const rank = RANKS[rankUp && rankUp.index] || RANKS[0];
     $('levelupRank').textContent = I18N.tf(rank, 'name');
-    $('levelupModal').hidden = false;
+    openModal('levelupModal');
     AudioKit.play('levelup');
     FX.confetti(50);
     FX.coinRain(16);
@@ -119,7 +162,7 @@ const App = (() => {
   function closeModals() {
     const hadResult = !$('resultModal').hidden;
     Gacha.close();
-    ['resultModal', 'settingsModal', 'cardModal', 'levelupModal'].forEach((id) => { $(id).hidden = true; });
+    modalStack.slice().reverse().forEach(closeModal);
     if (hadResult) go('home');
   }
 
@@ -182,10 +225,10 @@ const App = (() => {
       AudioKit.play('click');
       $('toggleSound').checked = SaveStore.data.sound;
       $('toggleVoice').checked = SaveStore.data.voice;
-      settingsModal.hidden = false;
+      openModal('settingsModal');
     });
     settingsModal.addEventListener('click', (e) => {
-      if (e.target.hasAttribute('data-close-settings')) settingsModal.hidden = true;
+      if (e.target.closest('[data-close-settings]')) closeModal('settingsModal');
     });
     $('toggleSound').addEventListener('change', (e) => {
       SaveStore.data.sound = e.target.checked;
@@ -223,14 +266,14 @@ const App = (() => {
     // 結果モーダル
     const resultModal = $('resultModal');
     resultModal.addEventListener('click', (e) => {
-      if (e.target.hasAttribute('data-close-result')) { resultModal.hidden = true; go('home'); }
+      if (e.target.closest('[data-close-result]')) { closeModal('resultModal'); go('home'); }
     });
     $('btnResultHome').addEventListener('click', () => {
-      resultModal.hidden = true;
+      closeModal('resultModal');
       go('home');
     });
     $('btnResultRetry').addEventListener('click', () => {
-      resultModal.hidden = true;
+      closeModal('resultModal');
       Quiz.start(Quiz.state.mode);
       showScreen('screen-quiz');
     });
@@ -238,16 +281,35 @@ const App = (() => {
     // Esc でモーダルを閉じる
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') closeModals();
+      const cutin = $('wazaCutin');
+      if (e.key === 'Tab' && !cutin.hidden && !cutin.classList.contains('is-compact')) {
+        e.preventDefault();
+        $('wazaCutinSkip').focus();
+        return;
+      }
+      if (e.key !== 'Tab' || !modalStack.length) return;
+      const modal = $(modalStack[modalStack.length - 1]);
+      const targets = modalTargets(modal);
+      const first = targets[0] || modal;
+      const last = targets[targets.length - 1] || modal;
+      const outside = !modal.contains(document.activeElement);
+      if (e.shiftKey && (document.activeElement === first || outside)) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && (document.activeElement === last || outside)) {
+        e.preventDefault();
+        first.focus();
+      }
     });
 
     // ランクアップ祝典モーダル
     const levelupModal = $('levelupModal');
     levelupModal.addEventListener('click', (e) => {
-      if (e.target.hasAttribute('data-close-levelup')) levelupModal.hidden = true;
+      if (e.target.closest('[data-close-levelup]')) closeModal('levelupModal');
     });
     $('btnLevelupOk').addEventListener('click', () => {
       AudioKit.play('click');
-      levelupModal.hidden = true;
+      closeModal('levelupModal');
     });
 
     // 各モジュール初期化
@@ -267,5 +329,5 @@ const App = (() => {
     init();
   }
 
-  return { go, refreshHeader, toast, renderHome, showLevelUp };
+  return { go, refreshHeader, toast, renderHome, showLevelUp, openModal, closeModal };
 })();

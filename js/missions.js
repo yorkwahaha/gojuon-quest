@@ -112,7 +112,9 @@ const Missions = (() => {
     document.querySelectorAll('#missionTabs .seg-btn').forEach((b) => {
       const active = b.dataset.filter === filter;
       b.classList.toggle('is-active', active);
-      b.setAttribute('aria-checked', active ? 'true' : 'false');
+      b.setAttribute('aria-selected', String(active));
+      b.tabIndex = active ? 0 : -1;
+      if (active) $('missionList').setAttribute('aria-labelledby', b.id);
     });
     render();
   }
@@ -123,6 +125,19 @@ const Missions = (() => {
       if (!btn) return;
       AudioKit.play('click');
       setFilter(btn.dataset.filter);
+    });
+    $('missionTabs').addEventListener('keydown', (event) => {
+      const btn = event.target.closest('.seg-btn');
+      if (!btn || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+      const tabs = Array.from($('missionTabs').querySelectorAll('.seg-btn'));
+      const current = tabs.indexOf(btn);
+      const offset = event.key === 'ArrowLeft' ? -1 : 1;
+      let index = (current + offset + tabs.length) % tabs.length;
+      if (event.key === 'Home') index = 0;
+      if (event.key === 'End') index = tabs.length - 1;
+      event.preventDefault();
+      setFilter(tabs[index].dataset.filter);
+      tabs[index].focus();
     });
     refreshBadge();
   }

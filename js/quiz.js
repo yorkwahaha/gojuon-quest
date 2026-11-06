@@ -606,13 +606,13 @@ const Quiz = (() => {
 
   function showResult(buildView) {
     resultView = buildView;
-    renderResult();
-    AudioKit.play(buildView().stamp ? 'fanfare' : 'star');
+    const view = buildView();
+    renderResult(view);
+    AudioKit.play(view.stamp ? 'fanfare' : 'star');
   }
 
-  function renderResult() {
-    const { title, sub, stars, rows, stamp, retryLabel } = resultView();
-    const modal = $('resultModal');
+  function renderResult(view = resultView()) {
+    const { title, sub, stars, rows, stamp, retryLabel } = view;
     $('resultTitle').textContent = title;
     $('resultSub').textContent = sub || '';
     $('resultStamp').hidden = !stamp;
@@ -625,9 +625,20 @@ const Quiz = (() => {
     $('resultStars').style.visibility = stars > 0 ? 'visible' : 'hidden';
 
     const dl = $('resultStats');
-    dl.innerHTML = rows.map(([k, v]) => `<div class="result-stat-row"><dt>${k}</dt><dd>${v}</dd></div>`).join('');
-    $('btnResultRetry').innerHTML = `${I18N.t(retryLabel)}<svg><use href="#i-arrow-right"/></svg>`;
-    modal.hidden = false;
+    dl.textContent = '';
+    rows.forEach(([label, value]) => {
+      const row = document.createElement('div');
+      row.className = 'result-stat-row';
+      const term = document.createElement('dt');
+      const description = document.createElement('dd');
+      term.textContent = label;
+      description.textContent = value;
+      row.appendChild(term);
+      row.appendChild(description);
+      dl.appendChild(row);
+    });
+    $('btnResultRetryText').textContent = I18N.t(retryLabel);
+    App.openModal('resultModal');
   }
 
   function finishTimeAttack() {
@@ -659,13 +670,13 @@ const Quiz = (() => {
     if (state.locked === 'done') return;
     stop();
     const m = state.sessionMistakes;
-    const earnedStars = m === 0 ? 3 : m <= 2 ? 2 : 1;
-    SaveStore.addStars(earnedStars);
-    const clearResult = SaveStore.recordDailyClear();
+    const grade = m === 0 ? 3 : m <= 2 ? 2 : 1;
+    const clearResult = SaveStore.recordDailyClear(grade);
+    const earnedStars = clearResult.already ? 0 : grade;
     const bonus = clearResult.already ? 0 : 50;
     const xpReward = bonus > 0 ? SaveStore.addXP(bonus) : null;
     if (xpReward) state.sessionCoins += xpReward.bonusCoins;
-    const perfect = perfectBonusIfAny();
+    const perfect = clearResult.already ? 0 : perfectBonusIfAny();
     FX.confetti(40);
     showResult(() => ({
       title: clearResult.already ? I18N.t('result.dailyReview') : I18N.t('result.dailyClear'),
@@ -694,7 +705,6 @@ const Quiz = (() => {
       App.go('home');
       return;
     }
-    const perfect = perfectBonusIfAny();
     const isListening = state.mode === 'listening';
     showResult(() => ({
       title: I18N.t('result.quit'),
@@ -704,15 +714,15 @@ const Quiz = (() => {
           ? I18N.t('listening.quitSub')
           : I18N.t('result.quitPractice'),
       stars: 0,
-      stamp: state.mode === 'daily',
+      stamp: false,
       retryLabel: 'result.retryQuit',
       rows: isListening
-        ? listeningResultRows(perfect)
+        ? listeningResultRows(0)
         : [
             [I18N.t('result.correct'), I18N.t('result.correctCount', { n: state.sessionCorrect })],
             [I18N.t('result.miss'), I18N.t('result.missCount', { n: state.sessionMistakes })],
             [I18N.t('result.xp'), `+${state.sessionXP}`],
-            [I18N.t('result.coins'), `+${state.sessionCoins}${perfect ? I18N.t('result.perfect') : ''}`],
+            [I18N.t('result.coins'), `+${state.sessionCoins}`],
           ],
     }));
   }

@@ -195,12 +195,13 @@ const SaveStore = {
     return isRecord;
   },
 
-  recordDailyClear() {
+  recordDailyClear(stars = 0) {
     const d = this.data;
     const today = todayKey(0);
     if (d.lastDaily === today) return { already: true, streak: d.dailyStreak };
     d.dailyStreak = (d.lastDaily === todayKey(-1)) ? d.dailyStreak + 1 : 1;
     d.lastDaily = today;
+    d.stars += stars;
     this.save();
     return { already: false, streak: d.dailyStreak };
   },

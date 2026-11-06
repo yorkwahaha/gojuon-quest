@@ -28,6 +28,8 @@ function boot({ audio = false, effects = false } = {}) {
     }
     set innerHTML(value) { this.html = value; this.children = []; }
     get innerHTML() { return this.html || ''; }
+    get textContent() { return (this.text || '') + this.children.map(el => el.textContent).join(''); }
+    set textContent(value) { this.text = String(value); this.children = []; }
     setAttribute(k, v) { this.attrs[k] = String(v); }
     hasAttribute(k) { return Object.hasOwn(this.attrs, k); }
     appendChild(el) { el.parent = this; this.children.push(el); return el; }
@@ -44,6 +46,8 @@ function boot({ audio = false, effects = false } = {}) {
       return this.children.flatMap(el => [el, ...el.querySelectorAll('*')])
         .filter(el => selector === '*' || el.classList.contains(selector.slice(1)));
     }
+    querySelector(selector) { return this.querySelectorAll(selector)[0] || null; }
+    getClientRects() { return this.hidden ? [] : [{}]; }
     focus() {}
     remove() { if (this.parent) this.parent.children = this.parent.children.filter(el => el !== this); }
   }
@@ -54,18 +58,27 @@ function boot({ audio = false, effects = false } = {}) {
     el.hidden = /\shidden(?:\s|>)/.test(tag); elements.set(el.id, el);
   }
   const get = id => { assert.ok(elements.has(id), `Unknown HTML id: ${id}`); return elements.get(id); };
-  for (const id of ['animeChips', 'levelChips', 'scriptChips']) {
+  for (const id of ['animeChips', 'levelChips', 'scriptChips', 'missionTabs']) {
     const group = new Element(); group.className = 'setup-group'; group.appendChild(get(id));
     const content = html.slice(html.indexOf(`id="${id}"`)).split('</div>')[0];
     for (const match of content.matchAll(/<button[^>]*>/g)) {
       const el = new Element(); el.className = match[0].match(/class="([^"]*)"/)[1];
-      el.dataset.value = match[0].match(/data-value="([^"]*)"/)[1];
+      const field = id === 'missionTabs' ? 'filter' : 'value';
+      el.dataset[field] = match[0].match(new RegExp(`data-${field}="([^"]*)"`))[1];
+      for (const attr of ['id', 'role', 'aria-selected', 'aria-checked']) {
+        const value = match[0].match(new RegExp(`${attr}="([^"]*)"`))?.[1];
+        if (value !== undefined) {
+          el.setAttribute(attr, value);
+          if (attr === 'id') { el.id = value; elements.set(value, el); }
+        }
+      }
       get(id).appendChild(el);
     }
   }
   const document = new Element();
   document.readyState = 'loading'; document.documentElement = new Element();
-  document.getElementById = get; document.createElement = () => new Element();
+  document.getElementById = get;
+  document.createElement = tag => { const el = new Element(); el.tagName = tag.toUpperCase(); return el; };
   document.querySelectorAll = selector => {
     if (selector.startsWith('#')) {
       const [id, rest] = selector.slice(1).split(' '); return get(id).querySelectorAll(rest);
@@ -251,7 +264,7 @@ test('locale changes rerender result statistics without awarding rewards again',
   const e = boot(); begin(e); e.run("I18N.setLocale('ja')"); answer(e); e.get('quizBack').fire();
   const coins = e.run('SaveStore.data.coins'); e.run("I18N.setLocale('zh')");
   assert.equal(e.get('resultTitle').textContent, e.run("I18N.t('result.quit')"));
-  assert.match(e.get('resultStats').innerHTML, /金幣/);
+  assert.match(e.get('resultStats').textContent || e.get('resultStats').innerHTML, /金幣/);
   assert.equal(e.run('SaveStore.data.coins'), coins);
 });
 test('a completed confetti animation removes only its own particle', () => {
@@ -294,4 +307,91 @@ test('the full comic panel remains readable until the player continues', () => {
   e.run("let comicFinished = 0; FX.wazaCutin({name:'テスト',questionId:'q37',onDone:()=>comicFinished++})");
   e.tick(10000); assert.equal(e.get('wazaCutin').hidden, false);
   e.get('wazaCutin').fire(); assert.equal(e.run('comicFinished'), 1);
+});
+
+for (const mode of ['practice', 'listening', 'daily', 'timeattack']) {
+  test(`quitting ${mode} retains answer earnings without a perfect completion bonus`, () => {
+    const e = boot(); begin(e, mode); answer(e);
+    const coins = e.run('SaveStore.data.coins'); e.get('quizBack').fire();
+    assert.equal(e.run('SaveStore.data.coins'), coins);
+  });
+}
+test('quitting an unfinished daily challenge never shows a clear stamp', () => {
+  const e = boot(); begin(e, 'daily'); answer(e); e.get('quizBack').fire();
+  assert.equal(e.get('resultStamp').hidden, true);
+});
+test('daily completion grants stars and perfect coins once per date', () => {
+  const e = boot(); e.run('SaveStore.data.xp = RANKS[RANKS.length - 1].xp');
+  for (let round = 0; round < 2; round++) {
+    begin(e, 'daily');
+    for (let i = 0; i < 4; i++) { answer(e); e.get('btnNext').fire(); }
+    answer(e);
+    const stars = e.run('SaveStore.data.stars'), coins = e.run('SaveStore.data.coins');
+    e.get('btnNext').fire();
+    assert.equal(e.run('SaveStore.data.stars') - stars, round === 0 ? 3 : 0);
+    assert.equal(e.run('SaveStore.data.coins') - coins, round === 0 ? 30 : 0);
+  }
+});
+test('each completed timed round can earn its score-based stars', () => {
+  const e = boot();
+  for (let round = 1; round <= 2; round++) {
+    begin(e, 'timeattack'); e.run('Quiz.state.score = 1600'); e.tick(60000);
+    assert.equal(e.run('SaveStore.data.stars'), round * 3);
+  }
+});
+for (const id of ['q32', 'q33']) {
+  test(`${id} identifies Pucci as the Stand user in both locales`, () => {
+    const e = boot(); assert.match(e.run(`QUESTIONS.find(q => q.id === '${id}').desc`), /プッチ/);
+    assert.match(e.run(`DESC_ZH.${id}`), /普奇/);
+  });
+}
+test('the Chinese DIO hint describes the user of The World', () => {
+  const e = boot(); assert.equal(e.run('DESC_ZH.q02'), '「世界」的使者。');
+});
+test('Kakyoin is associated with Hierophant Green in both locales', () => {
+  const e = boot(); assert.match(e.run("QUESTIONS.find(q => q.id === 'q25').desc"), /ハイエロファントグリーン/);
+  assert.match(e.run('DESC_ZH.q25'), /綠色法皇/);
+});
+test('all accessible name references point to an existing HTML element', () => {
+  const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+  const ids = new Set([...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]));
+  for (const match of html.matchAll(/\baria-labelledby="([^"]+)"/g)) {
+    for (const id of match[1].split(/\s+/)) assert.ok(ids.has(id), `Missing accessible label: ${id}`);
+  }
+});
+test('result statistics render definition terms and descriptions as DOM text', () => {
+  const e = boot(); begin(e); answer(e); e.get('quizBack').fire();
+  const rows = e.get('resultStats').children;
+  assert.ok(rows.length > 0);
+  assert.equal(rows[0].children[0].tagName, 'DT');
+  assert.equal(rows[0].children[1].tagName, 'DD');
+  assert.match(e.get('resultStats').textContent, /金幣/);
+});
+test('mission tabs expose selected state and move it with ArrowRight', () => {
+  const e = boot(), box = e.get('missionTabs');
+  box.fire('keydown', { key: 'ArrowRight', target: box.children[0] });
+  assert.equal(box.children[1].attrs['aria-selected'], 'true');
+  assert.equal(box.children[0].attrs['aria-selected'], 'false');
+});
+test('voice generation skips duplicate readings instead of recreating unused q19 audio', async () => {
+  const source = fs.readFileSync(path.join(root, 'tools/generate-voice-pack.js'), 'utf8');
+  let requests = 0;
+  const fakeFs = {
+    readFileSync: () => fs.readFileSync(path.join(root, 'js/data.js'), 'utf8'),
+    mkdirSync() {}, writeFileSync() {}, statSync: () => ({ size: 2048 }),
+    existsSync: file => path.basename(file) !== 'q19.mp3',
+  };
+  const fakeProcess = { argv: ['node', 'generate-voice-pack.js'], env: { FISH_API_KEY: 'test-only' }, exit(code) { throw Error(`Unexpected exit ${code}`); } };
+  await vm.runInNewContext(source, {
+    require: name => name === 'fs' ? fakeFs : require(name), __dirname: path.join(root, 'tools'),
+    process: fakeProcess, console: { log() {}, error() {} }, Buffer, setTimeout,
+    fetch() { requests++; throw Error('Network is disabled in this test'); },
+  });
+  assert.equal(requests, 0);
+});
+test('a full attack keeps Tab inside its continue control', () => {
+  const e = boot({ effects: true }); e.run("FX.wazaCutin({name:'テスト'})");
+  let prevented = false;
+  e.document.fire('keydown', { key: 'Tab', preventDefault() { prevented = true; } });
+  assert.equal(prevented, true);
 });

@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; media-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; media-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'" />
   <meta name="description" content="アニメ（ジョジョ／呪術廻戦）のキャラクター名・わざ名をならべかえて、ひらがなとカタカナを楽しく覚えよう！小学生の五十音トレーニングゲーム。" />
   <title>五十音クエスト | アニメではじめる ひらがな・カタカナ</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23ffd23f'/%3E%3Ccircle cx='32' cy='32' r='24' fill='%23161333'/%3E%3Ctext x='32' y='43' font-size='30' text-anchor='middle' fill='%23ffd23f' font-family='sans-serif' font-weight='900'%3E五%3C/text%3E%3C/svg%3E" />
-  <link rel="stylesheet" href="css/style.css?v=10" />
+  <link rel="stylesheet" href="css/style.css?v=11" />
 </head>
 <body>
 
@@ -356,11 +356,11 @@
           <p class="section-sub" data-i18n="mission.sub">あそびながら ミッションを クリアしよう。うけとると コインが もらえるよ。</p>
         </div>
         <div class="seg mission-tabs" id="missionTabs" role="tablist" aria-label="ミッションのしめきり" data-i18n-aria="aria.missionTabs">
-          <button class="seg-btn is-active" data-filter="all" role="tab" aria-checked="true"><span data-i18n="mission.tabAll">ぜんぶ</span></button>
-          <button class="seg-btn" data-filter="claimable" role="tab" aria-checked="false"><span data-i18n="mission.tabClaimable">うけとれる</span></button>
-          <button class="seg-btn" data-filter="done" role="tab" aria-checked="false"><span data-i18n="mission.tabDone">かんりょう</span></button>
+          <button class="seg-btn is-active" id="missionTabAll" data-filter="all" role="tab" aria-selected="true" aria-controls="missionList"><span data-i18n="mission.tabAll">ぜんぶ</span></button>
+          <button class="seg-btn" id="missionTabClaimable" data-filter="claimable" role="tab" aria-selected="false" aria-controls="missionList" tabindex="-1"><span data-i18n="mission.tabClaimable">うけとれる</span></button>
+          <button class="seg-btn" id="missionTabDone" data-filter="done" role="tab" aria-selected="false" aria-controls="missionList" tabindex="-1"><span data-i18n="mission.tabDone">かんりょう</span></button>
         </div>
-        <div id="missionList" class="mission-list"></div>
+        <div id="missionList" class="mission-list" role="tabpanel" aria-labelledby="missionTabAll"></div>
       </div>
     </section>
 
@@ -386,7 +386,7 @@
       <dl class="result-stats" id="resultStats"></dl>
       <div class="result-actions">
         <button class="btn btn-ghost" id="btnResultHome"><span data-i18n="result.home">ホームへ</span></button>
-        <button class="btn btn-gold" id="btnResultRetry">もう一回<svg><use href="#i-arrow-right"/></svg></button>
+        <button class="btn btn-gold" id="btnResultRetry"><span id="btnResultRetryText">もう一回</span><svg><use href="#i-arrow-right"/></svg></button>
       </div>
     </div>
   </div>
@@ -492,7 +492,7 @@
   </div>
 
   <!-- ============ ランクアップ祝典 ============ -->
-  <div class="modal" id="levelupModal" role="dialog" aria-modal="true" aria-labelledby="levelupTitle" hidden>
+  <div class="modal" id="levelupModal" role="dialog" aria-modal="true" aria-labelledby="levelupRank" hidden>
     <div class="modal-backdrop" data-close-levelup></div>
     <div class="modal-card levelup-card">
       <div class="levelup-rays" aria-hidden="true"></div>
@@ -537,17 +537,17 @@
   <!-- 紙吹雪コンテナ -->
   <div class="confetti-layer" id="confettiLayer" aria-hidden="true"></div>
 
-  <script src="js/i18n.js?v=6"></script>
-  <script src="js/data.js?v=8"></script>
-  <script src="js/store.js?v=6"></script>
+  <script src="js/i18n.js?v=7"></script>
+  <script src="js/data.js?v=9"></script>
+  <script src="js/store.js?v=7"></script>
   <script src="js/voice-manifest.js?v=2"></script>
   <script src="js/audio.js?v=6"></script>
   <script src="js/fx.js?v=5"></script>
-  <script src="js/quiz.js?v=12"></script>
+  <script src="js/quiz.js?v=13"></script>
   <script src="js/chart.js?v=3"></script>
-  <script src="js/collection.js?v=5"></script>
-  <script src="js/missions.js?v=4"></script>
-  <script src="js/gacha.js?v=4"></script>
-  <script src="js/app.js?v=8"></script>
+  <script src="js/collection.js?v=6"></script>
+  <script src="js/missions.js?v=5"></script>
+  <script src="js/gacha.js?v=5"></script>
+  <script src="js/app.js?v=9"></script>
 </body>
 </html>

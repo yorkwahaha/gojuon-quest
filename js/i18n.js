@@ -108,7 +108,6 @@ const I18N = (() => {
       'setup.dailyStart': 'デイリーに いどむ！',
 
       /* プレイエリア */
-      'play.hint': 'ヒント：ローマ字をみる',
       'play.hintOpen': 'ヒント：ローマ字をみる',
       'play.hintClose': 'ヒント：ローマ字をとじる',
       'play.romajiHint': 'ヒント（ローマ字）：{en}',
@@ -142,14 +141,13 @@ const I18N = (() => {
       'mode.listening.meta': '制限時間なし・ハート3つ',
 
       /* リザルト */
-      'result.title': 'けっか発表！',
       'result.taUp': 'タイムアップ！',
       'result.dailyClear': 'デイリーチャレンジ クリア！',
       'result.dailyReview': 'おさらい クリア！',
       'result.taNewRecord': 'しん記録おめでとう！',
       'result.taBest': 'ベストスコア：{score} pt',
       'result.dailyBonus': 'ボーナス +50 XP ・ {n}日連続クリア！',
-      'result.dailyReviewSub': '今日はもうクリア済み。おつかれさま！',
+      'result.dailyReviewSub': '今日は受け取り済み。クリアの星とパーフェクトボーナスは1日1回だよ。',
       'result.quit': 'おつかれさま！',
       'result.quitTa': 'タイムアタックを おえたよ。',
       'result.quitPractice': 'れんしゅうの まとめだよ。',
@@ -179,7 +177,6 @@ const I18N = (() => {
       /* コレクション */
       'collection.title': 'コレクション',
       'collection.sub': '正解数で ごほうびカードが アンロックされるよ。コインで ガチャも ひける！',
-      'collection.progress': '{n} / 12 枚',
       'collection.progressSuffix': '/ 12 枚',
       'collection.next': 'つぎのカード「{name}」まで あと{n}問',
       'collection.complete': 'コンプリート！ おめでとう！',
@@ -204,7 +201,6 @@ const I18N = (() => {
       'gacha.xpPackKind': '+{n} XP を ゲット！',
       'gacha.bonusLabel': 'ボーナス',
       'gacha.notEnoughToast': 'コインが たりないよ（あと {n} コイン）',
-      'gacha.notEnoughBtn': 'コインが たりないよ（あと {n} コイン）',
 
       /* ランクアップ */
       'levelup.kicker': 'ランクアップ！！',
@@ -223,7 +219,6 @@ const I18N = (() => {
       'mission.claimed': 'かんりょう',
       'mission.inProgress': 'しんこうちゅう',
       'mission.clearToast': 'ミッションクリア！ +{n}コイン',
-      'mission.coins': 'コイン',
 
       /* 設定 */
       'settings.title': 'せってい',
@@ -261,7 +256,6 @@ const I18N = (() => {
       'aria.levelFilter': 'レベルフィルター',
       'aria.scriptFilter': '文字の種類',
       'aria.missionTabs': 'ミッションのしめきり',
-      'aria.heroArt': '五十音クエストのシンボルアート',
       'aria.newName': '新しい名前',
       'aria.resultStars': '獲得した星',
     },
@@ -361,7 +355,6 @@ const I18N = (() => {
       'setup.dailyStart': '開始每日挑戰！',
 
       /* 遊玩區 */
-      'play.hint': '提示：顯示羅馬字',
       'play.hintOpen': '提示：顯示羅馬字',
       'play.hintClose': '提示：收起羅馬字',
       'play.romajiHint': '提示（羅馬字）：{en}',
@@ -395,14 +388,13 @@ const I18N = (() => {
       'mode.listening.meta': '無限時・答錯 3 次結束',
 
       /* 結算 */
-      'result.title': '結果公佈！',
       'result.taUp': '時間到！',
       'result.dailyClear': '每日挑戰 通關！',
       'result.dailyReview': '複習通關！',
       'result.taNewRecord': '新紀錄，恭喜！',
       'result.taBest': '最佳成績：{score} pt',
       'result.dailyBonus': '獎勵 +50 XP ・ 已連續挑戰 {n} 天！',
-      'result.dailyReviewSub': '今天已完成。辛苦了！',
+      'result.dailyReviewSub': '今日已領取通關獎勵。通關星星與全對加碼每日限領一次。',
       'result.quit': '辛苦了！',
       'result.quitTa': '限時挑戰結束了！',
       'result.quitPractice': '練習成果結算！',
@@ -432,7 +424,6 @@ const I18N = (() => {
       /* 收藏冊 */
       'collection.title': '收藏冊',
       'collection.sub': '累計答對即可解鎖獎勵卡。也能用金幣抽扭蛋！',
-      'collection.progress': '{n} / 12 張',
       'collection.progressSuffix': '/ 12 張',
       'collection.next': '距離下一張「{name}」還差 {n} 題',
       'collection.complete': '全蒐集完成！恭喜！',
@@ -457,7 +448,6 @@ const I18N = (() => {
       'gacha.xpPackKind': '獲得 +{n} XP！',
       'gacha.bonusLabel': '獎勵',
       'gacha.notEnoughToast': '金幣不夠（還差 {n} 枚）',
-      'gacha.notEnoughBtn': '金幣不夠（還差 {n} 枚）',
 
       /* 等級提升 */
       'levelup.kicker': '等級提升！',
@@ -476,7 +466,6 @@ const I18N = (() => {
       'mission.claimed': '已完成',
       'mission.inProgress': '進行中',
       'mission.clearToast': '任務達成！ +{n} 金幣',
-      'mission.coins': '金幣',
 
       /* 設定 */
       'settings.title': '設定',
@@ -514,7 +503,6 @@ const I18N = (() => {
       'aria.levelFilter': '難度篩選',
       'aria.scriptFilter': '文字種類',
       'aria.missionTabs': '任務分類',
-      'aria.heroArt': '五十音クエスト的符號藝術',
       'aria.newName': '新名字',
       'aria.resultStars': '獲得的星星',
     },
@@ -548,7 +536,6 @@ const I18N = (() => {
   function apply() {
     document.documentElement.lang = locale === 'zh' ? 'zh-Hant' : 'ja';
     document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = t(el.dataset.i18n); });
-    document.querySelectorAll('[data-i18n-html]').forEach((el) => { el.innerHTML = t(el.dataset.i18nHtml); });
     document.querySelectorAll('[data-i18n-aria]').forEach((el) => { el.setAttribute('aria-label', t(el.dataset.i18nAria)); });
     document.querySelectorAll('[data-i18n-title]').forEach((el) => { el.setAttribute('title', t(el.dataset.i18nTitle)); });
     document.querySelectorAll('.lang-switch-btn').forEach((b) => {
@@ -576,5 +563,5 @@ const I18N = (() => {
     apply();
   }
 
-  return { t, tf, get, setLocale, init, apply, onLocaleChange };
+  return { t, tf, get, setLocale, init, onLocaleChange };
 })();

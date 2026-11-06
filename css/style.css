@@ -1047,16 +1047,6 @@ button.slot:hover { border-color: rgba(255, 210, 63, .55); background: rgba(255,
   .btn-big { font-size: .95rem; padding: 14px 18px; }
 }
 
-/* ============ 動きを減らす設定への配慮 ============ */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.15s !important;
-  }
-  html { scroll-behavior: auto; }
-}
-
 /* ============================================================
    五十音クエスト — アップデート：コイン・ミッション・ガチャ・演出
    ============================================================ */
@@ -1787,6 +1777,13 @@ button.slot:hover { border-color: rgba(255, 210, 63, .55); background: rgba(255,
   .daily-cta { justify-content: center; }
 }
 @media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.15s !important;
+  }
+  html { scroll-behavior: auto; }
+
   .waza-cutin *, .screen.active, .hero-title { animation: none !important; transition: none !important; }
   .waza-cutin-flash, .waza-cutin-speed { display: none; }
 }

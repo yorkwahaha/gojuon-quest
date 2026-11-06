@@ -77,17 +77,17 @@ const Collection = (() => {
     $('cardModalCondition').textContent = unlocked
       ? I18N.t('collection.detailGot', { n: card.need })
       : I18N.t('collection.detailLocked', { n: card.need, m: SaveStore.data.correct });
-    $('cardModal').hidden = false;
+    App.openModal('cardModal');
   }
 
   function closeDetail() {
-    $('cardModal').hidden = true;
+    App.closeModal('cardModal');
   }
 
   function init() {
     $('btnCloseCard').addEventListener('click', closeDetail);
     $('cardModal').addEventListener('click', (e) => {
-      if (e.target.hasAttribute('data-close-card')) closeDetail();
+      if (e.target.closest('[data-close-card]')) closeDetail();
     });
     refresh();
   }

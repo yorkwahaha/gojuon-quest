@@ -38,13 +38,13 @@ const Gacha = (() => {
 
   function open() {
     AudioKit.play('click');
-    $('gachaModal').hidden = false;
     resetStage();
+    App.openModal('gachaModal');
   }
 
   function close() {
     clearTimers();
-    $('gachaModal').hidden = true;
+    App.closeModal('gachaModal');
   }
 
   function pull() {
@@ -145,7 +145,7 @@ const Gacha = (() => {
     $('btnGachaCollection').addEventListener('click', () => { close(); App.go('collection'); });
     $('btnGachaClose').addEventListener('click', close);
     $('gachaModal').addEventListener('click', (e) => {
-      if (e.target.hasAttribute('data-close-gacha')) close();
+      if (e.target.closest('[data-close-gacha]')) close();
     });
   }
 
