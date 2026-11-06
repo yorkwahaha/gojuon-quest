@@ -7,30 +7,11 @@
   <meta name="description" content="アニメ（ジョジョ／呪術廻戦）のキャラクター名・わざ名をならべかえて、ひらがなとカタカナを楽しく覚えよう！小学生の五十音トレーニングゲーム。" />
   <title>五十音クエスト | アニメではじめる ひらがな・カタカナ</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23ffd23f'/%3E%3Ccircle cx='32' cy='32' r='24' fill='%23161333'/%3E%3Ctext x='32' y='43' font-size='30' text-anchor='middle' fill='%23ffd23f' font-family='sans-serif' font-weight='900'%3E五%3C/text%3E%3C/svg%3E" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700;900&family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css?v=9" />
+  <link rel="stylesheet" href="css/style.css?v=10" />
 </head>
 <body>
 
-  <!-- 背景に浮かぶ大きなかな（装飾） -->
-  <div class="bg-kana" aria-hidden="true">
-    <span style="--x:4%;  --d:0s;  --s:7rem;  --r:-12deg">あ</span>
-    <span style="--x:12%; --d:-6s; --s:5rem;  --r:8deg">ア</span>
-    <span style="--x:22%; --d:-2s; --s:9rem;  --r:15deg">ザ</span>
-    <span style="--x:32%; --d:-9s; --s:4.5rem;--r:-6deg">呪</span>
-    <span style="--x:44%; --d:-4s; --s:8rem;  --r:10deg">お</span>
-    <span style="--x:54%; --d:-11s;--s:5.5rem;--r:-14deg">ド</span>
-    <span style="--x:63%; --d:-1s; --s:6.5rem;--r:6deg">オ</span>
-    <span style="--x:72%; --d:-7s; --s:4rem;  --r:-9deg">ラ</span>
-    <span style="--x:80%; --d:-3s; --s:7.5rem;--r:18deg">き</span>
-    <span style="--x:90%; --d:-8s; --s:5rem;  --r:-16deg">ン</span>
-    <span style="--x:16%; --d:-12s;--s:6rem;  --r:12deg">ン</span>
-    <span style="--x:86%; --d:-5s; --s:8.5rem;--r:-4deg">ム</span>
-  </div>
-
-  <!-- アイコン定義（使い回し） -->
+<!-- アイコン定義（使い回し） -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
     <defs>
       <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4 6.2 20.5l1.1-6.5L2.6 9.4l6.5-.9L12 2.6z"/></symbol>
@@ -106,7 +87,6 @@
 
         <!-- ヒーロー -->
         <div class="hero panel">
-          <div class="hero-glow" aria-hidden="true"></div>
           <div class="hero-text">
             <div class="hero-badge"><span class="hero-badge-dot"></span><span data-i18n="hero.badge">アニメではじめる ひらがな×カタカナ</span></div>
             <h1 class="hero-title">五十音<br /><span class="hero-title-accent">クエスト</span></h1>
@@ -131,40 +111,8 @@
           </div>
 
           <div class="hero-art" aria-hidden="true">
-            <svg viewBox="0 0 360 360" class="hero-svg" role="img" aria-label="五十音クエストのシンボルアート" data-i18n-aria="aria.heroArt">
-              <defs>
-                <radialGradient id="artGlow" cx="50%" cy="45%" r="55%">
-                  <stop offset="0%" stop-color="#ffe98a" stop-opacity="0.9"/>
-                  <stop offset="45%" stop-color="#ffb03a" stop-opacity="0.25"/>
-                  <stop offset="100%" stop-color="#ffb03a" stop-opacity="0"/>
-                </radialGradient>
-                <linearGradient id="artGold" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0" stop-color="#fff6c8"/><stop offset=".45" stop-color="#ffd23f"/><stop offset="1" stop-color="#e07b12"/>
-                </linearGradient>
-                <linearGradient id="artPurple" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0" stop-color="#b388ff"/><stop offset="1" stop-color="#5b2bd9"/>
-                </linearGradient>
-              </defs>
-              <circle cx="180" cy="168" r="150" fill="url(#artGlow)"/>
-              <circle cx="180" cy="168" r="118" fill="#16133a" stroke="#ffd23f" stroke-opacity="0.35" stroke-width="2" stroke-dasharray="6 10" class="art-spin"/>
-              <circle cx="180" cy="168" r="88" fill="url(#artPurple)" opacity="0.28"/>
-              <text x="180" y="228" text-anchor="middle" class="art-go" fill="url(#artGold)" stroke="#3a2503" stroke-width="3" paint-order="stroke">五</text>
-              <!-- まわりをまわるかな -->
-              <g class="art-orbit">
-                <text x="180" y="38"  class="art-orb orb-gold">ア</text>
-                <text x="292" y="96"  class="art-orb orb-red">ザ</text>
-                <text x="316" y="216" class="art-orb orb-cyan">ル</text>
-                <text x="236" y="308" class="art-orb orb-gold">ド</text>
-                <text x="124" y="308" class="art-orb orb-purple">ワ</text>
-                <text x="44"  y="216" class="art-orb orb-red">オ</text>
-                <text x="68"  y="96"  class="art-orb orb-cyan">ラ</text>
-              </g>
-              <!-- 稲妻とキラキラ -->
-              <path d="M268 118l-13 20h12l-7 16 18-21h-12l8-15z" fill="#ffd23f" opacity="0.95"/>
-              <path d="M84 150l-8 13h8l-5 11 12-14h-8l6-10z" fill="#38e1ff" opacity="0.9"/>
-              <path class="art-twinkle" d="M180 34l3.2 8 8 3.2-8 3.2-3.2 8-3.2-8-8-3.2 8-3.2z" fill="#ffffff"/>
-              <path class="art-twinkle t2" d="M300 260l2.2 5.5 5.5 2.2-5.5 2.2-2.2 5.5-2.2-5.5-5.5-2.2 5.5-2.2z" fill="#ffd23f"/>
-            </svg>
+            <img class="hero-comic-image" src="assets/comic/stand-rush.webp" width="1672" height="941" alt="" fetchpriority="high" />
+            <span class="hero-comic-caption">KANA / BATTLE 01</span>
           </div>
         </div>
 
@@ -198,9 +146,6 @@
 
         <!-- デイリーチャレンジバナー -->
         <button class="daily-banner" id="dailyBanner" data-nav="daily">
-          <span class="daily-art" aria-hidden="true">
-            <svg viewBox="0 0 96 96"><circle cx="48" cy="48" r="44" fill="#1b1030" stroke="#ffd23f" stroke-opacity="0.4" stroke-width="2" stroke-dasharray="4 6"/><text x="48" y="62" text-anchor="middle" font-size="34" font-weight="900" fill="#ffd23f" font-family="'Zen Maru Gothic',sans-serif">挑</text></svg>
-          </span>
           <span class="daily-body">
             <span class="daily-kicker" data-i18n="daily.kicker">きょうの デイリーチャレンジ</span>
             <span class="daily-title" id="dailyTitle">5問勝負で 特別ボーナス！</span>
@@ -564,112 +509,12 @@
   </div>
 
   <!-- わざ発動カットイン（正解したときに全画面で演出） -->
-  <div class="waza-cutin" id="wazaCutin" hidden aria-hidden="true">
+  <div class="waza-cutin" id="wazaCutin" hidden role="region" aria-label="招式攻擊" data-i18n-aria="cutin.region">
     <div class="waza-cutin-speed"></div>
     <div class="waza-cutin-flash"></div>
-    <svg class="waza-cutin-art" viewBox="0 0 1280 720" preserveAspectRatio="xMidYMid slice" focusable="false">
-      <defs>
-        <radialGradient id="haloGrad" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stop-color="#ffe98a" stop-opacity="0"/>
-          <stop offset="72%" stop-color="#ffd23f" stop-opacity="0"/>
-          <stop offset="86%" stop-color="#ffd23f" stop-opacity="0.9"/>
-          <stop offset="100%" stop-color="#b388ff" stop-opacity="0"/>
-        </radialGradient>
-        <radialGradient id="goldGlow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stop-color="#fff6c8"/>
-          <stop offset="38%" stop-color="#ffd23f" stop-opacity="0.85"/>
-          <stop offset="100%" stop-color="#ffd23f" stop-opacity="0"/>
-        </radialGradient>
-        <radialGradient id="violetGlow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stop-color="#e6d6ff"/>
-          <stop offset="38%" stop-color="#8b5cf6" stop-opacity="0.85"/>
-          <stop offset="100%" stop-color="#8b5cf6" stop-opacity="0"/>
-        </radialGradient>
-        <linearGradient id="goldFlame" x1="0" y1="1" x2="0" y2="0">
-          <stop offset="0" stop-color="#ff8a00" stop-opacity="0.15"/>
-          <stop offset="55%" stop-color="#ffb03a" stop-opacity="0.7"/>
-          <stop offset="100%" stop-color="#fff6c8" stop-opacity="0.95"/>
-        </linearGradient>
-        <linearGradient id="violetFlame" x1="0" y1="1" x2="0" y2="0">
-          <stop offset="0" stop-color="#3b1d8f" stop-opacity="0.15"/>
-          <stop offset="55%" stop-color="#8b5cf6" stop-opacity="0.7"/>
-          <stop offset="100%" stop-color="#e6d6ff" stop-opacity="0.95"/>
-        </linearGradient>
-        <linearGradient id="rimGold" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stop-color="#fff2b0"/><stop offset="1" stop-color="#ffb03a"/>
-        </linearGradient>
-        <linearGradient id="rimViolet" x1="1" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="#e6d6ff"/><stop offset="1" stop-color="#38e1ff"/>
-        </linearGradient>
-      </defs>
-
-      <!-- 背後的破損光輪 -->
-      <circle class="cutin-halo" cx="905" cy="322" r="218" fill="url(#haloGrad)"/>
-      <circle class="cutin-halo cutin-halo-dash" cx="905" cy="322" r="158" fill="none" stroke="#ffd23f" stroke-opacity="0.55" stroke-width="6" stroke-dasharray="40 26"/>
-
-      <!-- 雙色衝擊波：右金／左紫 -->
-      <path class="cutin-flame" d="M905 668 C1015 575 1005 435 1085 330 C1125 262 1115 175 1175 80 C1188 210 1252 268 1222 388 C1268 366 1262 488 1185 565 C1138 616 1052 668 905 672 Z" fill="url(#goldFlame)" opacity="0.6"/>
-      <path class="cutin-flame cutin-flame-l" d="M905 668 C795 575 805 435 725 330 C685 262 695 175 635 80 C622 210 558 268 588 388 C542 366 548 488 625 565 C672 616 758 668 905 672 Z" fill="url(#violetFlame)" opacity="0.6"/>
-
-      <!-- 手中的氣勁 -->
-      <circle cx="620" cy="168" r="46" fill="url(#violetGlow)" class="cutin-orb"/>
-      <circle cx="1190" cy="168" r="46" fill="url(#goldGlow)" class="cutin-orb"/>
-
-      <!-- 閃電 -->
-      <g class="cutin-bolt" fill="none" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M1052 208 L1108 296 L1076 300 L1150 420" stroke="#ffe873" stroke-width="7"/>
-        <path d="M1052 208 L1108 296 L1076 300 L1150 420" stroke="#fffdf0" stroke-width="2.2" stroke-opacity="0.9"/>
-        <path d="M1146 178 L1186 252 L1156 256 L1214 332" stroke="#ffd23f" stroke-width="4.5" stroke-opacity="0.9"/>
-      </g>
-      <g class="cutin-bolt cutin-bolt-violet" fill="none" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M758 208 L702 296 L734 300 L660 420" stroke="#c99cff" stroke-width="7"/>
-        <path d="M758 208 L702 296 L734 300 L660 420" stroke="#f3eaff" stroke-width="2.2" stroke-opacity="0.9"/>
-        <path d="M664 178 L624 252 L654 256 L596 332" stroke="#8b5cf6" stroke-width="4.5" stroke-opacity="0.9"/>
-      </g>
-
-      <!-- 主角剪影（背影・雙手張開） -->
-      <path d="M852 292 L636 148 L606 202 L830 342 Z" fill="#141030"/>
-      <path d="M958 292 L1174 148 L1204 202 L980 342 Z" fill="#141030"/>
-      <circle cx="618" cy="172" r="23" fill="#1a1636" stroke="#b388ff" stroke-opacity="0.7" stroke-width="2"/>
-      <circle cx="1192" cy="172" r="23" fill="#1a1636" stroke="#ffd23f" stroke-opacity="0.7" stroke-width="2"/>
-      <path d="M838 292 C812 370 762 470 692 618 L736 636 L764 576 L796 652 L834 596 L868 660 L902 606 L936 658 L968 596 L1002 646 L1030 566 C1002 462 988 372 966 292 Q902 262 838 292 Z" fill="#151130" stroke="rgba(255,255,255,0.05)" stroke-width="1.5"/>
-      <path d="M878 244 L932 244 L928 290 Q905 300 882 290 Z" fill="#151130"/>
-      <circle cx="905" cy="216" r="30" fill="#1a1636"/>
-      <path d="M862 214 L824 156 L862 176 L854 116 L890 156 L884 90 L916 130 L930 62 L946 136 L980 82 L972 156 L1028 114 L994 182 Q928 168 862 214 Z" fill="#0d0b1e"/>
-
-      <!-- 邊緣光 -->
-      <g fill="none" stroke-linecap="round">
-        <path d="M1174 148 L1204 202 L980 342" stroke="url(#rimGold)" stroke-width="5" stroke-opacity="0.95"/>
-        <path d="M966 292 C988 372 1002 462 1030 566" stroke="url(#rimGold)" stroke-width="6" stroke-opacity="0.9"/>
-        <path d="M930 62 L946 136 L980 82" stroke="url(#rimGold)" stroke-width="4" stroke-opacity="0.8"/>
-        <path d="M636 148 L606 202 L830 342" stroke="url(#rimViolet)" stroke-width="5" stroke-opacity="0.95"/>
-        <path d="M838 292 C812 370 762 470 692 618" stroke="url(#rimViolet)" stroke-width="6" stroke-opacity="0.9"/>
-        <path d="M884 90 L916 130 L930 62" stroke="url(#rimViolet)" stroke-width="4" stroke-opacity="0.8"/>
-      </g>
-
-      <!-- 火花星 -->
-      <g fill="#ffffff">
-        <path class="cutin-twinkle" d="M620 118l2.6 6.4 6.4 2.6-6.4 2.6-2.6 6.4-2.6-6.4-6.4-2.6 6.4-2.6z"/>
-        <path class="cutin-twinkle t2" d="M1190 120l2.2 5.4 5.4 2.2-5.4 2.2-2.2 5.4-2.2-5.4-5.4-2.2 5.4-2.2z" fill="#ffd23f"/>
-        <path class="cutin-twinkle t3" d="M905 60l2.4 5.8 5.8 2.4-5.8 2.4-2.4 5.8-2.4-5.8-5.8-2.4 5.8-2.4z" fill="#e6d6ff"/>
-      </g>
-
-      <!-- 碎石 -->
-      <g opacity="0.9">
-        <polygon points="770,258 780,250 776,266" fill="#b388ff"/>
-        <polygon points="700,360 712,352 708,372" fill="#8b5cf6"/>
-        <polygon points="1050,250 1062,242 1058,262" fill="#ffd23f"/>
-        <polygon points="1120,430 1132,422 1128,442" fill="#ffb03a"/>
-        <polygon points="830,140 840,132 836,152" fill="#ffffff"/>
-        <polygon points="1000,150 1010,142 1006,162" fill="#ffd23f"/>
-        <polygon points="740,480 752,472 748,492" fill="#c99cff"/>
-        <polygon points="1100,330 1112,322 1108,342" fill="#fff6c8"/>
-      </g>
-
-      <!-- 地面光 -->
-      <ellipse cx="792" cy="670" rx="215" ry="17" fill="#8b5cf6" opacity="0.35"/>
-      <ellipse cx="1035" cy="670" rx="215" ry="17" fill="#ffb03a" opacity="0.35"/>
-    </svg>
+    <div class="waza-comic-frame">
+      <img class="waza-cutin-art" id="wazaAttackImage" src="assets/comic/stand-rush.webp" width="1672" height="941" alt="" decoding="async" />
+    </div>
     <div class="waza-cutin-vignette"></div>
     <div class="waza-cutin-body">
       <div class="waza-cutin-kicker"><svg class="waza-cutin-kicker-icon"><use href="#i-bolt"/></svg><span data-i18n="cutin.kicker">わざ はっどう！</span></div>
@@ -677,7 +522,7 @@
       <div class="waza-cutin-label" id="wazaCutinLabel">ザ・ワールド</div>
       <div class="waza-cutin-en" id="wazaCutinEn">THE WORLD</div>
     </div>
-    <span class="waza-cutin-skip" data-i18n="cutin.skip">タップで スキップ</span>
+    <button type="button" class="waza-cutin-skip" id="wazaCutinSkip" data-i18n="cutin.skip">タップで つづける</button>
   </div>
 
   <!-- コンボ・大字スプラッシュ -->
@@ -692,13 +537,13 @@
   <!-- 紙吹雪コンテナ -->
   <div class="confetti-layer" id="confettiLayer" aria-hidden="true"></div>
 
-  <script src="js/i18n.js?v=5"></script>
+  <script src="js/i18n.js?v=6"></script>
   <script src="js/data.js?v=8"></script>
   <script src="js/store.js?v=6"></script>
   <script src="js/voice-manifest.js?v=2"></script>
   <script src="js/audio.js?v=6"></script>
-  <script src="js/fx.js?v=4"></script>
-  <script src="js/quiz.js?v=11"></script>
+  <script src="js/fx.js?v=5"></script>
+  <script src="js/quiz.js?v=12"></script>
   <script src="js/chart.js?v=3"></script>
   <script src="js/collection.js?v=5"></script>
   <script src="js/missions.js?v=4"></script>

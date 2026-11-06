@@ -127,7 +127,8 @@ const I18N = (() => {
       'reveal.comboStreak': 'れんさ {n}',
       'play.replay': 'なまえを きく',
       'cutin.kicker': 'わざ はっどう！',
-      'cutin.skip': 'タップで スキップ',
+      'cutin.skip': 'タップで つづける',
+      'cutin.region': 'わざの攻撃イラスト',
 
       /* ききとりチャレンジ（聽音挑戰） */
       'listening.bestCombo': 'さいだい コンボ',
@@ -379,7 +380,8 @@ const I18N = (() => {
       'reveal.comboStreak': '連勝 {n}',
       'play.replay': '聽讀音',
       'cutin.kicker': '招式發動！',
-      'cutin.skip': '點擊跳過演出',
+      'cutin.skip': '點擊繼續',
+      'cutin.region': '招式攻擊插圖',
 
       /* 聽音挑戰 */
       'listening.bestCombo': '最高連擊',

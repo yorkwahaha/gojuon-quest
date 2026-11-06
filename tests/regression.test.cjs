@@ -35,7 +35,9 @@ function boot({ audio = false, effects = false } = {}) {
     removeEventListener(type, fn) { this.events[type] = (this.events[type] || []).filter(f => f !== fn); }
     fire(type = 'click', extra = {}) {
       if (type === 'click' && this.disabled) return;
-      for (const fn of this.events[type] || []) fn({ target: this, preventDefault() {}, ...extra });
+      const event = { target: this, preventDefault() {}, ...extra };
+      if (this['on' + type]) this['on' + type](event);
+      for (const fn of this.events[type] || []) fn(event);
     }
     closest(selector) { return this.classList.contains(selector.slice(1)) ? this : this.parent?.closest(selector); }
     querySelectorAll(selector) {
@@ -97,7 +99,7 @@ function boot({ audio = false, effects = false } = {}) {
   for (const name of ['i18n', 'data', 'store', 'voice-manifest']) load(name);
   if (audio) load('audio'); else run('const AudioKit = { play() {}, speak() {}, stopVoice() {}, shout() {} };');
   if (effects) load('fx');
-  else run('const FX = { confetti() {}, coinRain() {}, comboSplash() {}, stopCutin() {}, wazaCutin({onDone}) { onDone(); } };');
+  else run('const FX = { confetti() {}, coinRain() {}, comboSplash() {}, prepareAttack() {}, stopCutin() {}, wazaCutin({onDone}) { onDone(); } };');
   for (const name of ['quiz', 'chart', 'collection', 'missions', 'gacha', 'app']) load(name);
   document.fire('DOMContentLoaded');
   const tick = ms => {
@@ -261,4 +263,35 @@ test('a completed confetti animation removes only its own particle', () => {
 test('leaving the quiz cancels the skill overlay as well as delayed callbacks', () => {
   const e = boot({ effects: true }); begin(e); e.run("FX.wazaCutin({name:'テスト'}); App.go('home')");
   assert.equal(e.get('wazaCutin').hidden, true);
+});
+test('attack panels select the corresponding full-color illustration', () => {
+  const e = boot({ effects: true });
+  const image = e.get('wazaAttackImage'); image.complete = true; image.naturalWidth = 1672;
+  for (const [id, scene] of [['q10', 'stand-rush'], ['q37', 'black-flash'], ['q54', 'domain'], ['q57', 'purple-blast']]) {
+    e.run(`FX.wazaCutin({name:'テスト', questionId:'${id}'})`);
+    assert.equal(image.src, `assets/comic/${scene}.webp`);
+  }
+});
+test('an attack panel waits for its image and cancellation ignores a stale load', () => {
+  const e = boot({ effects: true }); e.run("let attackDone = 0; FX.wazaCutin({name:'テスト',questionId:'q57',onDone:()=>attackDone++})");
+  e.tick(2100); assert.equal(e.run('attackDone'), 0);
+  const staleLoad = e.get('wazaAttackImage').onload;
+  e.run('FX.stopCutin()'); staleLoad(); e.tick(4000);
+  assert.equal(e.get('wazaCutin').hidden, true);
+  assert.equal(e.run('attackDone'), 0);
+});
+test('a timed skill answer displays a compact attack without blocking auto-next', () => {
+  const e = boot({ effects: true }); e.run("App.go('timeattack'); Quiz.state.pool = ['q37']");
+  e.get('wazaAttackImage').complete = true; e.get('wazaAttackImage').naturalWidth = 1672;
+  e.get('btnStartQuiz').fire(); answer(e);
+  assert.equal(e.get('wazaCutin').classList.contains('is-compact'), true);
+  assert.equal(e.get('revealPanel').hidden, false);
+  e.tick(1100); assert.equal(e.run('Quiz.state.questionCount'), 2);
+});
+test('the full comic panel remains readable until the player continues', () => {
+  const e = boot({ effects: true });
+  e.get('wazaAttackImage').complete = true; e.get('wazaAttackImage').naturalWidth = 1672;
+  e.run("let comicFinished = 0; FX.wazaCutin({name:'テスト',questionId:'q37',onDone:()=>comicFinished++})");
+  e.tick(10000); assert.equal(e.get('wazaCutin').hidden, false);
+  e.get('wazaCutin').fire(); assert.equal(e.run('comicFinished'), 1);
 });

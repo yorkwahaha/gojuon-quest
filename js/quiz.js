@@ -302,9 +302,11 @@ const Quiz = (() => {
 
   function nextQuestion() {
     if (state.locked === 'done' || (state.mode === 'daily' && state.questionCount >= DAILY_QUESTION_COUNT)) return;
+    FX.stopCutin();
     const q = drawNextQuestion();
     if (!q) { endSession(); return; }
     state.current = q;
+    if (q.type === 'waza') FX.prepareAttack(q.id);
     state.questionCount += 1;
     state.locked = false;
 
@@ -433,8 +435,8 @@ const Quiz = (() => {
     }
     $('quizStreak').textContent = String(SaveStore.data.streak);
     // わざ（招式）題はカットイン演出が主役なので、コンボ文字や紙吹雪は重ねない
-    const isWazaCutin = q.type === 'waza' && state.mode !== 'timeattack';
-    const fxDelay = isWazaCutin ? 2100 : 0;
+    const isWazaCutin = q.type === 'waza';
+    const compactCutin = state.mode === 'timeattack';
     if (!isWazaCutin) FX.comboSplash(SaveStore.data.streak);
     App.refreshHeader();
 
@@ -470,16 +472,19 @@ const Quiz = (() => {
 
     if (isWazaCutin) {
       // カットインが終わってから答え合わせパネルを表示
-      $('revealPanel').hidden = true;
+      $('revealPanel').hidden = !compactCutin;
       FX.wazaCutin({
         name: shown,
         label: q.label,
         en: q.en,
+        questionId: q.id,
+        compact: compactCutin,
         onDone: () => {
           if (state.current !== q || state.locked !== true) return;
           $('revealPanel').hidden = false;
           FX.confetti(state.golden ? 40 : 22);
           if (state.golden) FX.coinRain(12);
+          if (!compactCutin) celebrateRewards();
         },
       });
     } else {
@@ -488,18 +493,17 @@ const Quiz = (() => {
     $('quizFeedback').textContent = '';
 
     // 新規カード解放のお知らせ
-    res.newlyUnlocked.forEach((card) => {
-      later(() => {
-        AudioKit.play('unlock');
-        FX.confetti(36);
-        App.toast(I18N.t('toast.cardGet', { name: I18N.tf(card, 'name') }));
-      }, 650 + fxDelay);
-    });
-
-    // ランクアップ祝典（少し待ってから表示）
-    if (res.rankUp) {
-      later(() => App.showLevelUp(res.rankUp), 800 + fxDelay);
+    function celebrateRewards() {
+      res.newlyUnlocked.forEach((card) => {
+        later(() => {
+          AudioKit.play('unlock');
+          FX.confetti(36);
+          App.toast(I18N.t('toast.cardGet', { name: I18N.tf(card, 'name') }));
+        }, 650);
+      });
+      if (res.rankUp) later(() => App.showLevelUp(res.rankUp), 800);
     }
+    if (!isWazaCutin || compactCutin) celebrateRewards();
 
     // タイムアタックはテンポ重視で自動的に次へ
     if (state.mode === 'timeattack') {

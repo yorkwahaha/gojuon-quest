@@ -89,7 +89,17 @@ const FX = (() => {
   function stopCutin() {
     if (cancelCutin) cancelCutin();
   }
-  function wazaCutin({ name, label, en, onDone }) {
+  const ATTACK_SCENES = {
+    q37: 'black-flash',
+    q51: 'domain', q54: 'domain', q55: 'domain', q56: 'domain',
+    q57: 'purple-blast',
+  };
+
+  function prepareAttack(questionId) {
+    $('wazaAttackImage').src = `assets/comic/${ATTACK_SCENES[questionId] || 'stand-rush'}.webp`;
+  }
+
+  function wazaCutin({ name, label, en, questionId, compact = false, onDone }) {
     stopCutin();
     const el = $('wazaCutin');
     if (!el) { if (onDone) onDone(); return; }
@@ -98,28 +108,55 @@ const FX = (() => {
     labelEl.textContent = label || '';
     labelEl.hidden = !label || label === name;
     $('wazaCutinEn').textContent = en ? String(en).toUpperCase() : '';
+    const image = $('wazaAttackImage');
+    const skip = $('wazaCutinSkip');
+    const previousFocus = document.activeElement;
     el.hidden = false;
-    // アニメーションを毎回最初から再生する
+    image.hidden = true;
+    el.classList.toggle('is-compact', compact);
+    el.classList.add('is-loading');
     el.classList.remove('is-show');
-    void el.offsetWidth;
-    el.classList.add('is-show');
-    AudioKit.play('cutin');
-    AudioKit.shout(name);
+    if (!compact) skip.focus();
     const cleanup = () => {
       if (cutinTimer) { clearTimeout(cutinTimer); cutinTimer = null; }
+      image.onload = null;
+      image.onerror = null;
       el.removeEventListener('click', finish);
+      skip.removeEventListener('keydown', onKey);
       el.classList.remove('is-show');
       el.hidden = true;
       cancelCutin = null;
+      if (document.activeElement === skip && previousFocus && previousFocus.isConnected) previousFocus.focus();
     };
     const finish = () => {
       cleanup();
       if (onDone) onDone();
     };
+    const onKey = (event) => {
+      if (event.key === 'Escape') { event.preventDefault(); finish(); }
+    };
+    const show = () => {
+      if (cancelCutin !== cleanup) return;
+      image.onload = null;
+      image.onerror = null;
+      clearTimeout(cutinTimer);
+      image.hidden = false;
+      el.classList.remove('is-loading');
+      void el.offsetWidth;
+      el.classList.add('is-show');
+      AudioKit.play('cutin');
+      AudioKit.shout(name);
+      cutinTimer = compact ? setTimeout(finish, 850) : null;
+    };
     cancelCutin = cleanup;
     el.addEventListener('click', finish);
-    cutinTimer = setTimeout(finish, 2100);
+    skip.addEventListener('keydown', onKey);
+    image.onload = show;
+    image.onerror = finish;
+    cutinTimer = setTimeout(finish, 3000);
+    prepareAttack(questionId);
+    if (image.complete && image.naturalWidth > 0) show();
   }
 
-  return { confetti, coinRain, comboSplash, wazaCutin, stopCutin };
+  return { confetti, coinRain, comboSplash, prepareAttack, wazaCutin, stopCutin };
 })();
