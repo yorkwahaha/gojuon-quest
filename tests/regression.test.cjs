@@ -235,16 +235,21 @@ test('replacement speech pauses the old pack; stale rejection cannot start TTS',
   assert.equal(e.packs[0].paused, true); e.packs[0].reject(new Error('interrupted')); await Promise.resolve();
   assert.deepEqual(e.spoken, ['テスト']);
 });
-test('attack shout asks the voice cache and does not use TTS', async () => {
+test('recorded move names play their mp3 instead of a missing Fish server', async () => {
   const e = boot({ audio: true });
-  e.run("AudioKit.shout('ざ・わーるど'); AudioKit.shout('ざ・わーるど')");
-  const url = new URL(e.packs.at(-1).file, 'http://local/');
-  assert.equal(url.searchParams.get('kana'), 'ザ・ワールド');
-  assert.equal(url.searchParams.get('anime'), 'jojo');
-  assert.equal(e.packs.at(-1).file, e.packs.at(-2).file);
+  e.run("AudioKit.shout('ざ・わーるど')");
+  assert.equal(e.packs.at(-1).file, 'assets/voice/q12.mp3');
   e.packs.at(-1).reject(new Error('blocked'));
   await Promise.resolve();
   assert.deepEqual(e.spoken, []);
+});
+test('an unrecorded move on the local server asks Fish and speaks if that fails', () => {
+  const e = boot({ audio: true });
+  e.run("delete VOICE_PACK['ザ・ワールド']; location.hostname='127.0.0.1'; location.protocol='http:'; AudioKit.shout('ざ・わーるど')");
+  const url = new URL(e.packs.at(-1).file, 'http://local/');
+  assert.equal(url.searchParams.get('kana'), 'ザ・ワールド');
+  e.packs.at(-1).fire('error');
+  assert.deepEqual(e.spoken, ['ザ・ワールド']);
 });
 test('muting voice stops playback and suppresses pending TTS fallback', async () => {
   const e = boot({ audio: true }); e.run("AudioKit.speak('ジョジョ')");

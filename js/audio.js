@@ -236,30 +236,46 @@ const AudioKit = (() => {
     return QUESTIONS.find((q) => q.type === 'waza' && q.kana === key) || null;
   }
 
-  // 招式名不走預先上傳的 mp3。同網域的 voice server 第一次向 Fish 要聲音並存檔，之後重播同一檔。
+  // 本機 voice server 才向 Fish 要聲音。線上版沒有這支伺服器，有音檔就直接播。
   function voiceUrl(q) {
     const path = `api/voice?kana=${encodeURIComponent(q.kana)}&anime=${encodeURIComponent(q.anime)}`;
     if (typeof location !== 'undefined' && location.protocol === 'file:') return `http://127.0.0.1:8765/${path}`;
     return path;
   }
 
+  function fishServerHere() {
+    if (typeof location === 'undefined') return false;
+    const host = location.hostname;
+    return location.protocol === 'file:' || host === '127.0.0.1' || host === 'localhost';
+  }
+
   function playFish(q) {
-    try {
-      const audio = new Audio(voiceUrl(q));
-      currentPackAudio = audio;
-      audio.play().catch(() => {
-        if (currentPackAudio === audio) currentPackAudio = null;
-      });
-    } catch (e) {
+    let audio;
+    try { audio = new Audio(voiceUrl(q)); }
+    catch (e) { speakTTS(q.kana); return; }
+    currentPackAudio = audio;
+    audio.addEventListener('error', () => {
+      if (currentPackAudio !== audio || !SaveStore.data || !SaveStore.data.voice) return;
       currentPackAudio = null;
+      speakTTS(q.kana);
+    });
+    audio.play().catch(() => {});
+  }
+
+  function speakWaza(q) {
+    if (typeof VOICE_PACK !== 'undefined' && VOICE_PACK[q.kana]) {
+      speakWithPack(q.kana, false);
+      return;
     }
+    if (fishServerHere()) { playFish(q); return; }
+    speakTTS(q.kana);
   }
 
   function speak(text) {
     stopVoice();
     if (!SaveStore.data || !SaveStore.data.voice) return;
     const waza = wazaQuestion(text);
-    if (waza) { playFish(waza); return; }
+    if (waza) { speakWaza(waza); return; }
     if (speakWithPack(text)) return;
     speakTTS(text);
   }
@@ -296,7 +312,7 @@ const AudioKit = (() => {
     stopVoice();
     if (!SaveStore.data || !SaveStore.data.voice) return;
     const waza = wazaQuestion(text);
-    if (waza) playFish(waza);
+    if (waza) speakWaza(waza);
   }
 
   return { init, setMusic, syncSettings, play, speak, shout, stopVoice };
