@@ -135,12 +135,12 @@ function boot({ audio = false, effects = false } = {}) {
 
 function begin(env, mode = 'practice') {
   env.run(`App.go('${mode}')`);
-  if (mode !== 'listening') env.get('btnStartQuiz').fire();
+  env.get('btnStartQuiz').fire();
 }
 function answer(env, wrong = false) {
   const state = env.run('Quiz.state');
   const available = [...state.tiles];
-  let order = [...state.current.kana].filter(c => c !== '・').map(c => {
+  let order = [...state.current.kana].filter(c => !env.run('FIXED_CHARS').has(c)).map(c => {
     const i = available.findIndex(t => t.char === c); return available.splice(i, 1)[0];
   });
   if (wrong) {
@@ -167,7 +167,7 @@ test('leaving during the 240ms judge delay cannot award an answer', () => {
 function answerWithoutJudge(e) {
   const s = e.run('Quiz.state'), tiles = [...s.tiles];
   for (const ch of s.current.kana) {
-    if (ch === '・') continue;
+    if (e.run('FIXED_CHARS').has(ch)) continue;
     const i = tiles.findIndex(t => t.char === ch), tile = tiles.splice(i, 1)[0];
     e.get('tilePool').children[s.tiles.indexOf(tile)].fire();
   }
@@ -193,6 +193,23 @@ test('daily settlement is idempotent even if next is activated again', () => {
   e.get('btnNext').fire();
   assert.equal(e.run('JSON.stringify([SaveStore.data.stars, SaveStore.data.coins, SaveStore.data.xp])'), rewards);
 });
+test('listening waits to choose hiragana or katakana', () => {
+  const e = boot();
+  e.run("App.go('listening')");
+  assert.equal(e.get('playPanel').hidden, true);
+  assert.equal(e.get('animeChips').children[0].disabled, true);
+  const box = e.get('scriptChips');
+  box.fire('click', { target: box.children.find((el) => el.dataset.value === 'hiragana') });
+  e.get('btnStartQuiz').fire();
+  const ch = e.run('Quiz.state.tiles[0].char');
+  assert.equal(e.get('tilePool').children[0].textContent, e.run(`toHiragana(${JSON.stringify(ch)})`));
+});
+test('an ampersand in a stand name stays fixed', () => {
+  const e = boot();
+  e.run("App.go('practice'); Quiz.state.pool = [QUESTIONS.find(q => q.kana.includes('＆')).id]");
+  e.get('btnStartQuiz').fire();
+  assert.equal(e.run("Quiz.state.slots.filter(s => s.fixed).map(s => s.char).join(',')"), '＆');
+});
 test('filter buttons reflect the actual pool after listening resets filters', () => {
   const e = boot(); e.run("App.go('practice')");
   for (const [id, value] of [['animeChips', 'jojo'], ['levelChips', '3']]) {
@@ -217,6 +234,17 @@ test('replacement speech pauses the old pack; stale rejection cannot start TTS',
   const e = boot({ audio: true }); e.run("AudioKit.speak('ジョジョ'); AudioKit.speak('テスト')");
   assert.equal(e.packs[0].paused, true); e.packs[0].reject(new Error('interrupted')); await Promise.resolve();
   assert.deepEqual(e.spoken, ['テスト']);
+});
+test('attack shout asks the voice cache and does not use TTS', async () => {
+  const e = boot({ audio: true });
+  e.run("AudioKit.shout('ざ・わーるど'); AudioKit.shout('ざ・わーるど')");
+  const url = new URL(e.packs.at(-1).file, 'http://local/');
+  assert.equal(url.searchParams.get('kana'), 'ザ・ワールド');
+  assert.equal(url.searchParams.get('anime'), 'jojo');
+  assert.equal(e.packs.at(-1).file, e.packs.at(-2).file);
+  e.packs.at(-1).reject(new Error('blocked'));
+  await Promise.resolve();
+  assert.deepEqual(e.spoken, []);
 });
 test('muting voice stops playback and suppresses pending TTS fallback', async () => {
   const e = boot({ audio: true }); e.run("AudioKit.speak('ジョジョ')");
@@ -351,6 +379,11 @@ for (const id of ['q32', 'q33']) {
 }
 test('the Chinese DIO hint describes the user of The World', () => {
   const e = boot(); assert.equal(e.run('DESC_ZH.q02'), '「世界」的使者。');
+});
+test('Malevolent Shrine uses the reading ふくまみづし', () => {
+  const e = boot();
+  assert.equal(e.run("QUESTIONS.find(q => q.id === 'q51').kana"), 'フクマミヅシ');
+  assert.equal(e.run("toHiragana(QUESTIONS.find(q => q.id === 'q51').kana)"), 'ふくまみづし');
 });
 test('Kakyoin is associated with Hierophant Green in both locales', () => {
   const e = boot(); assert.match(e.run("QUESTIONS.find(q => q.id === 'q25').desc"), /ハイエロファントグリーン/);

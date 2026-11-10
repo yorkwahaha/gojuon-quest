@@ -211,7 +211,7 @@ const AudioKit = (() => {
     if ('speechSynthesis' in window) window.speechSynthesis.cancel();
   }
 
-  function speakWithPack(text) {
+  function speakWithPack(text, fallback = true) {
     const file = typeof VOICE_PACK !== 'undefined' ? VOICE_PACK[text] : null;
     if (!file) return false;
     try {
@@ -221,7 +221,7 @@ const AudioKit = (() => {
         // A replaced, muted, or cancelled request must not start stale speech.
         if (currentPackAudio !== audio || !SaveStore.data.voice) return;
         currentPackAudio = null;
-        speakTTS(text);
+        if (fallback) speakTTS(text);
       });
       return true;
     } catch (e) {
@@ -230,9 +230,36 @@ const AudioKit = (() => {
     }
   }
 
+  function wazaQuestion(text) {
+    if (typeof QUESTIONS === 'undefined') return null;
+    const key = typeof toKatakana === 'function' ? toKatakana(text) : text;
+    return QUESTIONS.find((q) => q.type === 'waza' && q.kana === key) || null;
+  }
+
+  // 招式名不走預先上傳的 mp3。同網域的 voice server 第一次向 Fish 要聲音並存檔，之後重播同一檔。
+  function voiceUrl(q) {
+    const path = `api/voice?kana=${encodeURIComponent(q.kana)}&anime=${encodeURIComponent(q.anime)}`;
+    if (typeof location !== 'undefined' && location.protocol === 'file:') return `http://127.0.0.1:8765/${path}`;
+    return path;
+  }
+
+  function playFish(q) {
+    try {
+      const audio = new Audio(voiceUrl(q));
+      currentPackAudio = audio;
+      audio.play().catch(() => {
+        if (currentPackAudio === audio) currentPackAudio = null;
+      });
+    } catch (e) {
+      currentPackAudio = null;
+    }
+  }
+
   function speak(text) {
     stopVoice();
     if (!SaveStore.data || !SaveStore.data.voice) return;
+    const waza = wazaQuestion(text);
+    if (waza) { playFish(waza); return; }
     if (speakWithPack(text)) return;
     speakTTS(text);
   }
@@ -264,20 +291,12 @@ const AudioKit = (() => {
     window.speechSynthesis.onvoiceschanged = pickJapaneseVoice;
   }
 
-  // わざ発動の「叫び」：低く太い声で叫ぶ感じに
+  // わざ発動の読み上げ。平仮名表示でも、サーバーが片仮名で Fish に頼み、快取した同じ檔を鳴らす。
   function shout(text) {
     stopVoice();
     if (!SaveStore.data || !SaveStore.data.voice) return;
-    if (!('speechSynthesis' in window)) return;
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = 'ja-JP';
-    u.rate = 0.95;
-    u.pitch = 0.75;   // 低く太い叫び声
-    u.volume = 1;
-    const voice = pickJapaneseVoice();
-    if (voice) u.voice = voice;
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(u);
+    const waza = wazaQuestion(text);
+    if (waza) playFish(waza);
   }
 
   return { init, setMusic, syncSettings, play, speak, shout, stopVoice };

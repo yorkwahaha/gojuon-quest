@@ -102,7 +102,8 @@ const I18N = (() => {
       'setup.katakana': 'カタカナ',
       'setup.hiragana': 'ひらがな',
       'setup.lockNote': 'きょうの5問は ぜんぶの中から えらばれるよ。「もじ」だけ えらべる！',
-      'setup.note': 'ヒント文をよんで、文字タイルを正しい順番にタップしよう。「・」は動かないよ。',
+      'setup.listeningLock': 'ききとりは ぜんぶの問題から出るよ。ひらがなとカタカナを えらんでね。',
+      'setup.note': 'ヒント文をよんで、文字タイルを正しい順番にタップしよう。「・」と「＆」は動かないよ。',
       'setup.start': 'スタート',
       'setup.taStart': 'スタート！ 60秒チャレンジ',
       'setup.dailyStart': 'デイリーに いどむ！',
@@ -137,7 +138,7 @@ const I18N = (() => {
       'listening.overSub': 'ハートが なくなっちゃった…',
       'listening.quitSub': 'ききとりチャレンジの まとめだよ。',
       'mode.listening.name': 'ききとりチャレンジ',
-      'mode.listening.desc': '耳できいて、ばらばらになった かなを 正しい じゅんばんに ならべよう。ハートは3つ！',
+      'mode.listening.desc': '耳できいて、ばらばらになった かなを 正しい じゅんばんに ならべよう。ひらがな／カタカナをえらべる。ハートは3つ！',
       'mode.listening.meta': '制限時間なし・ハート3つ',
 
       /* リザルト */
@@ -351,7 +352,8 @@ const I18N = (() => {
       'setup.katakana': '片假名',
       'setup.hiragana': '平假名',
       'setup.lockNote': '今天的 5 題是從題庫全部抽出來的。只有「文字」可以選！',
-      'setup.note': '讀一下提示文字，把字元方塊照正確順序點過去。「・」不會移動喔。',
+      'setup.listeningLock': '聽音挑戰從題庫全部出題。請選擇平假名或片假名。',
+      'setup.note': '讀一下提示文字，把字元方塊照正確順序點過去。「・」和「＆」不會移動喔。',
       'setup.start': '開始',
       'setup.taStart': '開始！ 限時 60 秒',
       'setup.dailyStart': '開始每日挑戰！',
@@ -386,7 +388,7 @@ const I18N = (() => {
       'listening.overSub': '愛心用完了……',
       'listening.quitSub': '聽音挑戰的成果結算！',
       'mode.listening.name': '聽音挑戰',
-      'mode.listening.desc': '聽讀音，把打散的假名照正確順序排回去！愛心共 3 顆。',
+      'mode.listening.desc': '聽讀音，把打散的假名照正確順序排回去。可選平假名或片假名。愛心共 3 顆。',
       'mode.listening.meta': '無限時・答錯 3 次結束',
 
       /* 結算 */

@@ -152,12 +152,13 @@ const Quiz = (() => {
     setSegValue('animeChips', state.animeFilter);
     setSegValue('levelChips', state.levelFilter);
     setSegValue('scriptChips', state.script);
-    const isDaily = state.mode === 'daily';
-    $('dailyLockNote').hidden = !isDaily;
+    const lockFilters = state.mode === 'daily' || state.mode === 'listening';
+    $('dailyLockNote').hidden = !lockFilters;
+    $('dailyLockNote').textContent = I18N.t(state.mode === 'listening' ? 'setup.listeningLock' : 'setup.lockNote');
     ['animeChips', 'levelChips'].forEach((id) => {
       const group = $(id).closest('.setup-group');
-      group.classList.toggle('is-locked', isDaily);
-      group.querySelectorAll('.seg-btn').forEach((b) => { b.disabled = isDaily; });
+      group.classList.toggle('is-locked', lockFilters);
+      group.querySelectorAll('.seg-btn').forEach((b) => { b.disabled = lockFilters; });
     });
     const icon = $('setupTitleUse');
     const title = $('setupTitleText');
@@ -198,8 +199,8 @@ const Quiz = (() => {
     }
 
     const isListening = state.mode === 'listening';
-    $('setupPanel').hidden = isListening;      // ききとりは設定なしで即スタート
-    $('playPanel').hidden = !isListening;
+    $('setupPanel').hidden = false;
+    $('playPanel').hidden = true;
     $('revealPanel').hidden = true;
     $('quizTimerChip').hidden = true;
     $('quizScoreChip').hidden = state.mode !== 'timeattack';
@@ -212,7 +213,6 @@ const Quiz = (() => {
     if (isListening) renderListeningHearts();
     configureSetupPanel();
     App.refreshHeader();
-    if (isListening) nextQuestion();
   }
 
   function beginPlay() {

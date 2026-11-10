@@ -2,6 +2,7 @@
 .env.*
 !.env.example
 node_modules/
+assets/voice-cache/
 *.log
 .DS_Store
 Thumbs.db
