@@ -236,39 +236,35 @@ const AudioKit = (() => {
     return QUESTIONS.find((q) => q.type === 'waza' && q.kana === key) || null;
   }
 
-  // 本機 voice server 才向 Fish 要聲音。線上版沒有這支伺服器，有音檔就直接播。
+  const PUBLIC_VOICE_ORIGIN = 'https://gojuon-voice.yorkwahaha.workers.dev';
+
+  // 本機走 voice server，GitHub Pages 走同一個介面的公開快取。失敗才改播已上傳的 mp3。
   function voiceUrl(q) {
     const path = `api/voice?kana=${encodeURIComponent(q.kana)}&anime=${encodeURIComponent(q.anime)}`;
+    const host = typeof location !== 'undefined' ? location.hostname : '';
+    if (host === '127.0.0.1' || host === 'localhost') return path;
     if (typeof location !== 'undefined' && location.protocol === 'file:') return `http://127.0.0.1:8765/${path}`;
-    return path;
-  }
-
-  function fishServerHere() {
-    if (typeof location === 'undefined') return false;
-    const host = location.hostname;
-    return location.protocol === 'file:' || host === '127.0.0.1' || host === 'localhost';
+    return `${PUBLIC_VOICE_ORIGIN}/${path}`;
   }
 
   function playFish(q) {
     let audio;
     try { audio = new Audio(voiceUrl(q)); }
-    catch (e) { speakTTS(q.kana); return; }
+    catch (e) {
+      if (!speakWithPack(q.kana, false)) speakTTS(q.kana);
+      return;
+    }
     currentPackAudio = audio;
     audio.addEventListener('error', () => {
       if (currentPackAudio !== audio || !SaveStore.data || !SaveStore.data.voice) return;
       currentPackAudio = null;
-      speakTTS(q.kana);
+      if (!speakWithPack(q.kana, false)) speakTTS(q.kana);
     });
     audio.play().catch(() => {});
   }
 
   function speakWaza(q) {
-    if (typeof VOICE_PACK !== 'undefined' && VOICE_PACK[q.kana]) {
-      speakWithPack(q.kana, false);
-      return;
-    }
-    if (fishServerHere()) { playFish(q); return; }
-    speakTTS(q.kana);
+    playFish(q);
   }
 
   function speak(text) {

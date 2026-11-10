@@ -235,12 +235,15 @@ test('replacement speech pauses the old pack; stale rejection cannot start TTS',
   assert.equal(e.packs[0].paused, true); e.packs[0].reject(new Error('interrupted')); await Promise.resolve();
   assert.deepEqual(e.spoken, ['テスト']);
 });
-test('recorded move names play their mp3 instead of a missing Fish server', async () => {
+test('GitHub move playback asks the public Fish cache and falls back to the mp3', () => {
   const e = boot({ audio: true });
-  e.run("AudioKit.shout('ざ・わーるど')");
+  e.run("location.protocol='https:'; location.hostname='yorkwahaha.github.io'; AudioKit.shout('ざ・わーるど')");
+  const url = new URL(e.packs.at(-1).file);
+  assert.equal(url.origin, 'https://gojuon-voice.yorkwahaha.workers.dev');
+  assert.equal(url.searchParams.get('kana'), 'ザ・ワールド');
+  assert.equal(url.searchParams.get('anime'), 'jojo');
+  e.packs.at(-1).fire('error');
   assert.equal(e.packs.at(-1).file, 'assets/voice/q12.mp3');
-  e.packs.at(-1).reject(new Error('blocked'));
-  await Promise.resolve();
   assert.deepEqual(e.spoken, []);
 });
 test('an unrecorded move on the local server asks Fish and speaks if that fails', () => {
@@ -250,6 +253,12 @@ test('an unrecorded move on the local server asks Fish and speaks if that fails'
   assert.equal(url.searchParams.get('kana'), 'ザ・ワールド');
   e.packs.at(-1).fire('error');
   assert.deepEqual(e.spoken, ['ザ・ワールド']);
+});
+test('the public voice allowlist is exactly the move questions', () => {
+  const allow = JSON.parse(fs.readFileSync(path.join(root, 'worker/allowlist.json'), 'utf8'));
+  const e = boot();
+  const moves = e.run("QUESTIONS.filter(q => q.type === 'waza').map(q => q.anime + '\\n' + q.kana).sort()");
+  assert.equal(JSON.stringify(allow.map((item) => `${item.anime}\n${item.kana}`).sort()), JSON.stringify(moves));
 });
 test('muting voice stops playback and suppresses pending TTS fallback', async () => {
   const e = boot({ audio: true }); e.run("AudioKit.speak('ジョジョ')");
