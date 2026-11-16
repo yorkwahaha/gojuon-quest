@@ -259,7 +259,7 @@ const AudioKit = (() => {
     const question = typeof QUESTIONS !== 'undefined' ? QUESTIONS.find(q => q.kana === key) : null;
     if (question) {
       const url = VOICE_API + '?anime=' + encodeURIComponent(question.anime)
-        + '&kana=' + encodeURIComponent(key) + '&v=20261116-fish1';
+        + '&kana=' + encodeURIComponent(key) + '&v=20261116-fish2';
       if (playVoice(url, 9000, () => speakFallback(key))) return;
     }
     speakFallback(key);

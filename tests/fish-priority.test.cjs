@@ -67,10 +67,12 @@ function workerHarness({ date = '2026-11-16T12:00:00Z', config, provider, cacheE
   const source = fs.readFileSync(path.join(root, 'worker/index.js'), 'utf8')
     .replace("import allowlist from './allowlist.json';", 'const allowlist=' + JSON.stringify(require('../worker/allowlist.json')) + ';')
     .replace("import voiceConfig from '../tools/voice-config.cjs';", 'const voiceConfig=' + JSON.stringify(voiceConfig) + ';')
+    .replace("import voiceStyle from '../tools/voice-style.cjs';", '')
     .replace('export default {', 'const worker={');
   const records = new Map(), calls = [], pending = [], logs = [];
   const worker = vm.runInNewContext(source + '\nworker', {
     Request, Response, URL, Headers, TextEncoder, AbortController, Uint8Array,
+    voiceStyle: require('../tools/voice-style.cjs'),
     crypto: require('node:crypto').webcrypto,
     Date: class extends Date { static now() { return Date.parse(date); } },
     setTimeout: timers?.setTimeout || setTimeout, clearTimeout: timers?.clearTimeout || clearTimeout,
@@ -92,7 +94,7 @@ function workerHarness({ date = '2026-11-16T12:00:00Z', config, provider, cacheE
   return { request, calls, logs, records };
 }
 
-test('Worker generates the recorded JOJO voice with only the free model then serves cache', async () => {
+test('Worker generates the hero Stand voice and shout with only the free model then serves cache', async () => {
   const h = workerHarness(); const first = await h.request();
   assert.equal(first.status, 200); assert.equal(first.headers.get('X-Voice-Source'), 'fish-generated');
   assert.deepEqual(Buffer.from(await first.arrayBuffer()), mp3);
@@ -100,8 +102,8 @@ test('Worker generates the recorded JOJO voice with only the free model then ser
   assert.equal(url, 'https://api.fish.audio/v1/tts'); assert.equal(options.method, 'POST');
   assert.equal(options.headers.model, 's2.1-pro-free');
   const body = JSON.parse(options.body);
-  assert.equal(body.reference_id, '5a8e46f1b94c4351aebb8a66b113cec5');
-  assert.equal(body.text, 'キッス'); assert.equal(body.prosody.speed, 0.92);
+  assert.equal(body.reference_id, '4359ff0bb0ad45139c35f4b664ae3f87');
+  assert.equal(body.text, '[shouting] キッス'); assert.equal(body.prosody.speed, 0.92);
   const second = await h.request('きっす');
   assert.equal(second.headers.get('X-Voice-Source'), 'fish-cache'); assert.equal(h.calls.length, 1);
 });
@@ -165,9 +167,54 @@ test('changing the voice style invalidates generated cache', async () => {
   const h = workerHarness(); await h.request();
   const other = workerHarness({ config: { ...require('../tools/voice-config.cjs'), voices: {
     ...require('../tools/voice-config.cjs').voices,
-    jojo: { ...require('../tools/voice-config.cjs').voices.jojo, prefix: '[shouting] ' },
+    jojoHero: { ...require('../tools/voice-config.cjs').voices.jojoHero, prosody: { speed: 0.95, volume: 0, normalize_loudness: true } },
   } } });
   await other.request();
   assert.notEqual([...h.records.keys()][0], [...other.records.keys()][0]);
+});
+
+test('JOJO hero and villain names, Stands and battle cries choose their server-owned voices', async () => {
+  const examples = [
+    ['クウジョウジョウタロウ', 'hero', false], ['ディオ', 'villain', false],
+    ['スタープラチナ', 'hero', true], ['ザ・ワールド', 'villain', true],
+    ['オラオラ', 'hero', true], ['ムダムダ', 'villain', true],
+    ['ハモン', 'neutral', false], ['スタンド', 'neutral', false],
+  ];
+  const h = workerHarness();
+  for (const [kana, side, shout] of examples) {
+    await h.request(kana, 'jojo', 'GET', '&voiceSide=hero&reference_id=override&prefix=override');
+    const body = JSON.parse(h.calls.at(-1).options.body);
+    assert.equal(body.reference_id, side === 'hero' ? '4359ff0bb0ad45139c35f4b664ae3f87' : '5a8e46f1b94c4351aebb8a66b113cec5', kana);
+    assert.equal(body.text, (shout ? '[shouting] ' : '') + kana);
+  }
+});
+
+test('all JOJO entries have an explicit voice side and a matching owner/Stand side', () => {
+  const e = boot(), byId = Object.fromEntries(e.run('QUESTIONS').map(q => [q.id, q]));
+  for (const q of Object.values(byId).filter(q => q.anime === 'jojo')) {
+    assert.ok(['hero', 'villain', 'neutral'].includes(q.voiceSide), q.id);
+    if (q.type !== 'term') assert.notEqual(q.voiceSide, 'neutral', q.id);
+  }
+  const pairs = [['q24','q13'],['q25','q85'],['q63','q84'],['q64','q86'],['q23','q87'],['q65','q88'],
+    ['q66','q89'],['q67','q90'],['q15','q91'],['q16','q92'],['q68','q93'],['q05','q94'],['q17','q95'],
+    ['q06','q96'],['q18','q97'],['q07','q30'],['q07','q98'],['q71','q99'],['q73','q100'],['q70','q32'],
+    ['q70','q33'],['q70','q101'],['q74','q102'],['q76','q103'],['q77','q104'],['q78','q105'],
+    ['q79','q106'],['q80','q108'],['q81','q109'],['q82','q110'],['q83','q111'],['q02','q12'],
+    ['q02','q34'],['q26','q14'],['q69','q31'],['q27','q29'],['q28','q21'],['q24','q10'],['q02','q11']];
+  for (const [owner, stand] of pairs) assert.equal(byId[owner].voiceSide, byId[stand].voiceSide, owner + '/' + stand);
+  for (const id of ['q02','q03','q04','q26','q62','q69','q70','q78','q79','q81']) assert.equal(byId[id].voiceSide, 'villain', id);
+  for (const id of ['q06','q15','q25','q27','q64','q67','q82','q83']) assert.equal(byId[id].voiceSide, 'hero', id);
+});
+
+test('offline fingerprints follow the same faction and shout rules as online generation', () => {
+  const { fingerprint, styleFor, model, hash } = require('../tools/voice-pack.cjs');
+  const e = boot();
+  for (const q of e.run('QUESTIONS')) {
+    assert.equal(fingerprint(q), hash(JSON.stringify({ kana: q.kana, model, style: styleFor(q) })));
+    if (q.anime === 'jojo' && q.type === 'waza') assert.equal(styleFor(q).prefix, '[shouting] ');
+  }
+  const q = { anime: 'jojo', type: 'char', kana: 'ジョジョ', voiceSide: 'hero' };
+  assert.notEqual(fingerprint(q), fingerprint({ ...q, voiceSide: 'villain' }));
+  assert.notEqual(fingerprint(q), fingerprint({ ...q, type: 'waza' }));
 });
 

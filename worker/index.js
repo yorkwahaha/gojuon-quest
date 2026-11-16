@@ -1,5 +1,6 @@
 import allowlist from './allowlist.json';
 import voiceConfig from '../tools/voice-config.cjs';
+import voiceStyle from '../tools/voice-style.cjs';
 
 const CORS = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS' };
 const ASSET_ORIGIN = 'https://yorkwahaha.github.io/gojuon-quest/';
@@ -47,7 +48,7 @@ export default {
     if (url.pathname === '/') return new Response(
       '<!doctype html><meta charset="utf-8"><title>五十音語音</title>'
       + '<p>Fish Audio S2.1 Pro Free 優先語音服務。</p>'
-      + '<p>題庫讀音依作品使用固定聲線；生成失敗改播既有音檔。免費生成截止 2026-11-30（UTC）。</p>'
+      + '<p>JOJO 依正反派使用對應聲線，替身與招式以喊技語氣播放；生成失敗改播既有音檔。免費生成截止 2026-11-30（UTC）。</p>'
       + '<p><a href="/api/voice?anime=jojo&amp;kana=%E3%82%AD%E3%83%83%E3%82%B9">試聽「キッス」</a></p>',
       { headers: { ...CORS, 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' } });
     const kana = toKatakana(url.searchParams.get('kana'));
@@ -58,7 +59,7 @@ export default {
     // HEAD probes must not create a generation. Only a finite, server-owned list
     // of readings is accepted; callers cannot choose text, model, voice or style.
     if (request.method === 'HEAD') return fallback(entry);
-    const style = voiceConfig.voices[entry.anime];
+    const style = voiceStyle(voiceConfig, entry);
     const identity = JSON.stringify({ entry, model: voiceConfig.model, style, revision: 1 });
     const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(identity));
     const key = [...new Uint8Array(digest)].map(b => b.toString(16).padStart(2, '0')).join('');

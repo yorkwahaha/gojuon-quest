@@ -191,9 +191,11 @@ test('malformed URLs return 400 while valid requests remain available',()=>{
 });
 test('without a secret the public Worker redirects only known versioned static audio',async()=>{
   let source=fs.readFileSync(path.join(root,'worker/index.js'),'utf8').replace("import allowlist from './allowlist.json';",'const allowlist='+JSON.stringify(require('../worker/allowlist.json'))+';')
-    .replace("import voiceConfig from '../tools/voice-config.cjs';",'const voiceConfig='+JSON.stringify(require('../tools/voice-config.cjs'))+';').replace('export default {','const worker={');
+    .replace("import voiceConfig from '../tools/voice-config.cjs';",'const voiceConfig='+JSON.stringify(require('../tools/voice-config.cjs'))+';')
+    .replace("import voiceStyle from '../tools/voice-style.cjs';",'').replace('export default {','const worker={');
   let calls=0;
   const worker=vm.runInNewContext(source+'\nworker',{Request,Response,URL,Headers,TextEncoder,crypto:require('node:crypto').webcrypto,
+    voiceStyle:require('../tools/voice-style.cjs'),
     caches:{default:{match:async()=>null}},fetch:()=>{calls++;throw Error('network forbidden');}});
   for(let i=0;i<2;i++){
     const res=await worker.fetch(new Request('https://example.test/api/voice?anime=jojo&kana='+encodeURIComponent('キッス')));

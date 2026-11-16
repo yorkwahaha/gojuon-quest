@@ -1,10 +1,10 @@
 'use strict';
-// Explicit maintenance command; public playback never calls this generator.
+// Explicit maintenance command for offline packs; online playback uses the Worker.
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 const { spawnSync } = require('node:child_process');
-const { model, voices, hash, fingerprint, validateAudio, atomicWrite } = require('./voice-pack.cjs');
+const { model, styleFor, hash, fingerprint, validateAudio, atomicWrite } = require('./voice-pack.cjs');
 const ROOT = path.resolve(__dirname, '..');
 const args = process.argv.slice(2);
 const option = key => (args.find(a => a.startsWith(key + '=')) || '').slice(key.length + 1);
@@ -15,7 +15,7 @@ const syncOnly = args.includes('--sync-only');
 const metadataFile = path.join(__dirname, 'voice-pack-metadata.json');
 const metadata = fs.existsSync(metadataFile) ? JSON.parse(fs.readFileSync(metadataFile, 'utf8')) : {};
 const QUESTIONS = vm.runInNewContext(fs.readFileSync(path.join(ROOT,'js/data.js'),'utf8') + '\nQUESTIONS');
-if (only && !Object.hasOwn(voices, only)) throw Error('--only must be jojo or jjk');
+if (only && !['jojo', 'jjk'].includes(only)) throw Error('--only must be jojo or jjk');
 for (const id of ids) if (!QUESTIONS.some(q => q.id === id)) throw Error('Unknown question id: ' + id);
 async function main() {
   const manifest = {}, allowed = [];
@@ -31,7 +31,7 @@ async function main() {
     if (!syncOnly && selected && (force || !valid)) {
       try {
         if (!process.env.FISH_API_KEY) throw Error('FISH_API_KEY is missing');
-        const style = voices[q.anime];
+        const style = styleFor(q);
         const res = await fetch('https://api.fish.audio/v1/tts', {
           method:'POST', signal:AbortSignal.timeout(45000),
           headers:{Authorization:'Bearer '+process.env.FISH_API_KEY,'Content-Type':'application/json',model},
@@ -60,7 +60,7 @@ async function main() {
     const key = q.anime + '\n' + q.kana;
     if (manifest[q.kana] && !allowedKeys.has(key)) {
       allowedKeys.add(key);
-      allowed.push({anime:q.anime,kana:q.kana,file:manifest[q.kana]});
+      allowed.push({anime:q.anime,kana:q.kana,type:q.type,...(q.voiceSide ? {voiceSide:q.voiceSide} : {}),file:manifest[q.kana]});
     }
   }
   // Publish both mappings together only when the entire pack is valid.

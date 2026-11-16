@@ -1,7 +1,7 @@
 {
   "q01": {
     "kana": "ジョジョ",
-    "fingerprint": "9de3985b16d04e92c745eb9f704a59c13f85167da266dcd56529443ffef64ec2"
+    "fingerprint": "0da1acc02cf5df9388d06fdb0d3af45ba08903d11d1d60fd7138d6895dc634dd"
   },
   "q02": {
     "kana": "ディオ",
@@ -17,15 +17,15 @@
   },
   "q05": {
     "kana": "ミスタ",
-    "fingerprint": "7cf8baedc96265eb3a2b62271fb5a5ced9df76f47851b7493946c607a08128ac"
+    "fingerprint": "0eb16947c6158be2679f462fe1f7a5db9f3729650b403640d2a3e49245525446"
   },
   "q06": {
     "kana": "フーゴ",
-    "fingerprint": "f666a8fd2d23d882dc240cc8647e89337a17e0b26d5594572d523109923181d1"
+    "fingerprint": "b1761519ffb904167155ee97ad02e788177033e74549f93b4ff154f886a350c8"
   },
   "q07": {
     "kana": "ジョルノ",
-    "fingerprint": "4e6226c71fb597813b64f3e1dd45f27e87b306e7154c39992671e649001234aa"
+    "fingerprint": "ffb4c6e11509ff90f0d5bdaef3fc592f91e9f46294169d50c8b52ec1c95ab288"
   },
   "q08": {
     "kana": "ハモン",
@@ -37,63 +37,63 @@
   },
   "q10": {
     "kana": "オラオラ",
-    "fingerprint": "ef7c9f0f778f373b92733e6c217162086accca36df6ae1ac116cd2ee998fa15e"
+    "fingerprint": "5984cc3b2908c83cdc3f0179c0ccbc8e68df5e6b622575b532bc7e8ca48977f0"
   },
   "q11": {
     "kana": "ムダムダ",
-    "fingerprint": "2798503026486ed3e87b254d0304b6697714fd3a26b811f9bbbff623035a201d"
+    "fingerprint": "9bcaa29508232490c61d533c5e7d50eb8de0703346493caccac1f9ce8cb18283"
   },
   "q12": {
     "kana": "ザ・ワールド",
-    "fingerprint": "30656f129c77fcd89177d52798c74a5904c1dd7c0f644ca6fe6ee27e8adf1eaa"
+    "fingerprint": "ea3557b6d955454f498c7d18fb6e1ef53fb3feed466ec507512b75d22e69f00f"
   },
   "q13": {
     "kana": "スタープラチナ",
-    "fingerprint": "2a85a3dc90fedd55ea902da07235f831cbe7f3d6d4666f376588c78db756c991"
+    "fingerprint": "1c94cfb2b01e787ad80cec1b6809b5e2c6670ff5ad5528f97721b2fdc3ba5805"
   },
   "q14": {
     "kana": "キラークイーン",
-    "fingerprint": "068727d8e0c823134c979edf3782c7c0d8e3d88a7773f03361052cd690c8a59c"
+    "fingerprint": "0a128fd6a5300fc3a7eb81345547a8898cebaa4fc1f8bd2e28f7032092cf9221"
   },
   "q15": {
     "kana": "キシベロハン",
-    "fingerprint": "8543e46b4c094226f68fd0b4c19f8100371ac916bfc1db7c6af2240368506b9b"
+    "fingerprint": "80670a9ce8a0465bb9cc40e43664f64ff7ecebde26097ae8d2b87b649353d3a5"
   },
   "q16": {
     "kana": "ブチャラティ",
-    "fingerprint": "db3a2141ceedace13287d9cc5e28faa7b8adf46beddeb6cb888dd93bcd0a167f"
+    "fingerprint": "535ebe0bdd57b5e4fada5895d6ca9d5b610b95712b6c787a890f174ab34c4675"
   },
   "q17": {
     "kana": "ナランチャ",
-    "fingerprint": "7f16000cb41f65fb79359947741908225080700864dc697618172628b6822572"
+    "fingerprint": "baf8f77346a802410cc41b1b5c0885a85e1c992593e846699b54f3b9a6693d72"
   },
   "q18": {
     "kana": "トリッシュ",
-    "fingerprint": "7b93f660c97c2658a16229ec401946a87449423ee4ce288681e9a5ec2f2b9a2b"
+    "fingerprint": "4edf58a09653630b1bc4cdac40a1d622681f9979455d4e8ce7f5b1c354f6db04"
   },
   "q20": {
     "kana": "スピードワゴン",
-    "fingerprint": "fe87ba06784380c68d336a7f34ad11537cd6f43d47c866f6111926771a3b9941"
+    "fingerprint": "e855e05aa205a6388a35c688c185222079928285b7363eceb23aeab9a5ea96c0"
   },
   "q21": {
     "kana": "ストーン・フリー",
-    "fingerprint": "bd716459e412424170f68db038771aa96ca05271fdab03482626ca80e6a0ec91"
+    "fingerprint": "58f892bcab926f1c5bd7f740e182bdbec0e72db3d17448bf045efce5c7ff3e00"
   },
   "q22": {
     "kana": "ジョナサン・ジョースター",
-    "fingerprint": "610dbb63fc0eac6e9e92552dafa8ced12b32f8a7437a2655369cc2e0a13e6236"
+    "fingerprint": "5042d9f7b40cce44280640918d2e3141a1c1173dac744848921ca2ba9aa57b60"
   },
   "q23": {
     "kana": "ジョセフ・ジョースター",
-    "fingerprint": "8f97b051cfb2ce6954a56b9bba24eb3cf22cdd2fc510d6e40871a09bc707818f"
+    "fingerprint": "27d89ee75012263f832465d423d099db917fdf4bb665427f976c791a7bb33fad"
   },
   "q24": {
     "kana": "クウジョウジョウタロウ",
-    "fingerprint": "423d524f421391c90bf1a09551a21033e9505c832394730020ecbe759b6a6939"
+    "fingerprint": "3d7bb202ec3ee42bee470a2efec8db5ef73e15a02599e8f9d8c6b33526fd5059"
   },
   "q25": {
     "kana": "カキョウインノリアキ",
-    "fingerprint": "bb0ad19dcca4f8a114517731db005b906ad2837c0c28fab8f72653327951485d"
+    "fingerprint": "5e360f90972199227e480be4cd370f9b7a848acc421edeb390068b64289ec58f"
   },
   "q26": {
     "kana": "キラヨシカゲ",
@@ -101,43 +101,43 @@
   },
   "q27": {
     "kana": "ヒガシカタジョウスケ",
-    "fingerprint": "a8fe6cba376619e4e2f748085711dc9975723557f6b7a234c5a72b318af35e7a"
+    "fingerprint": "a79b566b447828dbf6f4ecd3e75b4b631f2eefe91ca886043414f8f1b16de40c"
   },
   "q28": {
     "kana": "クウジョウジョリーン",
-    "fingerprint": "a5dcad81eb29df681f2fa1a2e5d00fd464f8e5c905a0c98c2dc47e3dbac8250d"
+    "fingerprint": "6d29f9bcdf9c902eb494021925bc8d7e76c0f93f1e0e6f9be6a8d6ed1c87bb87"
   },
   "q29": {
     "kana": "クレイジー・ダイヤモンド",
-    "fingerprint": "9bc8c83b4111c95d3627cf39a0a110a16de51b6b4f1bf323b15310739087fab8"
+    "fingerprint": "f6288ad6d80c0e55b4ea525582452256894735a71dd664f9e54635d11c128920"
   },
   "q30": {
     "kana": "ゴールド・エクスペリエンス",
-    "fingerprint": "3c3d9784862eee51064de3eca6fbbaa0d66c99bd7efab76ea6ff6c245210f6cf"
+    "fingerprint": "ed9ea8ec3bf703343356a8403305e3f4fd7ef15abd1c64280fe0aab2760e9651"
   },
   "q31": {
     "kana": "キング・クリムゾン",
-    "fingerprint": "4585fb29b56ba562396c053aae3673999a591f46e4805d99e1d1db10c485cdf7"
+    "fingerprint": "65afe85ea51ac085ce92eb47dd5a4de5bc1525008bcc1b98bba7e75b39238ea5"
   },
   "q32": {
     "kana": "ホワイトスネイク",
-    "fingerprint": "3184969a6829498fb6222f2fcf70afa88132df9e3c80fb0c2b1d12fe70d44880"
+    "fingerprint": "32d90fbe8cdbec2f3d92bc0095420861b6705b3124cea5b78b5e1506716525d3"
   },
   "q33": {
     "kana": "メイド・イン・ヘブン",
-    "fingerprint": "c2b37d6a72509682d64fdadd301cca741e368fc59ec168a70d205ddd10e03fe6"
+    "fingerprint": "b6a676fe8c973b95a05c875a351f9f561d6cf873c82bbe38afad644b68c19c13"
   },
   "q34": {
     "kana": "ザ・ワールド・オーバーヘブン",
-    "fingerprint": "6b28ca5a792ac8ec54b7b213d94b3512cd15d579a854947507ed1973d13a2f37"
+    "fingerprint": "36d1bb3bc254111384d2e66f2ca0af8a2c6d461572ebc699152e5808b83b4e34"
   },
   "q60": {
     "kana": "シーザー・ツェペリ",
-    "fingerprint": "2bce390c4a86aaf8e6c5fabbc899f742ebc0065c9274f5a3bde8d3668974fca9"
+    "fingerprint": "b502508a6c4e4d05e7bccacea1998a01dccfb15e8fd39abc7621b23f8f325488"
   },
   "q61": {
     "kana": "リサリサ",
-    "fingerprint": "c70f1b36f4274e223435a325ee172504989480a96e509edce4b8b05b6a825c00"
+    "fingerprint": "d059ae36f9a6b7bd4702aa5fbc9eec21fc341c235542b877211e958069a77a0f"
   },
   "q62": {
     "kana": "エシディシ",
@@ -145,27 +145,27 @@
   },
   "q63": {
     "kana": "アヴドゥル",
-    "fingerprint": "1e1b1e0f02b1c650dfba671cf8f5e8ce5df553c1ac4e3c1f067a92423b228522"
+    "fingerprint": "efd54ba43b47305b3c8e0e0e623ebb767e769f4a50e28a5a6e5551375962426e"
   },
   "q64": {
     "kana": "ポルナレフ",
-    "fingerprint": "640c4a363cc21f246c4cdfeee51d50b7cf4e9a34b85757765d2714235253ed39"
+    "fingerprint": "5feeeb0f40a9bc42fd2bfb0479fd0432efbfcbfa173bdd89f231bcd41722e838"
   },
   "q65": {
     "kana": "イギー",
-    "fingerprint": "ed748076c0f9aef182619f0202c6fcde924b1a4c6c94aa2a6aa0046d5f704f03"
+    "fingerprint": "3b09a4aad4c92e9f038df67ab4cc6d90aa2f6e07411c080a0dd7ae5abcf8ec72"
   },
   "q66": {
     "kana": "ヒロセコウイチ",
-    "fingerprint": "8afa6a2120db4563dd20664ba4f8c166edcacfb1d84d56a5224503384bcfed81"
+    "fingerprint": "1251994feaf8e2081474c3594865d3d22bd9e27bbc1ad6834405256f14d6d7d9"
   },
   "q67": {
     "kana": "ニジムラオクヤス",
-    "fingerprint": "7c8d0dba7cf7c063ac8861e9981110810aff469416b89e887456d95acc162ccf"
+    "fingerprint": "37925fc3dfa1de8f06a7f63b20a5bd2dfdbb335e7552bd7115b4c785473e1bef"
   },
   "q68": {
     "kana": "アバッキオ",
-    "fingerprint": "268d6d4e579120c059cc0a6da3cbc3af053ee58fc0e36046f82ca1b446301bd0"
+    "fingerprint": "353b933854a756106773f17607aa3a5927028ee99e55859916efb4eb1f89465a"
   },
   "q69": {
     "kana": "ディアボロ",
@@ -177,31 +177,31 @@
   },
   "q71": {
     "kana": "エルメェス",
-    "fingerprint": "03cceff2ceb5102ce69dcf16de3e8612e43570d47e97abf74aeeaf6816d184e2"
+    "fingerprint": "817fa0bad20c9a86d2ea4647b1862fd991c402f62b900e26e4efaea6f677a62d"
   },
   "q72": {
     "kana": "ウェザー・リポート",
-    "fingerprint": "dbf5e13961bf97b5eb53369668005f35db9374d8774c993553d1eab9ef17fb88"
+    "fingerprint": "f7bfc7774386e8ef21aaef0c285952d882d184993d3ddbe84da069bdf7d5934a"
   },
   "q73": {
     "kana": "アナスイ",
-    "fingerprint": "fc37db9d54102b453e05f9fd652d8b2032858a37d02878e268aedb66ddbc3c5a"
+    "fingerprint": "909b120cd37ba65cd644dd1da737bc4225a0074dc28125dcb56b5372b08d7822"
   },
   "q74": {
     "kana": "エンポリオ",
-    "fingerprint": "6123eb595e8198a7f069b641a0ca0165b7d36447b21ebd3fa8a6e20dc98f7891"
+    "fingerprint": "ac3e8a4ef39f335ccadf4a63989fc7a1209791d1b0ff65078d16ccc6ec5110f5"
   },
   "q75": {
     "kana": "フー・ファイターズ",
-    "fingerprint": "f1416e7cedaddbcc45f312e3c9195c0004bce1b3bc562e6adb35088d8bc80acc"
+    "fingerprint": "402c43785e748220710998d4822adf276a4a1fbb3e90677bf179f6fbb9b780c4"
   },
   "q76": {
     "kana": "ジョニィ・ジョースター",
-    "fingerprint": "6e9720d8d3e255bdc7a3116ed2bf875d96b677358bd79040e6a6ea30df429470"
+    "fingerprint": "c46a852ff0e0365fc7fc16fd0a4fb5f89e7d6841820123852ee3f38dcef1cfec"
   },
   "q77": {
     "kana": "ジャイロ・ツェペリ",
-    "fingerprint": "5b049b4275752dfffc2980e3c57c710068376e6daacb2acb51c88ef83e78b8f0"
+    "fingerprint": "f913b5aa900d8f68c78034c8204883b925676ab2f7adc0e56a3bc94d7cecdcfd"
   },
   "q78": {
     "kana": "ディエゴ・ブランドー",
@@ -213,7 +213,7 @@
   },
   "q80": {
     "kana": "ヒロセヤスホ",
-    "fingerprint": "b33f5a6dafab01e74c6c40a6e9d6a1b4d0dca0f6b1abfe7e8904615b855d3357"
+    "fingerprint": "e32f7f6ec3e9c6460394f1411ae5cf0da2ae9740404bb4967e2e5afc6136ee81"
   },
   "q81": {
     "kana": "トオル",
@@ -221,123 +221,123 @@
   },
   "q82": {
     "kana": "ジョディオ・ジョースター",
-    "fingerprint": "0625308dd4b37d8aef7c07f7f67e8200c277df27335da1ee68bc087de94a3b39"
+    "fingerprint": "462f3e331f1580f0d27854bb531f1dfb08211b7e940b3ce3cd096ff758cb3c12"
   },
   "q83": {
     "kana": "ドラゴナ・ジョースター",
-    "fingerprint": "3bb3c6c671c18f4d8b0e6b9b3e3a31f78129efc54ce69fb1c2cde1ce8c94eb69"
+    "fingerprint": "015e11077026694ada7a695ef97cd3df052d37967a2f4ee17e81bcc03aa2c868"
   },
   "q84": {
     "kana": "マジシャンズレッド",
-    "fingerprint": "ea0f5052b9a20097a23bec4cdcbdfa62969b450275b0d816984f5667e21ec8a6"
+    "fingerprint": "8ed473f1fd30a4b88e372585ff1ab2214e3b3bf9fa0bd963290fbc5f291a9807"
   },
   "q85": {
     "kana": "ハイエロファントグリーン",
-    "fingerprint": "557e9f37674671a809ff254ad2cf9b4dbb1abcf39efe869bf0f370042f6bdb9a"
+    "fingerprint": "6af744c5836ef51f3b1ba8bc183d7a3870d5ee9df51140d332c6a0328011848d"
   },
   "q86": {
     "kana": "シルバーチャリオッツ",
-    "fingerprint": "b4c2488a15847f9ccba60cee103fa6c5a5be68aa65eb9db28997062b792f7bfb"
+    "fingerprint": "a17627b45615317af9b239d30fd153b38870f91ef2e8c2ed21b83ff08863d9c6"
   },
   "q87": {
     "kana": "ハーミットパープル",
-    "fingerprint": "4de5460787e7ae3d8ee81b60bdb5695d44ee4805b1291607e363b35267407097"
+    "fingerprint": "ec0dc8526c6e46712730ad07f0d1f3c3320253fbc5185ac0d04c521644a830d8"
   },
   "q88": {
     "kana": "ザ・フール",
-    "fingerprint": "0c4db13ff7991afa5ac3383fe8582cfe9ad82b255599807a8900e7d1903b40be"
+    "fingerprint": "f7494201db8671b5067e81e0b4696ed39a85cb5ab0c77ae64b9a2e21176e4d4f"
   },
   "q89": {
     "kana": "エコーズ",
-    "fingerprint": "bae8fda8908ceb5a125c10d244717eb8b784198f7a9f2626334ba5208eafea69"
+    "fingerprint": "8387f8f594376110945e7eddda303187ae0a5fbb582fe3bcc7ff06d17726a273"
   },
   "q90": {
     "kana": "ザ・ハンド",
-    "fingerprint": "b81892c1a8520245d7b7636d424af020b3bcc7f19cb9235edb45affeefb8855a"
+    "fingerprint": "07c7b9d558916f794ea3c5a590626a1099498f43e8ee2dc4792de4703f08547c"
   },
   "q91": {
     "kana": "ヘブンズ・ドアー",
-    "fingerprint": "f72eaeaf66946e5aad2842b38a79435f0c5bd0fb5790bdb2b09bf177acbf9b64"
+    "fingerprint": "b2a1a74e90f6d014016fcb7264be2c1c43330691f0031f698f1f1d87fa94ca0b"
   },
   "q92": {
     "kana": "スティッキィ・フィンガーズ",
-    "fingerprint": "b593588e1a7ee55f789efff8a8719a280f2587b3d89b9a3af1a142a7aefebe06"
+    "fingerprint": "3113bb8a19c4044c47adaaa3887f33a6a8c20372f7625924493796fc9e33cc25"
   },
   "q93": {
     "kana": "ムーディー・ブルース",
-    "fingerprint": "6c6e2a16e35cde14820a27964f4da251e9919b86ab4281adb0422e0adb020499"
+    "fingerprint": "e127926774515424d2097db3484e7d7d2688eb3c7ecccb26169398a00c8d2a65"
   },
   "q94": {
     "kana": "セックス・ピストルズ",
-    "fingerprint": "d325d2020e3e93db6545ca30d1c5197d3093170cde0df449481abacb466606a1"
+    "fingerprint": "c9952a0fda32aefcc8f2ba9f8149343a8d50970ccd6106fa84be5403ea40cca4"
   },
   "q95": {
     "kana": "エアロスミス",
-    "fingerprint": "ff2e16785bb6b69d4d35609b334f94b933821caf4b841082c373d189f92e5d96"
+    "fingerprint": "4d76a2b1222ab704e8373a8fe00fabedf2b98c1d3a28dc2bfba7590ea22e137b"
   },
   "q96": {
     "kana": "パープル・ヘイズ",
-    "fingerprint": "93d63d51ee11d96abbb90ea524516c2881ab2aa38adec8e6717c708550b3c61c"
+    "fingerprint": "9a1fb2ee5869cf9fa5799b0d4c4787a1fbba2a9d0dced1e2056177a7412c3c2c"
   },
   "q97": {
     "kana": "スパイス・ガール",
-    "fingerprint": "779a73583669c9ce8b3c9ce06e087597b7d5616699dbb63401aa6e046aee51bf"
+    "fingerprint": "31d4c6b95ed67e00ed0c1237c2c4d605524d0d739da0ebdb163a65d00e4cca44"
   },
   "q98": {
     "kana": "ゴールド・エクスペリエンス・レクイエム",
-    "fingerprint": "34733eae4b52acf8dd0c2b283d424049d60e00aff19656b84f261aa7be52c6c9"
+    "fingerprint": "9b952b5d66c2b1f49b1577c799384891d26cc57a81ed3faeb75459aba2b063eb"
   },
   "q99": {
     "kana": "キッス",
-    "fingerprint": "dafe1de5c0fccd252783feeb151e337dc780c339e4920d5984775d1aa04c3168"
+    "fingerprint": "ed5c4f2440c093f3abd3476c93d763f3cb42c2cc983e569073d8520fe04ed83c"
   },
   "q100": {
     "kana": "ダイバー・ダウン",
-    "fingerprint": "3674cbd22f70585603b25df71b2ae79a820c83d4df674f5e792ce9569ac20940"
+    "fingerprint": "78c3cc33387ced083e86486b5238c56ecabac4219c7ed00b9e53808a6e168804"
   },
   "q101": {
     "kana": "シー・ムーン",
-    "fingerprint": "7b259505fb7d6ed93d3920fbfc771b447e5f533fbb1b028f4a0d497016aafa47"
+    "fingerprint": "ac336471ed10d05e7e1ae55e5423a2a7259261c16181c4456211d28ba17918ce"
   },
   "q102": {
     "kana": "バーニング・ダウン・ザ・ハウス",
-    "fingerprint": "eea14a62b150646097711be77921d6ef96cb903460c51999131a050b530f4c0b"
+    "fingerprint": "7188c9bebffc4258a8499029b709f6e7750090ad0491009d5a82f891003327a2"
   },
   "q103": {
     "kana": "タスク",
-    "fingerprint": "6551383c9922b146e8e4f9b58dc219146b69c30e823b52939d73646b53ba5a07"
+    "fingerprint": "29a3d95f0b9aef7597308f3d5aedbe36e5e635251b956a9191e2177fa8822246"
   },
   "q104": {
     "kana": "ボール・ブレイカー",
-    "fingerprint": "fc5c154613d177655823186281c52597423d9f23b41b51964e53a33cb05ab03f"
+    "fingerprint": "9e18863ffff4a94e090414a963a84da6d00914e5bf3aedaf53b0ac881896299c"
   },
   "q105": {
     "kana": "スケアリー・モンスターズ",
-    "fingerprint": "3117c5d925772e8243a73fa212fbf031ae36d19c88084da8713983a695f9f815"
+    "fingerprint": "680562275cf0cd27ab0df6281caae3f03e8faaab173a601a27dad66cc2c5a735"
   },
   "q106": {
     "kana": "ディー・フォー・シー",
-    "fingerprint": "253ce4ec23d254226160e707b35b42561eece0ef7e8bbda98a2166af8f3745bc"
+    "fingerprint": "7d993618acdc3e802e3a44e131554e702d096ab21872433f050fba0e81282590"
   },
   "q107": {
     "kana": "ソフト＆ウェット",
-    "fingerprint": "629478aa4042798ed1b664370eaa16be5bd1fd82de1b0e1d660313b84dd8cdcd"
+    "fingerprint": "9371a31b621f15928b0be3cefb7909dafc930c5969ccc1f8caf22a11559ff2e8"
   },
   "q108": {
     "kana": "ペイズリー・パーク",
-    "fingerprint": "ac1d9b33428d35b1e05584902de129b25dae384af1f1c04c6c79f4c124c2e47e"
+    "fingerprint": "ee01d2c158b11b1faae462cb055ff815d0582e92ee347dde98a634e7c48a943f"
   },
   "q109": {
     "kana": "ワンダー・オブ・ユー",
-    "fingerprint": "19c071a567d6e29d344cd93a1a8a38fa16769bccb4111e157e0b9191cf17b670"
+    "fingerprint": "7fb70bd3dfa87994b3d16469ea43badd23dc1d4d0c7893b8f82be282cff86c54"
   },
   "q110": {
     "kana": "ノーヴェンバー・レイン",
-    "fingerprint": "4fbc30453c07dfee7985e35ec202ddb6e4c8845193ae3b99f394a2d1d0966f30"
+    "fingerprint": "9e915a9a70a96994ebde3b4109e88e8da5a10f7f0ef7fc648078afad2eea6db3"
   },
   "q111": {
     "kana": "スムース・オペレイターズ",
-    "fingerprint": "39edf9ffc81dd98aa5b5e2a4ffa092fad85e23773c6259d20073e252bea7c28d"
+    "fingerprint": "6fd8a8882b55d2377c06c5e9ba6f303252d6e3cae83fdfac1fe38668aea0e448"
   },
   "q35": {
     "kana": "ゲトウ",

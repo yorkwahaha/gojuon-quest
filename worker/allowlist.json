@@ -2,551 +2,746 @@
   {
     "anime": "jojo",
     "kana": "ジョジョ",
-    "file": "assets/voice/q01.mp3?v=0c45a0f7f4a7"
+    "type": "char",
+    "voiceSide": "hero",
+    "file": "assets/voice/q01.mp3?v=58cf9db1fe14"
   },
   {
     "anime": "jojo",
     "kana": "ディオ",
+    "type": "char",
+    "voiceSide": "villain",
     "file": "assets/voice/q02.mp3?v=d13eb066faf4"
   },
   {
     "anime": "jojo",
     "kana": "ワムウ",
+    "type": "char",
+    "voiceSide": "villain",
     "file": "assets/voice/q03.mp3?v=9e046572e9eb"
   },
   {
     "anime": "jojo",
     "kana": "カーズ",
+    "type": "char",
+    "voiceSide": "villain",
     "file": "assets/voice/q04.mp3?v=3257cd823aaa"
   },
   {
     "anime": "jojo",
     "kana": "ミスタ",
-    "file": "assets/voice/q05.mp3?v=76ce51783842"
+    "type": "char",
+    "voiceSide": "hero",
+    "file": "assets/voice/q05.mp3?v=23b4a43b76a6"
   },
   {
     "anime": "jojo",
     "kana": "フーゴ",
-    "file": "assets/voice/q06.mp3?v=2f6f5ccf838e"
+    "type": "char",
+    "voiceSide": "hero",
+    "file": "assets/voice/q06.mp3?v=2a2e6565e21a"
   },
   {
     "anime": "jojo",
     "kana": "ジョルノ",
-    "file": "assets/voice/q07.mp3?v=1b2833379aa6"
+    "type": "char",
+    "voiceSide": "hero",
+    "file": "assets/voice/q07.mp3?v=c8f91f86f6e5"
   },
   {
     "anime": "jojo",
     "kana": "ハモン",
+    "type": "term",
+    "voiceSide": "neutral",
     "file": "assets/voice/q08.mp3?v=a6f29c16b6a6"
   },
   {
     "anime": "jojo",
     "kana": "スタンド",
+    "type": "term",
+    "voiceSide": "neutral",
     "file": "assets/voice/q09.mp3?v=2d83bf32cb49"
   },
   {
     "anime": "jojo",
     "kana": "オラオラ",
-    "file": "assets/voice/q10.mp3?v=81c747516422"
+    "type": "waza",
+    "voiceSide": "hero",
+    "file": "assets/voice/q10.mp3?v=874013d1a31e"
   },
   {
     "anime": "jojo",
     "kana": "ムダムダ",
-    "file": "assets/voice/q11.mp3?v=51d3debf0c2c"
+    "type": "waza",
+    "voiceSide": "villain",
+    "file": "assets/voice/q11.mp3?v=ea973e5ea154"
   },
   {
     "anime": "jojo",
     "kana": "ザ・ワールド",
-    "file": "assets/voice/q12.mp3?v=75cea7cc19b1"
+    "type": "waza",
+    "voiceSide": "villain",
+    "file": "assets/voice/q12.mp3?v=85e186717b54"
   },
   {
     "anime": "jojo",
     "kana": "スタープラチナ",
-    "file": "assets/voice/q13.mp3?v=4bcf3e3b1576"
+    "type": "waza",
+    "voiceSide": "hero",
+    "file": "assets/voice/q13.mp3?v=ba6b8d8d7c8e"
   },
   {
     "anime": "jojo",
     "kana": "キラークイーン",
-    "file": "assets/voice/q14.mp3?v=0092646e9599"
+    "type": "waza",
+    "voiceSide": "villain",
+    "file": "assets/voice/q14.mp3?v=ca07bbfdd450"
   },
   {
     "anime": "jojo",
     "kana": "キシベロハン",
-    "file": "assets/voice/q15.mp3?v=5095504f465c"
+    "type": "char",
+    "voiceSide": "hero",
+    "file": "assets/voice/q15.mp3?v=b34d8f3eeb56"
   },
   {
     "anime": "jojo",
     "kana": "ブチャラティ",
-    "file": "assets/voice/q16.mp3?v=3f5c54ff6dc7"
+    "type": "char",
+    "voiceSide": "hero",
+    "file": "assets/voice/q16.mp3?v=9e3308bec801"
   },
   {
     "anime": "jojo",
     "kana": "ナランチャ",
-    "file": "assets/voice/q17.mp3?v=b5203702c37d"
+    "type": "char",
+    "voiceSide": "hero",
+    "file": "assets/voice/q17.mp3?v=05a9d0247305"
   },
   {
     "anime": "jojo",
     "kana": "トリッシュ",
-    "file": "assets/voice/q18.mp3?v=8052463b5c84"
+    "type": "char",
+    "voiceSide": "hero",
+    "file": "assets/voice/q18.mp3?v=18f56820bdb0"
   },
   {
     "anime": "jojo",
     "kana": "スピードワゴン",
-    "file": "assets/voice/q20.mp3?v=65cc2213bb37"
+    "type": "char",
+    "voiceSide": "hero",
+    "file": "assets/voice/q20.mp3?v=05a778db7295"
   },
   {
     "anime": "jojo",
     "kana": "ストーン・フリー",
-    "file": "assets/voice/q21.mp3?v=b0d5607b3aaa"
+    "type": "waza",
+    "voiceSide": "hero",
+    "file": "assets/voice/q21.mp3?v=4ea4bb0486d1"
   },
   {
     "anime": "jojo",
     "kana": "ジョナサン・ジョースター",
-    "file": "assets/voice/q22.mp3?v=7aa88b780097"
+    "type": "char",
+    "voiceSide": "hero",
+    "file": "assets/voice/q22.mp3?v=bf2d3ed49024"
   },
   {
     "anime": "jojo",
     "kana": "ジョセフ・ジョースター",
-    "file": "assets/voice/q23.mp3?v=681b2b4775d5"
+    "type": "char",
+    "voiceSide": "hero",
+    "file": "assets/voice/q23.mp3?v=395d56927b33"
   },
   {
     "anime": "jojo",
     "kana": "クウジョウジョウタロウ",
-    "file": "assets/voice/q24.mp3?v=670c91fad1b1"
+    "type": "char",
+    "voiceSide": "hero",
+    "file": "assets/voice/q24.mp3?v=0df0fe510025"
   },
   {
     "anime": "jojo",
     "kana": "カキョウインノリアキ",
-    "file": "assets/voice/q25.mp3?v=33128409e47f"
+    "type": "char",
+    "voiceSide": "hero",
+    "file": "assets/voice/q25.mp3?v=bc7ef355f92a"
   },
   {
     "anime": "jojo",
     "kana": "キラヨシカゲ",
+    "type": "char",
+    "voiceSide": "villain",
     "file": "assets/voice/q26.mp3?v=86c853a87543"
   },
   {
     "anime": "jojo",
     "kana": "ヒガシカタジョウスケ",
-    "file": "assets/voice/q27.mp3?v=b9d51eea5667"
+    "type": "char",
+    "voiceSide": "hero",
+    "file": "assets/voice/q27.mp3?v=f9aa8735fd3f"
   },
   {
     "anime": "jojo",
     "kana": "クウジョウジョリーン",
-    "file": "assets/voice/q28.mp3?v=3d2bab634f0a"
+    "type": "char",
+    "voiceSide": "hero",
+    "file": "assets/voice/q28.mp3?v=f51e5b7b398c"
   },
   {
     "anime": "jojo",
     "kana": "クレイジー・ダイヤモンド",
-    "file": "assets/voice/q29.mp3?v=21f3bd869bac"
+    "type": "waza",
+    "voiceSide": "hero",
+    "file": "assets/voice/q29.mp3?v=1fa2a4111224"
   },
   {
     "anime": "jojo",
     "kana": "ゴールド・エクスペリエンス",
-    "file": "assets/voice/q30.mp3?v=daa8369cdc05"
+    "type": "waza",
+    "voiceSide": "hero",
+    "file": "assets/voice/q30.mp3?v=44eabc0987df"
   },
   {
     "anime": "jojo",
     "kana": "キング・クリムゾン",
-    "file": "assets/voice/q31.mp3?v=8b291b984a29"
+    "type": "waza",
+    "voiceSide": "villain",
+    "file": "assets/voice/q31.mp3?v=af64164dabd8"
   },
   {
     "anime": "jojo",
     "kana": "ホワイトスネイク",
-    "file": "assets/voice/q32.mp3?v=16683532e600"
+    "type": "waza",
+    "voiceSide": "villain",
+    "file": "assets/voice/q32.mp3?v=385ed8fd8fe7"
   },
   {
     "anime": "jojo",
     "kana": "メイド・イン・ヘブン",
-    "file": "assets/voice/q33.mp3?v=7dd20ec4fe10"
+    "type": "waza",
+    "voiceSide": "villain",
+    "file": "assets/voice/q33.mp3?v=7671d9784286"
   },
   {
     "anime": "jojo",
     "kana": "ザ・ワールド・オーバーヘブン",
-    "file": "assets/voice/q34.mp3?v=89deda6500c1"
+    "type": "waza",
+    "voiceSide": "villain",
+    "file": "assets/voice/q34.mp3?v=642250b180f7"
   },
   {
     "anime": "jojo",
     "kana": "シーザー・ツェペリ",
-    "file": "assets/voice/q60.mp3?v=3aa578f35fad"
+    "type": "char",
+    "voiceSide": "hero",
+    "file": "assets/voice/q60.mp3?v=c2476362de27"
   },
   {
     "anime": "jojo",
     "kana": "リサリサ",
-    "file": "assets/voice/q61.mp3?v=62ff0c6aebe0"
+    "type": "char",
+    "voiceSide": "hero",
+    "file": "assets/voice/q61.mp3?v=fa1015928ae1"
   },
   {
     "anime": "jojo",
     "kana": "エシディシ",
+    "type": "char",
+    "voiceSide": "villain",
     "file": "assets/voice/q62.mp3?v=1b0d991d64c4"
   },
   {
     "anime": "jojo",
     "kana": "アヴドゥル",
-    "file": "assets/voice/q63.mp3?v=975926a6e219"
+    "type": "char",
+    "voiceSide": "hero",
+    "file": "assets/voice/q63.mp3?v=a06381c65fb1"
   },
   {
     "anime": "jojo",
     "kana": "ポルナレフ",
-    "file": "assets/voice/q64.mp3?v=190f7aa8cab5"
+    "type": "char",
+    "voiceSide": "hero",
+    "file": "assets/voice/q64.mp3?v=98a14cf06d0b"
   },
   {
     "anime": "jojo",
     "kana": "イギー",
-    "file": "assets/voice/q65.mp3?v=68a67c27d18b"
+    "type": "char",
+    "voiceSide": "hero",
+    "file": "assets/voice/q65.mp3?v=82d42c9e3073"
   },
   {
     "anime": "jojo",
     "kana": "ヒロセコウイチ",
-    "file": "assets/voice/q66.mp3?v=3d5422a8704b"
+    "type": "char",
+    "voiceSide": "hero",
+    "file": "assets/voice/q66.mp3?v=d12bf7a76bbb"
   },
   {
     "anime": "jojo",
     "kana": "ニジムラオクヤス",
-    "file": "assets/voice/q67.mp3?v=5210c7cdcb4e"
+    "type": "char",
+    "voiceSide": "hero",
+    "file": "assets/voice/q67.mp3?v=341aa2970f7b"
   },
   {
     "anime": "jojo",
     "kana": "アバッキオ",
-    "file": "assets/voice/q68.mp3?v=26bb2b9fc794"
+    "type": "char",
+    "voiceSide": "hero",
+    "file": "assets/voice/q68.mp3?v=d1ca44eef857"
   },
   {
     "anime": "jojo",
     "kana": "ディアボロ",
+    "type": "char",
+    "voiceSide": "villain",
     "file": "assets/voice/q69.mp3?v=7205f2c47f94"
   },
   {
     "anime": "jojo",
     "kana": "エンリコ・プッチ",
+    "type": "char",
+    "voiceSide": "villain",
     "file": "assets/voice/q70.mp3?v=e6784c8956d6"
   },
   {
     "anime": "jojo",
     "kana": "エルメェス",
-    "file": "assets/voice/q71.mp3?v=1a35382c28d5"
+    "type": "char",
+    "voiceSide": "hero",
+    "file": "assets/voice/q71.mp3?v=d9c6e335a422"
   },
   {
     "anime": "jojo",
     "kana": "ウェザー・リポート",
-    "file": "assets/voice/q72.mp3?v=b1e4b217bc4f"
+    "type": "char",
+    "voiceSide": "hero",
+    "file": "assets/voice/q72.mp3?v=624ced811a31"
   },
   {
     "anime": "jojo",
     "kana": "アナスイ",
-    "file": "assets/voice/q73.mp3?v=51f5d5aea23a"
+    "type": "char",
+    "voiceSide": "hero",
+    "file": "assets/voice/q73.mp3?v=4655f09e86f3"
   },
   {
     "anime": "jojo",
     "kana": "エンポリオ",
-    "file": "assets/voice/q74.mp3?v=cbfcaa64e3dd"
+    "type": "char",
+    "voiceSide": "hero",
+    "file": "assets/voice/q74.mp3?v=69e9848f68a7"
   },
   {
     "anime": "jojo",
     "kana": "フー・ファイターズ",
-    "file": "assets/voice/q75.mp3?v=802b4bf2b2f0"
+    "type": "char",
+    "voiceSide": "hero",
+    "file": "assets/voice/q75.mp3?v=9b1da4cb4bfe"
   },
   {
     "anime": "jojo",
     "kana": "ジョニィ・ジョースター",
-    "file": "assets/voice/q76.mp3?v=a29e48eaa8fe"
+    "type": "char",
+    "voiceSide": "hero",
+    "file": "assets/voice/q76.mp3?v=aa6e196a3734"
   },
   {
     "anime": "jojo",
     "kana": "ジャイロ・ツェペリ",
-    "file": "assets/voice/q77.mp3?v=02a12a50161f"
+    "type": "char",
+    "voiceSide": "hero",
+    "file": "assets/voice/q77.mp3?v=70b9a0cc27fb"
   },
   {
     "anime": "jojo",
     "kana": "ディエゴ・ブランドー",
+    "type": "char",
+    "voiceSide": "villain",
     "file": "assets/voice/q78.mp3?v=7981ff7206ce"
   },
   {
     "anime": "jojo",
     "kana": "ファニー・ヴァレンタイン",
+    "type": "char",
+    "voiceSide": "villain",
     "file": "assets/voice/q79.mp3?v=d5ed3b83490c"
   },
   {
     "anime": "jojo",
     "kana": "ヒロセヤスホ",
-    "file": "assets/voice/q80.mp3?v=af7efdf9f5aa"
+    "type": "char",
+    "voiceSide": "hero",
+    "file": "assets/voice/q80.mp3?v=eed88771b8fe"
   },
   {
     "anime": "jojo",
     "kana": "トオル",
+    "type": "char",
+    "voiceSide": "villain",
     "file": "assets/voice/q81.mp3?v=f556be9f5d2e"
   },
   {
     "anime": "jojo",
     "kana": "ジョディオ・ジョースター",
-    "file": "assets/voice/q82.mp3?v=f6b35b9e0d88"
+    "type": "char",
+    "voiceSide": "hero",
+    "file": "assets/voice/q82.mp3?v=23eca455ebb8"
   },
   {
     "anime": "jojo",
     "kana": "ドラゴナ・ジョースター",
-    "file": "assets/voice/q83.mp3?v=93624587dcf3"
+    "type": "char",
+    "voiceSide": "hero",
+    "file": "assets/voice/q83.mp3?v=3de0caf24de8"
   },
   {
     "anime": "jojo",
     "kana": "マジシャンズレッド",
-    "file": "assets/voice/q84.mp3?v=7b39a3c5d7bd"
+    "type": "waza",
+    "voiceSide": "hero",
+    "file": "assets/voice/q84.mp3?v=7de7d72fc098"
   },
   {
     "anime": "jojo",
     "kana": "ハイエロファントグリーン",
-    "file": "assets/voice/q85.mp3?v=c555a07a944e"
+    "type": "waza",
+    "voiceSide": "hero",
+    "file": "assets/voice/q85.mp3?v=740af9e7c614"
   },
   {
     "anime": "jojo",
     "kana": "シルバーチャリオッツ",
-    "file": "assets/voice/q86.mp3?v=de6909c1f2cb"
+    "type": "waza",
+    "voiceSide": "hero",
+    "file": "assets/voice/q86.mp3?v=9a6ae6f95dee"
   },
   {
     "anime": "jojo",
     "kana": "ハーミットパープル",
-    "file": "assets/voice/q87.mp3?v=6049dac90be2"
+    "type": "waza",
+    "voiceSide": "hero",
+    "file": "assets/voice/q87.mp3?v=23a279de3cc2"
   },
   {
     "anime": "jojo",
     "kana": "ザ・フール",
-    "file": "assets/voice/q88.mp3?v=171ed0804906"
+    "type": "waza",
+    "voiceSide": "hero",
+    "file": "assets/voice/q88.mp3?v=314f3250e54a"
   },
   {
     "anime": "jojo",
     "kana": "エコーズ",
-    "file": "assets/voice/q89.mp3?v=0e3ffb2e8bc3"
+    "type": "waza",
+    "voiceSide": "hero",
+    "file": "assets/voice/q89.mp3?v=aadfbe6f6b8b"
   },
   {
     "anime": "jojo",
     "kana": "ザ・ハンド",
-    "file": "assets/voice/q90.mp3?v=7f17b59ba8a7"
+    "type": "waza",
+    "voiceSide": "hero",
+    "file": "assets/voice/q90.mp3?v=9e452732cd24"
   },
   {
     "anime": "jojo",
     "kana": "ヘブンズ・ドアー",
-    "file": "assets/voice/q91.mp3?v=4e0cce02a0c6"
+    "type": "waza",
+    "voiceSide": "hero",
+    "file": "assets/voice/q91.mp3?v=38d463282169"
   },
   {
     "anime": "jojo",
     "kana": "スティッキィ・フィンガーズ",
-    "file": "assets/voice/q92.mp3?v=bd680cebda5b"
+    "type": "waza",
+    "voiceSide": "hero",
+    "file": "assets/voice/q92.mp3?v=13ea55f49cdc"
   },
   {
     "anime": "jojo",
     "kana": "ムーディー・ブルース",
-    "file": "assets/voice/q93.mp3?v=7f586ec29d04"
+    "type": "waza",
+    "voiceSide": "hero",
+    "file": "assets/voice/q93.mp3?v=e523d2046f60"
   },
   {
     "anime": "jojo",
     "kana": "セックス・ピストルズ",
-    "file": "assets/voice/q94.mp3?v=6f3066445e14"
+    "type": "waza",
+    "voiceSide": "hero",
+    "file": "assets/voice/q94.mp3?v=8985918b7ba0"
   },
   {
     "anime": "jojo",
     "kana": "エアロスミス",
-    "file": "assets/voice/q95.mp3?v=8941b5449f52"
+    "type": "waza",
+    "voiceSide": "hero",
+    "file": "assets/voice/q95.mp3?v=fc99eec28617"
   },
   {
     "anime": "jojo",
     "kana": "パープル・ヘイズ",
-    "file": "assets/voice/q96.mp3?v=28cc4af56bad"
+    "type": "waza",
+    "voiceSide": "hero",
+    "file": "assets/voice/q96.mp3?v=662239f79ece"
   },
   {
     "anime": "jojo",
     "kana": "スパイス・ガール",
-    "file": "assets/voice/q97.mp3?v=4996c2750a9f"
+    "type": "waza",
+    "voiceSide": "hero",
+    "file": "assets/voice/q97.mp3?v=e79d458698aa"
   },
   {
     "anime": "jojo",
     "kana": "ゴールド・エクスペリエンス・レクイエム",
-    "file": "assets/voice/q98.mp3?v=7e00e6edad75"
+    "type": "waza",
+    "voiceSide": "hero",
+    "file": "assets/voice/q98.mp3?v=71985be5f963"
   },
   {
     "anime": "jojo",
     "kana": "キッス",
-    "file": "assets/voice/q99.mp3?v=ff2888c2fe39"
+    "type": "waza",
+    "voiceSide": "hero",
+    "file": "assets/voice/q99.mp3?v=b979c039cfab"
   },
   {
     "anime": "jojo",
     "kana": "ダイバー・ダウン",
-    "file": "assets/voice/q100.mp3?v=954407598236"
+    "type": "waza",
+    "voiceSide": "hero",
+    "file": "assets/voice/q100.mp3?v=f3ec99823176"
   },
   {
     "anime": "jojo",
     "kana": "シー・ムーン",
-    "file": "assets/voice/q101.mp3?v=966146229273"
+    "type": "waza",
+    "voiceSide": "villain",
+    "file": "assets/voice/q101.mp3?v=5d66231eb6f6"
   },
   {
     "anime": "jojo",
     "kana": "バーニング・ダウン・ザ・ハウス",
-    "file": "assets/voice/q102.mp3?v=8ce5d1c3e4d6"
+    "type": "waza",
+    "voiceSide": "hero",
+    "file": "assets/voice/q102.mp3?v=956d78f0b875"
   },
   {
     "anime": "jojo",
     "kana": "タスク",
-    "file": "assets/voice/q103.mp3?v=a8479370dbff"
+    "type": "waza",
+    "voiceSide": "hero",
+    "file": "assets/voice/q103.mp3?v=4c95a8889f7c"
   },
   {
     "anime": "jojo",
     "kana": "ボール・ブレイカー",
-    "file": "assets/voice/q104.mp3?v=39afc4ed7910"
+    "type": "waza",
+    "voiceSide": "hero",
+    "file": "assets/voice/q104.mp3?v=be0cbf180236"
   },
   {
     "anime": "jojo",
     "kana": "スケアリー・モンスターズ",
-    "file": "assets/voice/q105.mp3?v=700602a15fd6"
+    "type": "waza",
+    "voiceSide": "villain",
+    "file": "assets/voice/q105.mp3?v=1cea08025b10"
   },
   {
     "anime": "jojo",
     "kana": "ディー・フォー・シー",
-    "file": "assets/voice/q106.mp3?v=03e6ce9e8848"
+    "type": "waza",
+    "voiceSide": "villain",
+    "file": "assets/voice/q106.mp3?v=0ea1d374a908"
   },
   {
     "anime": "jojo",
     "kana": "ソフト＆ウェット",
-    "file": "assets/voice/q107.mp3?v=3961712e5541"
+    "type": "waza",
+    "voiceSide": "hero",
+    "file": "assets/voice/q107.mp3?v=7ccb5e5d1a04"
   },
   {
     "anime": "jojo",
     "kana": "ペイズリー・パーク",
-    "file": "assets/voice/q108.mp3?v=97ac447a873b"
+    "type": "waza",
+    "voiceSide": "hero",
+    "file": "assets/voice/q108.mp3?v=370a90b5e6dc"
   },
   {
     "anime": "jojo",
     "kana": "ワンダー・オブ・ユー",
-    "file": "assets/voice/q109.mp3?v=9cbe44145260"
+    "type": "waza",
+    "voiceSide": "villain",
+    "file": "assets/voice/q109.mp3?v=0035b600c27a"
   },
   {
     "anime": "jojo",
     "kana": "ノーヴェンバー・レイン",
-    "file": "assets/voice/q110.mp3?v=4d969b095c11"
+    "type": "waza",
+    "voiceSide": "hero",
+    "file": "assets/voice/q110.mp3?v=d40076fe11f9"
   },
   {
     "anime": "jojo",
     "kana": "スムース・オペレイターズ",
-    "file": "assets/voice/q111.mp3?v=afdd7aaffa90"
+    "type": "waza",
+    "voiceSide": "hero",
+    "file": "assets/voice/q111.mp3?v=d488efdc41e8"
   },
   {
     "anime": "jjk",
     "kana": "ゲトウ",
+    "type": "char",
     "file": "assets/voice/q35.mp3?v=3837850581a0"
   },
   {
     "anime": "jjk",
     "kana": "メイメイ",
+    "type": "char",
     "file": "assets/voice/q36.mp3?v=74f5f38d2057"
   },
   {
     "anime": "jjk",
     "kana": "コクセン",
+    "type": "waza",
     "file": "assets/voice/q37.mp3?v=7c6d88f825c0"
   },
   {
     "anime": "jjk",
     "kana": "ムゲン",
+    "type": "term",
     "file": "assets/voice/q38.mp3?v=3cdd21672a29"
   },
   {
     "anime": "jjk",
     "kana": "リクガン",
+    "type": "term",
     "file": "assets/voice/q39.mp3?v=5c7a1921e803"
   },
   {
     "anime": "jjk",
     "kana": "ジュレイ",
+    "type": "term",
     "file": "assets/voice/q40.mp3?v=45458d11dfa8"
   },
   {
     "anime": "jjk",
     "kana": "イタドリユウジ",
+    "type": "char",
     "file": "assets/voice/q41.mp3?v=51aed3179c2a"
   },
   {
     "anime": "jjk",
     "kana": "フシグロメグミ",
+    "type": "char",
     "file": "assets/voice/q42.mp3?v=92ba5526551e"
   },
   {
     "anime": "jjk",
     "kana": "ゴジョウサトル",
+    "type": "char",
     "file": "assets/voice/q43.mp3?v=daa9b6103a61"
   },
   {
     "anime": "jjk",
     "kana": "ゼンインマキ",
+    "type": "char",
     "file": "assets/voice/q44.mp3?v=af03790e88b5"
   },
   {
     "anime": "jjk",
     "kana": "オッコツユウタ",
+    "type": "char",
     "file": "assets/voice/q45.mp3?v=2a9d99d9fab0"
   },
   {
     "anime": "jjk",
     "kana": "イヌマキトゲ",
+    "type": "char",
     "file": "assets/voice/q46.mp3?v=decbd7365b09"
   },
   {
     "anime": "jjk",
     "kana": "ナナミケント",
+    "type": "char",
     "file": "assets/voice/q47.mp3?v=05a6415b566b"
   },
   {
     "anime": "jjk",
     "kana": "トウドウアオイ",
+    "type": "char",
     "file": "assets/voice/q48.mp3?v=492d85cd0f77"
   },
   {
     "anime": "jjk",
     "kana": "ジュリョク",
+    "type": "term",
     "file": "assets/voice/q49.mp3?v=3689d1de9a5e"
   },
   {
     "anime": "jjk",
     "kana": "ジュジュツ",
+    "type": "term",
     "file": "assets/voice/q50.mp3?v=619cd8ff584b"
   },
   {
     "anime": "jjk",
     "kana": "フクマミヅシ",
+    "type": "waza",
     "file": "assets/voice/q51.mp3?v=c7b7c752a8a3"
   },
   {
     "anime": "jjk",
     "kana": "クギサキノバラ",
+    "type": "char",
     "file": "assets/voice/q52.mp3?v=e556f60c8738"
   },
   {
     "anime": "jjk",
     "kana": "リョウメンスクナ",
+    "type": "char",
     "file": "assets/voice/q53.mp3?v=ab1c29d87249"
   },
   {
     "anime": "jjk",
     "kana": "リョウイキテンカイ",
+    "type": "waza",
     "file": "assets/voice/q54.mp3?v=2cad82dac3ce"
   },
   {
     "anime": "jjk",
     "kana": "ムリョウクウショ",
+    "type": "waza",
     "file": "assets/voice/q55.mp3?v=a5968c5e265b"
   },
   {
     "anime": "jjk",
     "kana": "ムカゲンジュジュツ",
+    "type": "waza",
     "file": "assets/voice/q56.mp3?v=767eb1946010"
   },
   {
     "anime": "jjk",
     "kana": "キョシキムラサキ",
+    "type": "waza",
     "file": "assets/voice/q57.mp3?v=1d25d3741c28"
   },
   {
     "anime": "jjk",
     "kana": "ハンテンジュツシキ",
+    "type": "term",
     "file": "assets/voice/q58.mp3?v=1e8d50c0fcf2"
   },
   {
     "anime": "jjk",
     "kana": "ジュジュツカイセン",
+    "type": "term",
     "file": "assets/voice/q59.mp3?v=2b9fa824e737"
   }
 ]

@@ -71,7 +71,7 @@ node --test --experimental-test-coverage tests/regression.test.cjs tests/audit-f
 
 - 題目提示使用忠實對應假名的羅馬字（長音重複母音）；揭曉顯示原文、假名與原語／英文名稱，兩者分開處理
 - XP・プレイヤーランク（五十音みならい→傳説の日本語つかい）、連續正解（れんさ）與最高紀錄
-- **Fish Audio 優先語音**：題目朗讀與招式喊技優先使用線上 `s2.1-pro-free`，快取相同讀音；失敗時播放 111 題共用的 110 個既有 MP3（`assets/voice/*.mp3`，約 2.82 MB），最後才用瀏覽器日語 TTS。聲線保存在 `tools/voice-config.cjs`：JOJO → `5a8e46f1b94c4351aebb8a66b113cec5`（平順朗讀、0.92x）；呪術廻戦 → `827be896a6954a8199ce4b2baad6af36`（`[shouting]` 喊技語氣、1.0x）。播放遵循「設定 → よみあげ音声」開關。
+- **Fish Audio 優先語音**：題目朗讀與招式喊技優先使用線上 `s2.1-pro-free`，快取相同讀音；失敗時播放 111 題共用的 110 個既有 MP3（`assets/voice/*.mp3`，約 2.64 MB），最後才用瀏覽器日語 TTS。聲線保存在 `tools/voice-config.cjs`：JOJO 正派／主角陣營 → `4359ff0bb0ad45139c35f4b664ae3f87`；反派／敵對陣營及共通名詞 → `5a8e46f1b94c4351aebb8a66b113cec5`，皆 0.92x。角色名平順朗讀，替身名與招式（例如 `オラオラ`）使用 `[shouting]` 喊技語氣。呪術廻戦維持 `827be896a6954a8199ce4b2baad6af36`（喊技語氣、1.0x）。播放遵循「設定 → よみあげ音声」開關。
 - Web Audio API 合成音效 + 瀏覽器語音合成（ja-JP）朗讀（語音パックが無い場合のフォールバック）
 - 可選 MP3 音效優先使用 `assets/sfx/` 的同名檔案，缺檔回到既有合成音效；`assets/bgm/` 預留首頁、一般遊玩、限時挑戰三首循環音樂，缺檔保持安靜。背景音樂、音效、朗讀皆可獨立開關
 - 進度（XP・星星・卡牌・每日挑戰紀錄）保存在瀏覽器 localStorage。支援 Web Locks 的瀏覽器同時只有一個分頁可寫入；其他分頁會顯示提示。無 Web Locks 時仍檢查存檔變更並阻止舊分頁覆蓋。儲存失敗會顯示提醒。
@@ -82,7 +82,7 @@ node --test --experimental-test-coverage tests/regression.test.cjs tests/audit-f
 gojuon-quest/
 ├── index.html        # 所有畫面（首頁／クイズ／ミッション／五十音表／コレクション／結算／設定）
 ├── css/style.css     # 全部樣式（含響應式與減少動態偏好）
-├── assets/voice/     # Fish Audio 生成的読み上げ音声（110個MP3・約2.82MB）
+├── assets/voice/     # Fish Audio 生成的読み上げ音声（110個MP3・約2.64MB）
 ├── assets/bgm/       # 選填 home.mp3 / quiz.mp3 / timeattack.mp3
 ├── assets/sfx/       # 選填 click.mp3 / correct.mp3 等14種事件音效
 ├── tools/            # 開發用工具（generate-voice-pack.js：声音包生成スクリプト）
@@ -130,7 +130,7 @@ node tools/generate-voice-pack.js --only=jojo --force  # JOJOだけ作り直す
 - Worker 使用伺服器 secret `FISH_API_KEY`，只接受白名單中的 110 組作品／讀音，不能由呼叫者選模型、文字或聲線；7 秒上游逾時、MP3 格式與 1 MB 大小上限。新生成與快取的回應標頭分別為 `X-Voice-Source: fish-generated`／`fish-cache`；失敗回既有 MP3 redirect。快取為 Cloudflare 區域性暫存，並非永久保存。
 - 免費模型固定為 `s2.1-pro-free`，不自動切付費型號。依官方截至本次公布的免費期，`2026-12-01T00:00:00Z` 起停止新生成，仍可播放快取與既有音檔；若未來官方延長，再確認更新 `freeUntil`。金鑰不放前端或版本庫。
 - `node tools/voice-server.js` 啟動 loopback 本機預覽，前端同樣優先請求上述 Worker；本機 `/api/voice` 直接提供既有音檔。可公開檔案限 index、CSS、JS 與素材；禁止隱藏檔、工具與逃出根目錄的路徑。
-- 語音聲線配置統一在 `tools/voice-config.cjs`；生成器比較讀音／模型／聲線／語氣指紋，檢查 MP3 與解碼成功才原子替換。`tools/voice-pack-metadata.json` 保存產物對應，不含金鑰。manifest 與 Worker allowlist 由生成器同步產生，URL 帶音檔 hash。
+- 語音聲線配置統一在 `tools/voice-config.cjs`，`tools/voice-style.cjs` 共用正反派與喊技解析；JOJO 題目的 `voiceSide` 由 `js/data.js` 明確指定，生成後同步到伺服器白名單，呼叫者不能覆寫。生成器比較讀音／模型／聲線／語氣指紋，檢查 MP3 與解碼成功才原子替換。`tools/voice-pack-metadata.json` 保存產物對應，不含金鑰。manifest 與 Worker allowlist 由生成器同步產生，URL 帶音檔 hash。
 - 僅同步已有完整音檔（不需要 API key）：`node tools/generate-voice-pack.js --sync-only`。
 - 僅生成指定題號：`node tools/generate-voice-pack.js --ids=q82,q99,q106,q110,q111`。實際生成才需要環境變數 `FISH_API_KEY`，並使用 ffmpeg 驗證可解碼性。
 - 可選真實 Chromium 驗證：安裝／提供 `playwright-core` 與對應瀏覽器後執行 `node tools/browser-smoke.cjs`；共享執行環境可設定 `PLAYWRIGHT_MODULE`、`PLAYWRIGHT_BROWSERS_PATH`。遊戲本身不依賴這些套件。
