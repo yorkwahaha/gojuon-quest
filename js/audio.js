@@ -186,6 +186,7 @@ const AudioKit = (() => {
     if (!SaveStore.data.sound || document.hidden) {
       activeEffects.forEach(cancel => cancel());
     }
+    if (document.hidden) stopVoice();
     syncMusic();
   }
 
@@ -200,8 +201,11 @@ const AudioKit = (() => {
   // Fish Audio で生成した音声パック（VOICE_PACK にかな→mp3の対応表）があれば再生し、
   // なければブラウザの音声合成にフォールバックする
   let currentPackAudio = null;
+  let voiceTimer = null;
 
   function stopVoice() {
+    clearTimeout(voiceTimer);
+    voiceTimer = null;
     if (currentPackAudio) {
       const old = currentPackAudio;
       currentPackAudio = null;
@@ -211,18 +215,27 @@ const AudioKit = (() => {
     if ('speechSynthesis' in window) window.speechSynthesis.cancel();
   }
 
-  function speakWithPack(text, fallback = true) {
+  function speakWithPack(text) {
     const file = typeof VOICE_PACK !== 'undefined' ? VOICE_PACK[text] : null;
     if (!file) return false;
     try {
       const audio = new Audio(file);
       currentPackAudio = audio;
-      audio.play().catch(() => {
-        // A replaced, muted, or cancelled request must not start stale speech.
-        if (currentPackAudio !== audio || !SaveStore.data.voice) return;
+      let settled = false;
+      const fail = error => {
+        if (settled || currentPackAudio !== audio || !SaveStore.data.voice || document.hidden) return;
+        settled = true;
+        clearTimeout(voiceTimer);
+        audio.pause();
         currentPackAudio = null;
-        if (fallback) speakTTS(text);
-      });
+        if (error?.name === 'NotAllowedError' && typeof App !== 'undefined') App.toast(I18N.t('voice.retry'));
+        speakTTS(text);
+      };
+      audio.addEventListener('error', fail);
+      voiceTimer = setTimeout(fail, 4000);
+      audio.play().then(() => {
+        if (currentPackAudio === audio) clearTimeout(voiceTimer);
+      }).catch(fail);
       return true;
     } catch (e) {
       currentPackAudio = null;
@@ -230,50 +243,12 @@ const AudioKit = (() => {
     }
   }
 
-  function wazaQuestion(text) {
-    if (typeof QUESTIONS === 'undefined') return null;
-    const key = typeof toKatakana === 'function' ? toKatakana(text) : text;
-    return QUESTIONS.find((q) => q.type === 'waza' && q.kana === key) || null;
-  }
-
-  const PUBLIC_VOICE_ORIGIN = 'https://gojuon-voice.yorkwahaha.workers.dev';
-
-  // 本機走 voice server，GitHub Pages 走同一個介面的公開快取。失敗才改播已上傳的 mp3。
-  function voiceUrl(q) {
-    const path = `api/voice?kana=${encodeURIComponent(q.kana)}&anime=${encodeURIComponent(q.anime)}`;
-    const host = typeof location !== 'undefined' ? location.hostname : '';
-    if (host === '127.0.0.1' || host === 'localhost') return path;
-    if (typeof location !== 'undefined' && location.protocol === 'file:') return `http://127.0.0.1:8765/${path}`;
-    return `${PUBLIC_VOICE_ORIGIN}/${path}`;
-  }
-
-  function playFish(q) {
-    let audio;
-    try { audio = new Audio(voiceUrl(q)); }
-    catch (e) {
-      if (!speakWithPack(q.kana, false)) speakTTS(q.kana);
-      return;
-    }
-    currentPackAudio = audio;
-    audio.addEventListener('error', () => {
-      if (currentPackAudio !== audio || !SaveStore.data || !SaveStore.data.voice) return;
-      currentPackAudio = null;
-      if (!speakWithPack(q.kana, false)) speakTTS(q.kana);
-    });
-    audio.play().catch(() => {});
-  }
-
-  function speakWaza(q) {
-    playFish(q);
-  }
-
   function speak(text) {
     stopVoice();
-    if (!SaveStore.data || !SaveStore.data.voice) return;
-    const waza = wazaQuestion(text);
-    if (waza) { speakWaza(waza); return; }
-    if (speakWithPack(text)) return;
-    speakTTS(text);
+    if (!SaveStore.data || !SaveStore.data.voice || document.hidden) return;
+    const key = toKatakana(text);
+    if (speakWithPack(key)) return;
+    speakTTS(key);
   }
 
   function speakTTS(text) {
@@ -305,10 +280,7 @@ const AudioKit = (() => {
 
   // わざ発動の読み上げ。平仮名表示でも、サーバーが片仮名で Fish に頼み、快取した同じ檔を鳴らす。
   function shout(text) {
-    stopVoice();
-    if (!SaveStore.data || !SaveStore.data.voice) return;
-    const waza = wazaQuestion(text);
-    if (waza) speakWaza(waza);
+    speak(text);
   }
 
   return { init, setMusic, syncSettings, play, speak, shout, stopVoice };

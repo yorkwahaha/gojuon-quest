@@ -5,6 +5,7 @@
 
 const Collection = (() => {
   const $ = (id) => document.getElementById(id);
+  let detailCard = null;
 
   // カードアイコン（線画SVG・currentColor）
   const ICONS = {
@@ -66,6 +67,7 @@ const Collection = (() => {
   }
 
   function openDetail(card, unlocked) {
+    detailCard = card;
     const frame = $('cardDetailFrame');
     frame.className = `modal-card card-detail-card ${RARITY_STYLE[card.rarity].cls}${unlocked ? '' : ' is-locked'}`;
     frame.style.setProperty('--hue', card.hue);
@@ -75,7 +77,7 @@ const Collection = (() => {
     $('cardModalName').textContent = unlocked ? name : I18N.t('collection.locked');
     $('cardModalDesc').textContent = unlocked ? I18N.tf(card, 'desc') : I18N.t('collection.hiddenDesc');
     $('cardModalCondition').textContent = unlocked
-      ? I18N.t('collection.detailGot', { n: card.need })
+      ? I18N.t('collection.detailGot')
       : I18N.t('collection.detailLocked', { n: card.need, m: SaveStore.data.correct });
     App.openModal('cardModal');
   }
@@ -92,5 +94,8 @@ const Collection = (() => {
     refresh();
   }
 
-  return { init, refresh, iconMarkup };
+  function refreshLocale() {
+    if (detailCard && !$('cardModal').hidden) openDetail(detailCard, isUnlocked(detailCard));
+  }
+  return { init, refresh, refreshLocale, iconMarkup };
 })();

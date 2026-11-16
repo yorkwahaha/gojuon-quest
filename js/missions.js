@@ -103,6 +103,7 @@ const Missions = (() => {
         App.toast(I18N.t('mission.clearToast', { n: result.coins }));
         App.refreshHeader();
         render();
+        (list.querySelector('.mission-claim-btn') || $('missionTabs').querySelector('.is-active'))?.focus();
       });
     });
   }

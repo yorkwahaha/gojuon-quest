@@ -8,6 +8,11 @@ const Gacha = (() => {
   const $ = (id) => document.getElementById(id);
   const PULL_TIMERS = [];
   let cracking = false;
+  let lastReward = null;
+
+  function complete() {
+    return SaveStore.data.unlocked.length === CARDS.length && !rankForXP(SaveStore.data.xp).next;
+  }
 
   function clearTimers() {
     while (PULL_TIMERS.length) clearTimeout(PULL_TIMERS.pop());
@@ -18,16 +23,17 @@ const Gacha = (() => {
   function refreshBalance() {
     const coins = SaveStore.data.coins;
     $('gachaCoins').textContent = String(coins);
-    const canPull = coins >= GACHA_COST;
+    const canPull = coins >= GACHA_COST && !complete();
     $('btnGachaPull').classList.toggle('is-disabled', !canPull);
     $('btnGachaPull').setAttribute('aria-disabled', String(!canPull));
-    $('gachaPullNote').textContent = canPull
-      ? I18N.t('gacha.sub')
+    $('gachaPullNote').textContent = complete() ? I18N.t('gacha.complete') : canPull
+      ? I18N.t(SaveStore.data.unlocked.length === CARDS.length ? 'gacha.xpOffer' : 'gacha.sub')
       : I18N.t('gacha.noCoins', { n: GACHA_COST - coins });
   }
 
   function resetStage() {
     clearTimers();
+    lastReward = null;
     $('gachaStage').hidden = false;
     $('gachaReward').hidden = true;
     $('gachaAgainRow').hidden = true;
@@ -49,6 +55,7 @@ const Gacha = (() => {
 
   function pull() {
     if (cracking) return;
+    if (!SaveStore.canWrite() || complete()) { refreshBalance(); return; }
     const coins = SaveStore.data.coins;
     if (coins < GACHA_COST) {
       AudioKit.play('wrong');
@@ -85,6 +92,8 @@ const Gacha = (() => {
     // 報酬を確定させてから表示（閉じても損しないよう、この時点で確定）
     const result = SaveStore.drawGacha();
     cracking = false;
+    if (!['card', 'xp'].includes(result.type)) { resetStage(); return; }
+    lastReward = result;
 
     $('gachaStage').hidden = true;
     $('gachaReward').hidden = false;
@@ -124,14 +133,26 @@ const Gacha = (() => {
       if (result.rankUp) App.showLevelUp(result.rankUp);
     }
 
-    // 「もう一回」ボタンの状態を更新
-    refreshBalance();
-    $('btnGachaAgain').classList.toggle('is-disabled', SaveStore.data.coins < GACHA_COST);
-    $('btnGachaAgain').setAttribute('aria-disabled', String(SaveStore.data.coins < GACHA_COST));
-    $('btnGachaAgain').innerHTML = `${I18N.t('gacha.again')}<svg class="coin-icon"><use href="#i-coin"/></svg>${GACHA_COST}`;
-
     Collection.refresh();
     App.refreshHeader();
+    refreshLocale();
+  }
+
+  function refreshLocale() {
+    if ($('gachaModal').hidden) return;
+    refreshBalance();
+    if (lastReward?.type === 'card') {
+      $('gachaRewardName').textContent = I18N.tf(lastReward.card, 'name');
+      $('gachaRewardKind').textContent = I18N.t('gacha.cardGet');
+    } else if (lastReward?.type === 'xp') {
+      $('gachaRewardName').textContent = I18N.t('gacha.xpPack');
+      $('gachaRewardRarity').textContent = I18N.t('gacha.bonusLabel');
+      $('gachaRewardKind').textContent = I18N.t('gacha.xpPackKind', { n: lastReward.amount });
+    }
+    const disabled = complete() || SaveStore.data.coins < GACHA_COST;
+    $('btnGachaAgain').setAttribute('aria-disabled', String(disabled));
+    $('btnGachaAgain').classList.toggle('is-disabled', disabled);
+    $('btnGachaAgain').innerHTML = `${I18N.t('gacha.again')}<svg class="coin-icon"><use href="#i-coin"/></svg>${GACHA_COST}`;
   }
 
   function init() {
@@ -149,5 +170,5 @@ const Gacha = (() => {
     });
   }
 
-  return { init, open, close };
+  return { init, open, close, refreshLocale };
 })();

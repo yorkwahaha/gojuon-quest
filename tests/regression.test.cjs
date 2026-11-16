@@ -7,7 +7,7 @@ const path = require('node:path');
 const vm = require('node:vm');
 const root = path.join(__dirname, '..');
 
-function boot({ audio = false, effects = false } = {}) {
+function boot({ audio = false, effects = false, storage = new Map() } = {}) {
   const elements = new Map(), jobs = new Map(), spoken = [], packs = [], tones = [];
   let now = Date.now(), timerId = 0;
   class Element {
@@ -48,7 +48,7 @@ function boot({ audio = false, effects = false } = {}) {
     }
     querySelector(selector) { return this.querySelectorAll(selector)[0] || null; }
     getClientRects() { return this.hidden ? [] : [{}]; }
-    focus() {}
+    focus() { document.activeElement = this; }
     remove() { if (this.parent) this.parent.children = this.parent.children.filter(el => el !== this); }
   }
   const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
@@ -96,7 +96,7 @@ function boot({ audio = false, effects = false } = {}) {
   }
   const context = vm.createContext({
     console, document, navigator: { language: 'zh-TW' },
-    localStorage: { getItem() { return null; }, setItem() {}, removeItem() {} },
+    localStorage: { getItem: k => storage.get(k) ?? null, setItem: (k,v) => storage.set(k,v), removeItem: k => storage.delete(k) },
     location: { reload() {} },
     window: { scrollTo() {}, AudioContext: class {
       currentTime = 0;
@@ -104,7 +104,8 @@ function boot({ audio = false, effects = false } = {}) {
       createGain() { return { gain: { setValueAtTime() {}, linearRampToValueAtTime() {}, exponentialRampToValueAtTime() {} } }; }
     }, speechSynthesis: { cancel() {}, speak: u => spoken.push(u.text), getVoices: () => [] } },
     Audio: MockAudio, SpeechSynthesisUtterance: function(text) { this.text = text; },
-    Date: class extends Date { static now() { return now; } },
+    Date: class extends Date { constructor(...args) { super(...(args.length ? args : [now])); } static now() { return now; } },
+    performance: { now: () => now },
     setTimeout: (fn, ms) => schedule(fn, ms), clearTimeout: id => jobs.delete(id),
     setInterval: (fn, ms) => schedule(fn, ms, true), clearInterval: id => jobs.delete(id),
   });
@@ -130,7 +131,7 @@ function boot({ audio = false, effects = false } = {}) {
     }
     now = end;
   };
-  return { run, get, tick, spoken, packs, tones, document };
+  return { run, get, tick, spoken, packs, tones, document, storage, jump: ms => now += ms };
 }
 
 function begin(env, mode = 'practice') {
@@ -197,7 +198,7 @@ test('listening waits to choose hiragana or katakana', () => {
   const e = boot();
   e.run("App.go('listening')");
   assert.equal(e.get('playPanel').hidden, true);
-  assert.equal(e.get('animeChips').children[0].disabled, true);
+  assert.equal(e.get('animeChips').children[0].disabled, false);
   const box = e.get('scriptChips');
   box.fire('click', { target: box.children.find((el) => el.dataset.value === 'hiragana') });
   e.get('btnStartQuiz').fire();
@@ -235,25 +236,19 @@ test('replacement speech pauses the old pack; stale rejection cannot start TTS',
   assert.equal(e.packs[0].paused, true); e.packs[0].reject(new Error('interrupted')); await Promise.resolve();
   assert.deepEqual(e.spoken, ['テスト']);
 });
-test('GitHub move playback asks the public Fish cache and falls back to the mp3', () => {
+test('move playback uses a pre-generated versioned MP3 on every host', () => {
   const e = boot({ audio: true });
   e.run("location.protocol='https:'; location.hostname='yorkwahaha.github.io'; AudioKit.shout('ざ・わーるど')");
-  const url = new URL(e.packs.at(-1).file);
-  assert.equal(url.origin, 'https://gojuon-voice.yorkwahaha.workers.dev');
-  assert.equal(url.searchParams.get('kana'), 'ザ・ワールド');
-  assert.equal(url.searchParams.get('anime'), 'jojo');
-  e.packs.at(-1).fire('error');
-  assert.equal(e.packs.at(-1).file, 'assets/voice/q12.mp3');
+  assert.match(e.packs.at(-1).file, /^assets\/voice\/q12\.mp3/);
   assert.deepEqual(e.spoken, []);
 });
-test('an unrecorded move on the local server asks Fish and speaks if that fails', () => {
+test('a missing local move recording falls back to TTS without a generation API', () => {
   const e = boot({ audio: true });
-  e.run("delete VOICE_PACK['ザ・ワールド']; location.hostname='127.0.0.1'; location.protocol='http:'; AudioKit.shout('ざ・わーるど')");
-  const url = new URL(e.packs.at(-1).file, 'http://local/');
-  assert.equal(url.searchParams.get('kana'), 'ザ・ワールド');
-  e.packs.at(-1).fire('error');
+  e.run("delete VOICE_PACK['ザ・ワールド']; AudioKit.shout('ざ・わーるど')");
+  assert.equal(e.packs.length, 0);
   assert.deepEqual(e.spoken, ['ザ・ワールド']);
 });
+
 test('the public voice allowlist is exactly the move questions', () => {
   const allow = JSON.parse(fs.readFileSync(path.join(root, 'worker/allowlist.json'), 'utf8'));
   const e = boot();
@@ -277,7 +272,7 @@ test('question hints and kana agree with the official JOJO identities', () => {
 test('幽波紋 uses the official reading and an existing matching voice pack', () => {
   const e = boot();
   assert.equal(e.run("QUESTIONS.find(q => q.id === 'q19').kana"), 'スタンド');
-  assert.equal(e.run("VOICE_PACK[QUESTIONS.find(q => q.id === 'q19').kana]"), 'assets/voice/q09.mp3');
+  assert.equal(e.run("VOICE_PACK[QUESTIONS.find(q => q.id === 'q19').kana]"), e.run("VOICE_PACK['スタンド']"));
 });
 test('a partial save retains default coins; invalid numbers cannot propagate', () => {
   const e = boot(); assert.equal(e.run('sanitizeSave({}).coins'), 30);
@@ -424,22 +419,12 @@ test('mission tabs expose selected state and move it with ArrowRight', () => {
   assert.equal(box.children[1].attrs['aria-selected'], 'true');
   assert.equal(box.children[0].attrs['aria-selected'], 'false');
 });
-test('voice generation skips duplicate readings instead of recreating unused q19 audio', async () => {
-  const source = fs.readFileSync(path.join(root, 'tools/generate-voice-pack.js'), 'utf8');
-  let requests = 0;
-  const fakeFs = {
-    readFileSync: () => fs.readFileSync(path.join(root, 'js/data.js'), 'utf8'),
-    mkdirSync() {}, writeFileSync() {}, statSync: () => ({ size: 2048 }),
-    existsSync: file => path.basename(file) !== 'q19.mp3',
-  };
-  const fakeProcess = { argv: ['node', 'generate-voice-pack.js'], env: { FISH_API_KEY: 'test-only' }, exit(code) { throw Error(`Unexpected exit ${code}`); } };
-  await vm.runInNewContext(source, {
-    require: name => name === 'fs' ? fakeFs : require(name), __dirname: path.join(root, 'tools'),
-    process: fakeProcess, console: { log() {}, error() {} }, Buffer, setTimeout,
-    fetch() { requests++; throw Error('Network is disabled in this test'); },
-  });
-  assert.equal(requests, 0);
+test('published voice mappings share the duplicate Stand reading', () => {
+  const e = boot();
+  assert.match(e.run("VOICE_PACK['スタンド']"), /q09\.mp3/);
+  assert.equal(Object.keys(e.run('VOICE_PACK')).length, new Set(e.run('QUESTIONS').map(q=>q.kana)).size);
 });
+
 test('a full attack keeps Tab inside its continue control', () => {
   const e = boot({ effects: true }); e.run("FX.wazaCutin({name:'テスト'})");
   let prevented = false;

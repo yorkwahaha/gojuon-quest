@@ -2,3 +2,9 @@ name = "gojuon-voice"
 main = "index.js"
 compatibility_date = "2026-11-10"
 workers_dev = true
+
+[observability]
+enabled = true
+
+[observability.traces]
+enabled = true

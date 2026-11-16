@@ -9,6 +9,7 @@ const Quiz = (() => {
   const DAILY_QUESTION_COUNT = 5;
   const TA_STAR_THRESHOLDS = [600, 1100, 1600]; // 1★/2★/3★
   const LISTENING_HEARTS = 3;                   // ききとりチャレンジのハート数
+  const clock = () => typeof performance !== 'undefined' ? performance.now() : Date.now();
 
   const state = {
     mode: 'practice',
@@ -17,6 +18,9 @@ const Quiz = (() => {
     levelFilter: 0,
     pool: [],          // ランダム出題用の問題ID配列
     dailyQueue: [],    // デイリー用の出題順
+    dailyDate: '',
+    answerReward: null,
+    deferredRank: null,
     current: null,
     slots: [],         // [{char, fixed, tile}]
     tiles: [],         // [{id, char, used}]
@@ -32,7 +36,7 @@ const Quiz = (() => {
     sessionMaxCombo: 0,         // このセッションの最高コンボ
     score: 0,
     timeLeft: TIME_ATTACK_SECONDS,
-    timerEndsAt: 0,    // タイムアタック終了予定時刻（Date.now ベース）
+    timerEndsAt: 0,    // Monotonic per-session deadline.
     timerId: null,
     lastTickSecond: null,
   };
@@ -114,6 +118,8 @@ const Quiz = (() => {
   function resetSession() {
     stop();
     resultView = null;
+    state.answerReward = null;
+    state.deferredRank = null;
     state.current = null;
     state.slots = [];
     state.tiles = [];
@@ -138,6 +144,7 @@ const Quiz = (() => {
   /* ---------- ハート表示（ききとりチャレンジ） ---------- */
   function renderListeningHearts(popIndex) {
     const wrap = $('quizHearts');
+    wrap.setAttribute('aria-label', I18N.t('listening.heartsCount', { n: state.hearts }));
     wrap.innerHTML = '';
     for (let i = 0; i < LISTENING_HEARTS; i++) {
       const filled = i < state.hearts;
@@ -152,7 +159,7 @@ const Quiz = (() => {
     setSegValue('animeChips', state.animeFilter);
     setSegValue('levelChips', state.levelFilter);
     setSegValue('scriptChips', state.script);
-    const lockFilters = state.mode === 'daily' || state.mode === 'listening';
+    const lockFilters = state.mode === 'daily';
     $('dailyLockNote').hidden = !lockFilters;
     $('dailyLockNote').textContent = I18N.t(state.mode === 'listening' ? 'setup.listeningLock' : 'setup.lockNote');
     ['animeChips', 'levelChips'].forEach((id) => {
@@ -191,7 +198,8 @@ const Quiz = (() => {
     state.mode = mode || 'practice';
     resetSession();
     if (state.mode === 'daily') {
-      state.dailyQueue = dailyQuestionIds(todayKey(0)).slice();
+      state.dailyDate = todayKey(0);
+      state.dailyQueue = dailyQuestionIds(state.dailyDate).slice();
     } else {
       // ききとりは前回のフィルター設定に関係なく全問から出題
       if (state.mode === 'listening') { state.animeFilter = 'all'; state.levelFilter = 0; }
@@ -217,6 +225,12 @@ const Quiz = (() => {
 
   function beginPlay() {
     if ($('setupPanel').hidden) return;
+    if (!SaveStore.canWrite()) return;
+    if (state.mode === 'daily' && state.dailyDate !== todayKey(0)) {
+      state.dailyDate = todayKey(0);
+      state.dailyQueue = dailyQuestionIds(state.dailyDate).slice();
+    }
+    if (state.mode === 'listening' && !SaveStore.data.voice) App.toast(I18N.t('voice.disabled'));
     $('setupPanel').hidden = true;
     $('playPanel').hidden = false;
     if (state.mode === 'timeattack') {
@@ -236,13 +250,13 @@ const Quiz = (() => {
 
   function startTimer() {
     stopTimer();
-    // 残り時間は setInterval の呼び出し回数ではなく、壁時計との差分で計算する
+    // Calculate from the monotonic deadline, independent of timer callback frequency.
     // （タブがバックグラウンドでスロットリングされても 60 秒が延びないように）
-    state.timerEndsAt = Date.now() + TIME_ATTACK_SECONDS * 1000;
+    state.timerEndsAt = clock() + TIME_ATTACK_SECONDS * 1000;
     state.timeLeft = TIME_ATTACK_SECONDS;
     updateTimerHUD();
     state.timerId = setInterval(() => {
-      state.timeLeft = Math.max(0, (state.timerEndsAt - Date.now()) / 1000);
+      state.timeLeft = Math.max(0, (state.timerEndsAt - clock()) / 1000);
       updateTimerHUD();
       // 残り10秒は毎秒 tick（whole が変わったときだけ鳴らす）
       const whole = Math.ceil(state.timeLeft);
@@ -278,7 +292,7 @@ const Quiz = (() => {
     $('clueTagType').textContent = typeLabel(q.type);
     $('clueTagLevel').textContent = `Lv.${q.level}`;
     $('clueDesc').textContent = questionDesc(q);
-    $('clueRomaji').textContent = I18N.t('play.romajiHint', { en: q.en });
+    $('clueRomaji').textContent = I18N.t('play.romajiHint', { en: kanaRomaji(q.kana) });
     $('btnHintText').textContent = $('clueRomaji').hidden ? I18N.t('play.hintOpen') : I18N.t('play.hintClose');
     // 直前のエラー表示があれば文言だけ差し替え
     if ($('quizFeedback').classList.contains('is-error')) {
@@ -293,6 +307,8 @@ const Quiz = (() => {
     if (state.current && !$('revealPanel').hidden) {
       $('revealDesc').textContent = questionDesc(state.current);
     }
+    if (state.answerReward) renderReward();
+    if (state.mode === 'listening') renderListeningHearts();
     if (state.slots.length) renderSlots();
     if (state.tiles.length) renderTiles();
     const dailyDone = state.mode === 'daily' && state.questionCount >= DAILY_QUESTION_COUNT;
@@ -303,6 +319,8 @@ const Quiz = (() => {
   function nextQuestion() {
     if (state.locked === 'done' || (state.mode === 'daily' && state.questionCount >= DAILY_QUESTION_COUNT)) return;
     FX.stopCutin();
+    AudioKit.stopVoice();
+    state.answerReward = null;
     const q = drawNextQuestion();
     if (!q) { endSession(); return; }
     state.current = q;
@@ -351,29 +369,35 @@ const Quiz = (() => {
   /* ---------- 描画 ---------- */
   function renderSlots() {
     const wrap = $('slotsWrap');
+    const focusIndex = document.activeElement?.dataset?.slotIndex;
     wrap.innerHTML = '';
     state.slots.forEach((slot, idx) => {
       const el = document.createElement(slot.fixed ? 'div' : 'button');
       el.className = 'slot' + (slot.fixed ? ' is-fixed' : '') + (slot.tile ? ' is-filled' : '');
+      el.classList.toggle('is-correct', !!state.answerReward);
       if (slot.fixed) {
         el.textContent = slot.char;
         el.setAttribute('aria-label', I18N.t('play.fixed'));
       } else {
         el.type = 'button';
+        el.dataset.slotIndex = String(idx);
         el.textContent = slot.tile ? inScript(slot.tile.char, state.script) : '';
         el.setAttribute('aria-label', slot.tile ? I18N.t('play.slotFilled', { kana: inScript(slot.tile.char, state.script) }) : I18N.t('play.slotAria'));
         el.addEventListener('click', () => unplaceSlot(idx));
       }
       wrap.appendChild(el);
     });
+    if (focusIndex !== undefined) wrap.children[Number(focusIndex)]?.focus();
   }
 
   function renderTiles() {
     const pool = $('tilePool');
+    const focusId = document.activeElement?.dataset?.tileId;
     pool.innerHTML = '';
     state.tiles.forEach((tile) => {
       const btn = document.createElement('button');
       btn.type = 'button';
+      btn.dataset.tileId = tile.id;
       btn.className = 'tile' + (tile.used ? ' is-used' : '') + (state.golden ? ' is-golden' : '');
       btn.textContent = inScript(tile.char, state.script);
       btn.disabled = tile.used;
@@ -381,11 +405,17 @@ const Quiz = (() => {
       btn.addEventListener('click', () => placeTile(tile));
       pool.appendChild(btn);
     });
+    if (focusId !== undefined) {
+      const buttons = Array.from(pool.children);
+      (buttons.find(b => b.dataset.tileId === focusId && !b.disabled) || buttons.find(b => !b.disabled))?.focus();
+    }
   }
 
   /* ---------- 入力処理 ---------- */
   function placeTile(tile) {
     if (state.locked || tile.used) return;
+    if (state.mode === 'timeattack' && clock() >= state.timerEndsAt) { finishTimeAttack(); return; }
+    if (!SaveStore.canWrite()) { stop(); return; }
     const idx = state.slots.findIndex((s) => !s.fixed && !s.tile);
     if (idx === -1) return;
     state.slots[idx].tile = tile;
@@ -395,6 +425,8 @@ const Quiz = (() => {
     renderTiles();
     if (state.slots.every((s) => s.fixed || s.tile)) {
       state.locked = true;
+      // Timed answers are submitted now; animation latency must not change scoring.
+      if (state.mode === 'timeattack') { judge(); return; }
       const judgeTarget = state.current;
       later(() => {
         // 題目が切り替わっていたら何もしない（もどる／タイムアップ等との競合防止）
@@ -423,10 +455,12 @@ const Quiz = (() => {
 
   function onCorrect() {
     const q = state.current;
+    const res = SaveStore.recordCorrect(q.level, q.anime, { golden: state.golden });
+    if (!res) { stop(); return; }
+    state.answerReward = res;
     state.sessionCorrect += 1;
     state.sessionCombo += 1;
     if (state.sessionCombo > state.sessionMaxCombo) state.sessionMaxCombo = state.sessionCombo;
-    const res = SaveStore.recordCorrect(q.level, q.anime, { golden: state.golden });
     state.sessionXP += res.gained;
     state.sessionCoins += res.coinsGained;
     if (state.mode === 'timeattack') {
@@ -462,15 +496,13 @@ const Quiz = (() => {
     $('revealDesc').textContent = questionDesc(q);
     const revealPanel = $('revealPanel');
     revealPanel.classList.toggle('is-golden', state.golden);
-    $('revealXp').innerHTML =
-      `+${res.gained} XP<span class="reveal-coins"><svg class="coin-icon"><use href="#i-coin"/></svg>+${res.coinsGained}</span>` +
-      (res.golden ? `<span class="reveal-golden-tag">${I18N.t('reveal.goldBonus')}</span>` : '') +
-      (SaveStore.data.streak >= 3 ? `<span class="reveal-streak"><svg><use href="#i-flame"/></svg> ${I18N.t('reveal.comboStreak', { n: SaveStore.data.streak })}</span>` : '');
+    renderReward();
 
     const isLastDaily = state.mode === 'daily' && state.questionCount >= DAILY_QUESTION_COUNT;
     $('btnNextText').textContent = isLastDaily ? I18N.t('reveal.toResult') : I18N.t('reveal.next');
 
     if (isWazaCutin) {
+      AudioKit.shout(q.kana);
       // カットインが終わってから答え合わせパネルを表示
       $('revealPanel').hidden = !compactCutin;
       FX.wazaCutin({
@@ -482,6 +514,7 @@ const Quiz = (() => {
         onDone: () => {
           if (state.current !== q || state.locked !== true) return;
           $('revealPanel').hidden = false;
+          if (!compactCutin) $('btnNext').focus();
           FX.confetti(state.golden ? 40 : 22);
           if (state.golden) FX.coinRain(12);
           if (!compactCutin) celebrateRewards();
@@ -489,6 +522,7 @@ const Quiz = (() => {
       });
     } else {
       $('revealPanel').hidden = false;
+      if (state.mode !== 'timeattack') $('btnNext').focus();
     }
     $('quizFeedback').textContent = '';
 
@@ -501,7 +535,12 @@ const Quiz = (() => {
           App.toast(I18N.t('toast.cardGet', { name: I18N.tf(card, 'name') }));
         }, 650);
       });
-      if (res.rankUp) later(() => App.showLevelUp(res.rankUp), 800);
+      if (res.rankUp) {
+        if (state.mode === 'timeattack') {
+          state.deferredRank = res.rankUp;
+          App.toast(I18N.t('levelup.pending'));
+        } else later(() => App.showLevelUp(res.rankUp), 800);
+      }
     }
     if (!isWazaCutin || compactCutin) celebrateRewards();
 
@@ -511,6 +550,15 @@ const Quiz = (() => {
         if (state.current === q && state.timeLeft > 0) advanceFromReveal();
       }, 1100);
     }
+  }
+
+  function renderReward() {
+    const res = state.answerReward;
+    if (!res) return;
+    $('revealXp').innerHTML =
+      `+${res.gained} XP<span class="reveal-coins"><svg class="coin-icon"><use href="#i-coin"/></svg>+${res.coinsGained}</span>` +
+      (res.golden ? `<span class="reveal-golden-tag">${I18N.t('reveal.goldBonus')}</span>` : '') +
+      (res.streak >= 3 ? `<span class="reveal-streak">${I18N.t('reveal.comboStreak', { n: res.streak })}</span>` : '');
   }
 
   function listeningResultRows() {
@@ -538,9 +586,9 @@ const Quiz = (() => {
   }
 
   function onWrong() {
+    if (SaveStore.recordWrong() === false) { stop(); return; }
     state.sessionMistakes += 1;
     state.sessionCombo = 0;
-    SaveStore.recordWrong();
     AudioKit.play('wrong');
     $('quizStreak').textContent = '0';
     if (state.mode === 'listening') {
@@ -577,7 +625,7 @@ const Quiz = (() => {
       finishDaily();
       return;
     }
-    if (state.mode === 'timeattack' && state.timeLeft <= 0) {
+    if (state.mode === 'timeattack' && clock() >= state.timerEndsAt) {
       finishTimeAttack();
       return;
     }
@@ -663,6 +711,7 @@ const Quiz = (() => {
       ],
     }));
     App.refreshHeader();
+    if (state.deferredRank) App.showLevelUp(state.deferredRank);
   }
 
   function finishDaily() {
@@ -670,7 +719,7 @@ const Quiz = (() => {
     stop();
     const m = state.sessionMistakes;
     const grade = m === 0 ? 3 : m <= 2 ? 2 : 1;
-    const clearResult = SaveStore.recordDailyClear(grade);
+    const clearResult = SaveStore.recordDailyClear(grade, state.dailyDate);
     const earnedStars = clearResult.already ? 0 : grade;
     const bonus = clearResult.already ? 0 : 50;
     const xpReward = bonus > 0 ? SaveStore.addXP(bonus) : null;

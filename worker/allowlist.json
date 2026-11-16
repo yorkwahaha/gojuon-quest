@@ -1,186 +1,232 @@
 [
- {
-  "anime": "jjk",
-  "kana": "キョシキムラサキ"
- },
- {
-  "anime": "jjk",
-  "kana": "コクセン"
- },
- {
-  "anime": "jjk",
-  "kana": "フクマミヅシ"
- },
- {
-  "anime": "jjk",
-  "kana": "ムカゲンジュジュツ"
- },
- {
-  "anime": "jjk",
-  "kana": "ムリョウクウショ"
- },
- {
-  "anime": "jjk",
-  "kana": "リョウイキテンカイ"
- },
- {
-  "anime": "jojo",
-  "kana": "エアロスミス"
- },
- {
-  "anime": "jojo",
-  "kana": "エコーズ"
- },
- {
-  "anime": "jojo",
-  "kana": "オラオラ"
- },
- {
-  "anime": "jojo",
-  "kana": "キス"
- },
- {
-  "anime": "jojo",
-  "kana": "キラークイーン"
- },
- {
-  "anime": "jojo",
-  "kana": "キング・クリムゾン"
- },
- {
-  "anime": "jojo",
-  "kana": "クレイジー・ダイヤモンド"
- },
- {
-  "anime": "jojo",
-  "kana": "ゴールド・エクスペリエンス"
- },
- {
-  "anime": "jojo",
-  "kana": "ゴールド・エクスペリエンス・レクイエム"
- },
- {
-  "anime": "jojo",
-  "kana": "ザ・ハンド"
- },
- {
-  "anime": "jojo",
-  "kana": "ザ・フール"
- },
- {
-  "anime": "jojo",
-  "kana": "ザ・ワールド"
- },
- {
-  "anime": "jojo",
-  "kana": "ザ・ワールド・オーバーヘブン"
- },
- {
-  "anime": "jojo",
-  "kana": "シー・ムーン"
- },
- {
-  "anime": "jojo",
-  "kana": "シルバーチャリオッツ"
- },
- {
-  "anime": "jojo",
-  "kana": "スケアリー・モンスターズ"
- },
- {
-  "anime": "jojo",
-  "kana": "スタープラチナ"
- },
- {
-  "anime": "jojo",
-  "kana": "スティッキィ・フィンガーズ"
- },
- {
-  "anime": "jojo",
-  "kana": "ストーン・フリー"
- },
- {
-  "anime": "jojo",
-  "kana": "スパイス・ガール"
- },
- {
-  "anime": "jojo",
-  "kana": "スムース・オペレーターズ"
- },
- {
-  "anime": "jojo",
-  "kana": "セックス・ピストルズ"
- },
- {
-  "anime": "jojo",
-  "kana": "ソフト＆ウェット"
- },
- {
-  "anime": "jojo",
-  "kana": "ダーティー・ディード・ダン・ダート・チープ"
- },
- {
-  "anime": "jojo",
-  "kana": "ダイバー・ダウン"
- },
- {
-  "anime": "jojo",
-  "kana": "タスク"
- },
- {
-  "anime": "jojo",
-  "kana": "ノヴェムバー・レイン"
- },
- {
-  "anime": "jojo",
-  "kana": "バーニング・ダウン・ザ・ハウス"
- },
- {
-  "anime": "jojo",
-  "kana": "パープル・ヘイズ"
- },
- {
-  "anime": "jojo",
-  "kana": "ハーミットパープル"
- },
- {
-  "anime": "jojo",
-  "kana": "ハイエロファントグリーン"
- },
- {
-  "anime": "jojo",
-  "kana": "ペイズリー・パーク"
- },
- {
-  "anime": "jojo",
-  "kana": "ヘブンズ・ドアー"
- },
- {
-  "anime": "jojo",
-  "kana": "ボール・ブレイカー"
- },
- {
-  "anime": "jojo",
-  "kana": "ホワイトスネイク"
- },
- {
-  "anime": "jojo",
-  "kana": "マジシャンズレッド"
- },
- {
-  "anime": "jojo",
-  "kana": "ムーディー・ブルース"
- },
- {
-  "anime": "jojo",
-  "kana": "ムダムダ"
- },
- {
-  "anime": "jojo",
-  "kana": "メイド・イン・ヘブン"
- },
- {
-  "anime": "jojo",
-  "kana": "ワンダー・オブ・ユー"
- }
+  {
+    "anime": "jojo",
+    "kana": "オラオラ",
+    "file": "assets/voice/q10.mp3?v=81c747516422"
+  },
+  {
+    "anime": "jojo",
+    "kana": "ムダムダ",
+    "file": "assets/voice/q11.mp3?v=51d3debf0c2c"
+  },
+  {
+    "anime": "jojo",
+    "kana": "ザ・ワールド",
+    "file": "assets/voice/q12.mp3?v=75cea7cc19b1"
+  },
+  {
+    "anime": "jojo",
+    "kana": "スタープラチナ",
+    "file": "assets/voice/q13.mp3?v=4bcf3e3b1576"
+  },
+  {
+    "anime": "jojo",
+    "kana": "キラークイーン",
+    "file": "assets/voice/q14.mp3?v=0092646e9599"
+  },
+  {
+    "anime": "jojo",
+    "kana": "ストーン・フリー",
+    "file": "assets/voice/q21.mp3?v=b0d5607b3aaa"
+  },
+  {
+    "anime": "jojo",
+    "kana": "クレイジー・ダイヤモンド",
+    "file": "assets/voice/q29.mp3?v=21f3bd869bac"
+  },
+  {
+    "anime": "jojo",
+    "kana": "ゴールド・エクスペリエンス",
+    "file": "assets/voice/q30.mp3?v=daa8369cdc05"
+  },
+  {
+    "anime": "jojo",
+    "kana": "キング・クリムゾン",
+    "file": "assets/voice/q31.mp3?v=8b291b984a29"
+  },
+  {
+    "anime": "jojo",
+    "kana": "ホワイトスネイク",
+    "file": "assets/voice/q32.mp3?v=16683532e600"
+  },
+  {
+    "anime": "jojo",
+    "kana": "メイド・イン・ヘブン",
+    "file": "assets/voice/q33.mp3?v=7dd20ec4fe10"
+  },
+  {
+    "anime": "jojo",
+    "kana": "ザ・ワールド・オーバーヘブン",
+    "file": "assets/voice/q34.mp3?v=89deda6500c1"
+  },
+  {
+    "anime": "jojo",
+    "kana": "マジシャンズレッド",
+    "file": "assets/voice/q84.mp3?v=7b39a3c5d7bd"
+  },
+  {
+    "anime": "jojo",
+    "kana": "ハイエロファントグリーン",
+    "file": "assets/voice/q85.mp3?v=c555a07a944e"
+  },
+  {
+    "anime": "jojo",
+    "kana": "シルバーチャリオッツ",
+    "file": "assets/voice/q86.mp3?v=de6909c1f2cb"
+  },
+  {
+    "anime": "jojo",
+    "kana": "ハーミットパープル",
+    "file": "assets/voice/q87.mp3?v=6049dac90be2"
+  },
+  {
+    "anime": "jojo",
+    "kana": "ザ・フール",
+    "file": "assets/voice/q88.mp3?v=171ed0804906"
+  },
+  {
+    "anime": "jojo",
+    "kana": "エコーズ",
+    "file": "assets/voice/q89.mp3?v=0e3ffb2e8bc3"
+  },
+  {
+    "anime": "jojo",
+    "kana": "ザ・ハンド",
+    "file": "assets/voice/q90.mp3?v=7f17b59ba8a7"
+  },
+  {
+    "anime": "jojo",
+    "kana": "ヘブンズ・ドアー",
+    "file": "assets/voice/q91.mp3?v=4e0cce02a0c6"
+  },
+  {
+    "anime": "jojo",
+    "kana": "スティッキィ・フィンガーズ",
+    "file": "assets/voice/q92.mp3?v=bd680cebda5b"
+  },
+  {
+    "anime": "jojo",
+    "kana": "ムーディー・ブルース",
+    "file": "assets/voice/q93.mp3?v=7f586ec29d04"
+  },
+  {
+    "anime": "jojo",
+    "kana": "セックス・ピストルズ",
+    "file": "assets/voice/q94.mp3?v=6f3066445e14"
+  },
+  {
+    "anime": "jojo",
+    "kana": "エアロスミス",
+    "file": "assets/voice/q95.mp3?v=8941b5449f52"
+  },
+  {
+    "anime": "jojo",
+    "kana": "パープル・ヘイズ",
+    "file": "assets/voice/q96.mp3?v=28cc4af56bad"
+  },
+  {
+    "anime": "jojo",
+    "kana": "スパイス・ガール",
+    "file": "assets/voice/q97.mp3?v=4996c2750a9f"
+  },
+  {
+    "anime": "jojo",
+    "kana": "ゴールド・エクスペリエンス・レクイエム",
+    "file": "assets/voice/q98.mp3?v=7e00e6edad75"
+  },
+  {
+    "anime": "jojo",
+    "kana": "キッス",
+    "file": "assets/voice/q99.mp3?v=ff2888c2fe39"
+  },
+  {
+    "anime": "jojo",
+    "kana": "ダイバー・ダウン",
+    "file": "assets/voice/q100.mp3?v=954407598236"
+  },
+  {
+    "anime": "jojo",
+    "kana": "シー・ムーン",
+    "file": "assets/voice/q101.mp3?v=966146229273"
+  },
+  {
+    "anime": "jojo",
+    "kana": "バーニング・ダウン・ザ・ハウス",
+    "file": "assets/voice/q102.mp3?v=8ce5d1c3e4d6"
+  },
+  {
+    "anime": "jojo",
+    "kana": "タスク",
+    "file": "assets/voice/q103.mp3?v=a8479370dbff"
+  },
+  {
+    "anime": "jojo",
+    "kana": "ボール・ブレイカー",
+    "file": "assets/voice/q104.mp3?v=39afc4ed7910"
+  },
+  {
+    "anime": "jojo",
+    "kana": "スケアリー・モンスターズ",
+    "file": "assets/voice/q105.mp3?v=700602a15fd6"
+  },
+  {
+    "anime": "jojo",
+    "kana": "ディー・フォー・シー",
+    "file": "assets/voice/q106.mp3?v=03e6ce9e8848"
+  },
+  {
+    "anime": "jojo",
+    "kana": "ソフト＆ウェット",
+    "file": "assets/voice/q107.mp3?v=3961712e5541"
+  },
+  {
+    "anime": "jojo",
+    "kana": "ペイズリー・パーク",
+    "file": "assets/voice/q108.mp3?v=97ac447a873b"
+  },
+  {
+    "anime": "jojo",
+    "kana": "ワンダー・オブ・ユー",
+    "file": "assets/voice/q109.mp3?v=9cbe44145260"
+  },
+  {
+    "anime": "jojo",
+    "kana": "ノーヴェンバー・レイン",
+    "file": "assets/voice/q110.mp3?v=4d969b095c11"
+  },
+  {
+    "anime": "jojo",
+    "kana": "スムース・オペレイターズ",
+    "file": "assets/voice/q111.mp3?v=afdd7aaffa90"
+  },
+  {
+    "anime": "jjk",
+    "kana": "コクセン",
+    "file": "assets/voice/q37.mp3?v=7c6d88f825c0"
+  },
+  {
+    "anime": "jjk",
+    "kana": "フクマミヅシ",
+    "file": "assets/voice/q51.mp3?v=c7b7c752a8a3"
+  },
+  {
+    "anime": "jjk",
+    "kana": "リョウイキテンカイ",
+    "file": "assets/voice/q54.mp3?v=2cad82dac3ce"
+  },
+  {
+    "anime": "jjk",
+    "kana": "ムリョウクウショ",
+    "file": "assets/voice/q55.mp3?v=a5968c5e265b"
+  },
+  {
+    "anime": "jjk",
+    "kana": "ムカゲンジュジュツ",
+    "file": "assets/voice/q56.mp3?v=767eb1946010"
+  },
+  {
+    "anime": "jjk",
+    "kana": "キョシキムラサキ",
+    "file": "assets/voice/q57.mp3?v=1d25d3741c28"
+  }
 ]

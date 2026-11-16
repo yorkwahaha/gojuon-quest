@@ -41,16 +41,17 @@ const Chart = (() => {
             cells.appendChild(spacer);
             return;
           }
-          const [kana, romaji] = cell;
+          const [kana, romaji, example] = cell;
           const shown = script === 'hiragana' ? kana : toKatakana(kana);
+          const spoken = example ? inScript(example, script) : shown;
           const btn = document.createElement('button');
           btn.type = 'button';
           btn.className = 'chart-cell';
-          btn.setAttribute('aria-label', I18N.t('chart.cellAria', { kana: shown }));
+          btn.setAttribute('aria-label', I18N.t(example ? 'chart.cellExample' : 'chart.cellAria', { kana: shown, example: spoken }));
           btn.innerHTML = `<span class="chart-kana">${shown}</span><span class="chart-romaji">${romaji}</span>`;
           btn.addEventListener('click', () => {
             AudioKit.play('click');
-            AudioKit.speak(shown);
+            AudioKit.speak(spoken);
             btn.classList.remove('is-ping');
             // アニメーションを再生し直す
             void btn.offsetWidth;
@@ -73,12 +74,22 @@ const Chart = (() => {
     $('chartTabKatakana').classList.toggle('is-active', script === 'katakana');
     $('chartTabHiragana').setAttribute('aria-selected', String(script === 'hiragana'));
     $('chartTabKatakana').setAttribute('aria-selected', String(script === 'katakana'));
+    $('chartTabHiragana').tabIndex = script === 'hiragana' ? 0 : -1;
+    $('chartTabKatakana').tabIndex = script === 'katakana' ? 0 : -1;
+    $('chartContainer').setAttribute('aria-labelledby', script === 'hiragana' ? 'chartTabHiragana' : 'chartTabKatakana');
     render();
   }
 
   function init() {
     $('chartTabHiragana').addEventListener('click', () => setScript('hiragana'));
     $('chartTabKatakana').addEventListener('click', () => setScript('katakana'));
+    for (const id of ['chartTabHiragana', 'chartTabKatakana']) $(id).addEventListener('keydown', event => {
+      if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+      event.preventDefault();
+      const next = event.key === 'Home' ? 'hiragana' : event.key === 'End' ? 'katakana' : script === 'hiragana' ? 'katakana' : 'hiragana';
+      setScript(next);
+      $(next === 'hiragana' ? 'chartTabHiragana' : 'chartTabKatakana').focus();
+    });
     render();
   }
 

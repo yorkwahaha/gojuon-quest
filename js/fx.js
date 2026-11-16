@@ -145,7 +145,6 @@ const FX = (() => {
       void el.offsetWidth;
       el.classList.add('is-show');
       AudioKit.play('cutin');
-      AudioKit.shout(name);
       cutinTimer = compact ? setTimeout(finish, 850) : null;
     };
     cancelCutin = cleanup;

@@ -14,7 +14,6 @@
   --ink-dim: #c2bdb1;
   --gold: #d7af57;
   --gold-soft: #efdaaa;
-  --gold-deep: #b08735;
   --amber-dark: #70501b;
   --red: #c64e43;
   --red-soft: #f49a8e;
@@ -304,7 +303,6 @@ h1, h2, h3 { font-family: var(--font-head); margin: 0; }
 }
 .hero-text { display: flex; flex-direction: column; align-items: flex-start; gap: 20px; position: relative; z-index: 1; }
 .hero-badge { display: inline-flex; font-size: .72rem; letter-spacing: .09em; font-weight: 700; color: #151515; background: var(--gold); padding: 6px 12px; transform: skewX(-8deg); }
-.hero-badge-dot { display: none; }
 .hero-title { font-size: clamp(3.2rem, 5.7vw, 5.4rem); font-weight: 900; line-height: 1; letter-spacing: -.05em; text-shadow: 4px 4px 0 #151515; transform: rotate(-3deg); }
 .hero-title-accent { color: var(--gold); background: none; -webkit-text-stroke: 1px var(--gold); }
 .hero-sub { color: #f3eddf; font-size: .92rem; line-height: 1.8; margin: 0; max-width: 34ch; text-shadow: 0 1px 4px #111; }
@@ -345,7 +343,7 @@ h1, h2, h3 { font-family: var(--font-head); margin: 0; }
 .daily-cta svg { width: 17px; height: 17px; fill: none; stroke: currentColor; }
 .daily-banner.is-cleared { border-color: #426653; }
 .mode-grid { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; counter-reset: chapter; }
-.mode-card { --accent: var(--gold); --accent-rgb: 215,175,87; counter-increment: chapter; position: relative; display: grid; grid-template-columns: 40px 1fr; gap: 8px 16px; padding: 22px 52px 22px 22px; text-align: left; background: #f8f3e7; color: #171717; border: 2px solid #171717; box-shadow: 4px 4px 0 #b6ad99; transition: transform .16s; }
+.mode-card { --accent: var(--gold); counter-increment: chapter; position: relative; display: grid; grid-template-columns: 40px 1fr; gap: 8px 16px; padding: 22px 52px 22px 22px; text-align: left; background: #f8f3e7; color: #171717; border: 2px solid #171717; box-shadow: 4px 4px 0 #b6ad99; transition: transform .16s; }
 .mode-card::after { content: '0' counter(chapter); position: absolute; top: 14px; right: 14px; font-weight: 900; font-size: 1.05rem; color: #7b6846; }
 .mode-card:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 #171717; }
 .mode-icon { grid-row: 1 / 4; align-self: start; width: 40px; height: 40px; display: grid; place-items: center; border-right: 2px solid #171717; color: #171717; }
@@ -597,9 +595,6 @@ button.slot:hover { border-color: rgba(255, 210, 63, .55); background: rgba(255,
   padding: 26px 24px 22px;
   animation: revealIn .34s cubic-bezier(.2, 1.2, .35, 1.1) both;
 }
-.reveal::before {
-  content: none;
-}
 @keyframes revealIn { from { opacity: 0; transform: translate(-50%, -46%) scale(.85); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
 
 .reveal-verdict {
@@ -828,7 +823,6 @@ button.slot:hover { border-color: rgba(255, 210, 63, .55); background: rgba(255,
 
 /* ============ モーダル ============ */
 .modal { position: fixed; inset: 0; z-index: 50; display: flex; overflow: auto; padding: 20px; }
-.modal[hidden] { display: none; }
 .modal-backdrop { position: fixed; inset: 0; background: rgba(6, 7, 18, 0.68); backdrop-filter: blur(4px); }
 .modal-card {
   position: relative;
@@ -1641,7 +1635,7 @@ button.slot:hover { border-color: rgba(255, 210, 63, .55); background: rgba(255,
 /* ============================================================
    五十音クエスト — ききとりクイズ（聽音選擇：音聲出題・四択・ハート制）
    ============================================================ */
-.accent-pink { --accent: #ff7ad9; --accent-rgb: 255, 122, 217; }
+.accent-pink { --accent: #ff7ad9; }
 .accent-pink .mode-icon svg { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
 /* ハート（残機） */
@@ -1679,7 +1673,7 @@ button.slot:hover { border-color: rgba(255, 210, 63, .55); background: rgba(255,
 .icon-btn, .mini-icon-btn, .lang-toggle { min-width: 44px; min-height: 44px; }
 .lang-toggle { color: var(--gold-soft); border-color: var(--line-strong); background: #22211f; }
 .icon-btn:hover { transform: translateY(-2px); }
-.chip { background: #25241f; }
+.chip { background: #25241f; color: var(--ink); }
 .btn-gold, .daily-cta, .xpbar-fill { background: var(--gold); }
 .daily-cta { color: #171717; }
 .btn-gold, .btn-gold:hover { color: #171717; box-shadow: 3px 3px 0 #000; }
@@ -1690,7 +1684,7 @@ button.slot:hover { border-color: rgba(255, 210, 63, .55); background: rgba(255,
 .modal-card { color: var(--ink); background: var(--panel); box-shadow: 8px 8px 0 #0007; }
 .section-title-icon { background: #171717; color: var(--gold); border: 2px solid #171717; }
 .section-sub, .quiz-progress { color: #565147; }
-.collection-next { color: #565147; }
+.collection-next { color: var(--ink-dim); }
 .app-footer { color: #655f53; background: transparent; border-top: 1px solid #bbb09a; }
 .quiz-topbar { border-bottom: 3px solid #171717; padding-bottom: 18px; }
 .quiz-topbar .btn-ghost { color: #171717; border-color: #171717; background: #f8f3e7; }
@@ -1787,3 +1781,5 @@ button.slot:hover { border-color: rgba(255, 210, 63, .55); background: rgba(255,
   .waza-cutin *, .screen.active, .hero-title { animation: none !important; transition: none !important; }
   .waza-cutin-flash, .waza-cutin-speed { display: none; }
 }
+
+.save-warning { position: sticky; top: 0; z-index: 80; padding: 12px 18px; display: flex; gap: 12px; align-items: center; justify-content: center; background: #fff1c5; color: #231b0d; border: 2px solid #6e4711; flex-wrap: wrap; }

@@ -8,6 +8,7 @@ const App = (() => {
   let currentScreen = 'screen-home';
   const modalStack = [];
   const modalReturnFocus = new Map();
+  let shownRank = null;
 
   function focusScreen() {
     const target = $(currentScreen).querySelector('button');
@@ -25,6 +26,7 @@ const App = (() => {
     modalReturnFocus.set(id, document.activeElement);
     modal.hidden = false;
     modalStack.push(id);
+    modal.style.zIndex = String(50 + modalStack.length);
     modal.tabIndex = -1;
     (modalTargets(modal)[0] || modal).focus();
   }
@@ -51,6 +53,7 @@ const App = (() => {
 
   /* ---------- 画面遷移 ---------- */
   function showScreen(screenId) {
+    if (currentScreen !== screenId) AudioKit.stopVoice();
     if (currentScreen === 'screen-quiz' && screenId !== 'screen-quiz') Quiz.stop();
     document.querySelectorAll('.screen').forEach((el) => {
       el.classList.toggle('active', el.id === screenId);
@@ -65,6 +68,7 @@ const App = (() => {
   }
 
   function go(target) {
+    if (['practice', 'listening', 'timeattack', 'daily'].includes(target) && !SaveStore.canWrite()) return;
     AudioKit.play('click');
     switch (target) {
       case 'home':
@@ -98,6 +102,7 @@ const App = (() => {
     const rank = rankForXP(d.xp);
     $('hdrRankName').textContent = I18N.tf(rank.current, 'name');
     $('hdrXpFill').style.width = `${Math.round(rank.progress * 100)}%`;
+    $('hdrXpGauge').setAttribute('aria-valuenow', String(Math.round(rank.progress * 100)));
     $('hdrCoins').textContent = String(d.coins);
     $('hdrStars').textContent = String(d.stars);
     $('hdrCorrect').textContent = String(d.correct);
@@ -116,6 +121,7 @@ const App = (() => {
     $('homePlayerName').textContent = d.playerName;
     $('homeRankName').textContent = I18N.tf(rank.current, 'name');
     $('homeXpFill').style.width = `${Math.round(rank.progress * 100)}%`;
+    $('homeXpGauge').setAttribute('aria-valuenow', String(Math.round(rank.progress * 100)));
     $('homeXpText').textContent = rank.next
       ? I18N.t('profile.nextRank', { xp: rank.next.xp - d.xp, name: I18N.tf(rank.next, 'name') })
       : I18N.t('profile.maxRank');
@@ -152,6 +158,7 @@ const App = (() => {
 
   /* ---------- ランクアップ祝典 ---------- */
   function showLevelUp(rankUp) {
+    shownRank = rankUp;
     const rank = RANKS[rankUp && rankUp.index] || RANKS[0];
     $('levelupRank').textContent = I18N.tf(rank, 'name');
     openModal('levelupModal');
@@ -177,6 +184,21 @@ const App = (() => {
     Collection.refresh();
     Chart.refresh();
     refreshHeader();
+    Gacha.refreshLocale();
+    Collection.refreshLocale();
+    if (shownRank && !$('levelupModal').hidden) $('levelupRank').textContent = I18N.tf(RANKS[shownRank.index], 'name');
+    renderSaveStatus();
+  }
+
+  function renderSaveStatus() {
+    const status = SaveStore.status;
+    const warning = $('saveWarning');
+    warning.hidden = status === 'ready';
+    $('saveWarningText').textContent = I18N.t('save.' + status);
+    if (status === 'conflict' || status === 'readonly') {
+      Quiz.stop();
+      Gacha.close();
+    }
   }
 
   function init() {
@@ -185,6 +207,11 @@ const App = (() => {
     // ロケール初期化（保存値優先、なければブラウザ言語）
     I18N.init();
     I18N.onLocaleChange(applyLocale);
+    SaveStore.onStatus = renderSaveStatus;
+    renderSaveStatus();
+    $('btnReloadSave').addEventListener('click', () => location.reload());
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) renderHome(); });
+    setInterval(() => { if (currentScreen === 'screen-home' && !document.hidden) renderHome(); }, 60000);
 
     // [data-nav] を持つすべてのボタンを画面遷移に接続
     document.querySelectorAll('[data-nav]').forEach((el) => {
@@ -192,7 +219,7 @@ const App = (() => {
     });
     $('logoHome').addEventListener('click', () => go('home'));
     $('btnMissions').addEventListener('click', () => go('missions'));
-    $('missionsBack').addEventListener('click', () => { AudioKit.play('click'); go('home'); });
+    $('missionsBack').addEventListener('click', () => go('home'));
 
     // 言語トグル（ヘッダー）
     $('btnLangToggle').addEventListener('click', () => {
@@ -214,6 +241,7 @@ const App = (() => {
     });
     nameForm.addEventListener('submit', (e) => {
       e.preventDefault();
+      if (!SaveStore.canWrite()) return;
       const value = $('nameInput').value.trim();
       SaveStore.data.playerName = value || 'クエスター';
       SaveStore.save();
@@ -229,23 +257,27 @@ const App = (() => {
       $('toggleSound').checked = SaveStore.data.sound;
       $('toggleBgm').checked = SaveStore.data.bgm;
       $('toggleVoice').checked = SaveStore.data.voice;
+      $('settingsTimerNote').hidden = Quiz.state.mode !== 'timeattack' || !Quiz.state.timerId;
       openModal('settingsModal');
     });
     settingsModal.addEventListener('click', (e) => {
       if (e.target.closest('[data-close-settings]')) closeModal('settingsModal');
     });
     $('toggleSound').addEventListener('change', (e) => {
+      if (!SaveStore.canWrite()) return;
       SaveStore.data.sound = e.target.checked;
       SaveStore.save();
       AudioKit.syncSettings();
       if (e.target.checked) AudioKit.play('correct');
     });
     $('toggleBgm').addEventListener('change', (e) => {
+      if (!SaveStore.canWrite()) return;
       SaveStore.data.bgm = e.target.checked;
       SaveStore.save();
       AudioKit.syncSettings();
     });
     $('toggleVoice').addEventListener('change', (e) => {
+      if (!SaveStore.canWrite()) return;
       SaveStore.data.voice = e.target.checked;
       SaveStore.save();
       if (e.target.checked) AudioKit.speak('こんにちは');
@@ -269,8 +301,7 @@ const App = (() => {
         return;
       }
       clearTimeout(armTimer);
-      SaveStore.reset();
-      location.reload();
+      if (SaveStore.reset()) location.reload();
     });
 
     // 結果モーダル

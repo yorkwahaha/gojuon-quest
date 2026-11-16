@@ -6,3 +6,6 @@ assets/voice-cache/
 *.log
 .DS_Store
 Thumbs.db
+
+.wrangler/
+*.part

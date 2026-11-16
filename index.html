@@ -7,7 +7,7 @@
   <meta name="description" content="アニメ（ジョジョ／呪術廻戦）のキャラクター名・わざ名をならべかえて、ひらがなとカタカナを楽しく覚えよう！小学生の五十音トレーニングゲーム。" />
   <title>五十音クエスト | アニメではじめる ひらがな・カタカナ</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23ffd23f'/%3E%3Ccircle cx='32' cy='32' r='24' fill='%23161333'/%3E%3Ctext x='32' y='43' font-size='30' text-anchor='middle' fill='%23ffd23f' font-family='sans-serif' font-weight='900'%3E五%3C/text%3E%3C/svg%3E" />
-  <link rel="stylesheet" href="css/style.css?v=11" />
+  <link rel="stylesheet" href="css/style.css?v=20261116" />
 </head>
 <body>
 
@@ -53,7 +53,7 @@
         <span class="chip-rank-icon"><svg><use href="#i-bolt"/></svg></span>
         <span class="chip-rank-body">
           <span class="chip-rank-name" id="hdrRankName">五十音みならい</span>
-          <span class="xpbar" role="progressbar" aria-label="ランクゲージ" data-i18n-aria="aria.rankGauge"><span class="xpbar-fill" id="hdrXpFill"></span></span>
+          <span id="hdrXpGauge" class="xpbar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="ランクゲージ" data-i18n-aria="aria.rankGauge"><span class="xpbar-fill" id="hdrXpFill"></span></span>
         </span>
       </div>
       <div class="chip chip-coin" title="コイン（あそぶと あつまるよ）" data-i18n-title="coins.tip">
@@ -79,6 +79,7 @@
     </div>
   </header>
 
+  <aside id="saveWarning" class="save-warning" role="alert" hidden><span id="saveWarningText"></span><button id="btnReloadSave" type="button" class="btn btn-small" data-i18n="save.reload">重新載入</button></aside>
   <main id="app">
 
     <!-- ============ ホーム ============ -->
@@ -88,7 +89,7 @@
         <!-- ヒーロー -->
         <div class="hero panel">
           <div class="hero-text">
-            <div class="hero-badge"><span class="hero-badge-dot"></span><span data-i18n="hero.badge">アニメではじめる ひらがな×カタカナ</span></div>
+            <div class="hero-badge"><span data-i18n="hero.badge">アニメではじめる ひらがな×カタカナ</span></div>
             <h1 class="hero-title">五十音<br /><span class="hero-title-accent">クエスト</span></h1>
             <p class="hero-sub">
               <span data-i18n="hero.sub1">『ジョジョの奇妙な冒険』『呪術廻戦』の</span><br />
@@ -104,7 +105,7 @@
               </button>
             </div>
             <ul class="hero-features">
-              <li><svg><use href="#i-check"/></svg><span id="heroFeat1">JOJO＆呪術廻戦 全59問</span></li>
+              <li><svg><use href="#i-check"/></svg><span id="heroFeat1">JOJO＆呪術廻戦 全111問</span></li>
               <li><svg><use href="#i-check"/></svg><span data-i18n="hero.feat2">ミッション＆ガチャで コインあつめ</span></li>
               <li><svg><use href="#i-check"/></svg><span data-i18n="hero.feat3">ごほうびカード12枚</span></li>
             </ul>
@@ -133,7 +134,7 @@
             </div>
           </div>
           <div class="profile-rank-progress">
-            <div class="xpbar big" role="progressbar" aria-label="次のランクまで" data-i18n-aria="aria.nextRankGauge"><span class="xpbar-fill" id="homeXpFill"></span></div>
+            <div id="homeXpGauge" class="xpbar big" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="次のランクまで" data-i18n-aria="aria.nextRankGauge"><span class="xpbar-fill" id="homeXpFill"></span></div>
             <div class="profile-xp-text" id="homeXpText">0 XP</div>
           </div>
           <div class="profile-stats">
@@ -174,28 +175,28 @@
             <span class="mode-meta" data-i18n="mode.listening.meta">制限時間なし・ハート3つ</span>
           </button>
 
-          <button class="mode-card accent-gold" data-nav="practice">
+          <button class="mode-card" data-nav="practice">
             <span class="mode-icon"><svg><use href="#i-sword"/></svg></span>
             <span class="mode-name" data-i18n="mode.practice.name">ならべかえ れんしゅう</span>
             <span class="mode-desc" data-i18n="mode.practice.desc">レベル・作品をえらんで じっくり練習。平仮名／片仮名もきりかえられる。</span>
             <span class="mode-meta" data-i18n="mode.practice.meta">無限にあそべる</span>
           </button>
 
-          <button class="mode-card accent-red" data-nav="timeattack">
+          <button class="mode-card" data-nav="timeattack">
             <span class="mode-icon"><svg><use href="#i-timer"/></svg></span>
             <span class="mode-name" data-i18n="mode.ta.name">タイムアタック</span>
             <span class="mode-desc" data-i18n="mode.ta.desc">60秒で 何問とけるかな？連続正解で高得点＆星ゲット！</span>
             <span class="mode-meta"><span data-i18n="mode.ta.metaLabel">ベストスコア</span> <strong id="taBestChip">0</strong> pt</span>
           </button>
 
-          <button class="mode-card accent-cyan" data-nav="chart">
+          <button class="mode-card" data-nav="chart">
             <span class="mode-icon"><svg><use href="#i-grid"/></svg></span>
             <span class="mode-name" data-i18n="mode.chart.name">ごじゅうおん表</span>
             <span class="mode-desc" data-i18n="mode.chart.desc">タップすると おとが きこえる！ひらがな・カタカナ・だくおん・ようおん。</span>
             <span class="mode-meta" data-i18n="mode.chart.meta">発音つき 音声ガイド</span>
           </button>
 
-          <button class="mode-card accent-purple" data-nav="collection">
+          <button class="mode-card" data-nav="collection">
             <span class="mode-icon"><svg><use href="#i-cards"/></svg></span>
             <span class="mode-name" data-i18n="mode.collection.name">コレクション</span>
             <span class="mode-desc" data-i18n="mode.collection.desc">正解数で ごほうびカードが アンロック！コインガチャもひける。</span>
@@ -281,7 +282,7 @@
           <p class="quiz-feedback" id="quizFeedback" role="status" aria-live="polite"></p>
 
           <!-- 答え合わせパネル -->
-          <div class="reveal panel" id="revealPanel" hidden>
+          <div class="reveal panel" role="region" aria-labelledby="revealKana" id="revealPanel" hidden>
             <div class="reveal-verdict" id="revealVerdict"><svg><use href="#i-check"/></svg><span data-i18n="reveal.correct">せいかい！</span></div>
             <div class="reveal-kana" id="revealKana">ザ・ワールド</div>
             <div class="reveal-label" id="revealLabel">ザ・ワールド</div>
@@ -306,10 +307,10 @@
           <p class="section-sub" data-i18n="chart.sub">マスをタップすると 発音がきこえるよ。「だくおん」「ようおん」も チャレンジしよう。</p>
         </div>
         <div class="chart-tabs" role="tablist" aria-label="文字の種類" data-i18n-aria="aria.scriptFilter">
-          <button class="chart-tab is-active" id="chartTabHiragana" role="tab" aria-selected="true"><span data-i18n="chart.hiragana">ひらがな</span></button>
-          <button class="chart-tab" id="chartTabKatakana" role="tab" aria-selected="false"><span data-i18n="chart.katakana">カタカナ</span></button>
+          <button class="chart-tab is-active" id="chartTabHiragana" aria-controls="chartContainer" role="tab" aria-selected="true"><span data-i18n="chart.hiragana">ひらがな</span></button>
+          <button class="chart-tab" id="chartTabKatakana" tabindex="-1" aria-controls="chartContainer" role="tab" aria-selected="false"><span data-i18n="chart.katakana">カタカナ</span></button>
         </div>
-        <div id="chartContainer" class="chart-sections"></div>
+        <div id="chartContainer" class="chart-sections" role="tabpanel" aria-labelledby="chartTabHiragana"></div>
       </div>
     </section>
 
@@ -399,7 +400,7 @@
         <h3 class="modal-title" id="settingsTitle"><svg><use href="#i-gear"/></svg><span data-i18n="settings.title">せってい</span></h3>
         <button class="icon-btn" data-close-settings aria-label="とじる"><svg><use href="#i-close"/></svg></button>
       </div>
-      <div class="settings-body">
+      <div class="settings-body"><p id="settingsTimerNote" data-i18n="settings.timerNote" hidden>限時挑戰在設定視窗開啟時仍會倒數。</p>
         <label class="switch-row">
           <span class="switch-text"><span class="switch-name" data-i18n="settings.bgm">BGM</span><span class="switch-desc" data-i18n="settings.bgmDesc">背景音楽をならす（音楽ファイルがある場合）</span></span>
           <input type="checkbox" class="switch-input" id="toggleBgm" /><span class="switch" aria-hidden="true"></span>
@@ -541,17 +542,17 @@
   <!-- 紙吹雪コンテナ -->
   <div class="confetti-layer" id="confettiLayer" aria-hidden="true"></div>
 
-  <script src="js/i18n.js?v=9"></script>
-  <script src="js/data.js?v=11"></script>
-  <script src="js/store.js?v=8"></script>
-  <script src="js/voice-manifest.js?v=4"></script>
-  <script src="js/audio.js?v=11"></script>
-  <script src="js/fx.js?v=5"></script>
-  <script src="js/quiz.js?v=15"></script>
-  <script src="js/chart.js?v=3"></script>
-  <script src="js/collection.js?v=6"></script>
-  <script src="js/missions.js?v=5"></script>
-  <script src="js/gacha.js?v=5"></script>
-  <script src="js/app.js?v=10"></script>
+  <script src="js/i18n.js?v=20261116"></script>
+  <script src="js/data.js?v=20261116"></script>
+  <script src="js/store.js?v=20261116"></script>
+  <script src="js/voice-manifest.js?v=20261116"></script>
+  <script src="js/audio.js?v=20261116"></script>
+  <script src="js/fx.js?v=20261116"></script>
+  <script src="js/quiz.js?v=20261116"></script>
+  <script src="js/chart.js?v=20261116"></script>
+  <script src="js/collection.js?v=20261116"></script>
+  <script src="js/missions.js?v=20261116"></script>
+  <script src="js/gacha.js?v=20261116"></script>
+  <script src="js/app.js?v=20261116"></script>
 </body>
 </html>

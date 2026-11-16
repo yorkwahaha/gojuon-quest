@@ -66,7 +66,7 @@ const QUESTIONS = [
   { id: 'q23', anime: 'jojo', type: 'char', label: 'ジョセフ・ジョースター',   kana: 'ジョセフ・ジョースター',   en: 'Joseph Joestar', desc: '波紋の使い手。ジョナサンの孫。', level: 3 },
   { id: 'q24', anime: 'jojo', type: 'char', label: '空条承太郎',         kana: 'クウジョウジョウタロウ', en: 'Kujo Jotaro', desc: 'スタープラチナの使い手。',        level: 3 },
   { id: 'q25', anime: 'jojo', type: 'char', label: '花京院典明',         kana: 'カキョウインノリアキ', en: 'Kakyoin Noriaki', desc: 'ハイエロファントグリーンの使い手。', level: 3 },
-  { id: 'q26', anime: 'jojo', type: 'char', label: '吉良吉影',           kana: 'キラヨシカゲ', en: 'Kira Yoshikage', desc: 'キラークイーンの使い手。',        level: 3 },
+  { id: 'q26', anime: 'jojo', type: 'char', label: '吉良吉影',           kana: 'キラヨシカゲ', en: 'Kira Yoshikage', desc: 'キラークイーンの使い手。',        level: 2 },
   { id: 'q27', anime: 'jojo', type: 'char', label: '東方仗助',           kana: 'ヒガシカタジョウスケ', en: 'Higashikata Josuke', desc: 'クレイジー・ダイヤモンドの使い手。', level: 3 },
   { id: 'q28', anime: 'jojo', type: 'char', label: '空条徐倫',           kana: 'クウジョウジョリーン', en: 'Kujo Jolyne', desc: 'ストーン・フリーの使い手。',      level: 3 },
   { id: 'q29', anime: 'jojo', type: 'waza', label: 'クレイジー・ダイヤモンド', kana: 'クレイジー・ダイヤモンド', en: 'Crazy Diamond', desc: '東方仗助のスタンド。',    level: 3 },
@@ -74,10 +74,10 @@ const QUESTIONS = [
   { id: 'q31', anime: 'jojo', type: 'waza', label: 'キング・クリムゾン', kana: 'キング・クリムゾン', en: 'King Crimson', desc: 'ディアボロのスタンド。時を消す。', level: 3 },
   { id: 'q32', anime: 'jojo', type: 'waza', label: 'ホワイトスネイク',   kana: 'ホワイトスネイク', en: 'White Snake', desc: 'プッチ神父のスタンド。記憶を盗む。', level: 3 },
   { id: 'q33', anime: 'jojo', type: 'waza', label: 'メイド・イン・ヘブン', kana: 'メイド・イン・ヘブン', en: 'Made in Heaven', desc: 'プッチ神父のスタンド。時を加速させる。', level: 3 },
-  { id: 'q34', anime: 'jojo', type: 'waza', label: 'ザ・ワールド・オーバーヘブン', kana: 'ザ・ワールド・オーバーヘブン', en: 'The World Over Heaven', desc: 'DIOの最終スタンド。', level: 3 },
+  { id: 'q34', anime: 'jojo', type: 'waza', label: 'ザ・ワールド・オーバーヘブン', kana: 'ザ・ワールド・オーバーヘブン', en: 'The World Over Heaven', desc: 'ゲーム『アイズオブヘブン』の天国に到達したDIOのスタンド。', level: 3 },
 
   /* ===== JOJO 主要キャラ（第2部〜第9部） ===== */
-  { id: 'q60', anime: 'jojo', type: 'char', label: 'シーザー・ツェペリ', kana: 'シーザー・ツェペリ', en: 'Caesar Zeppeli', desc: '波紋の師範代。ジョセフの友。', level: 3 },
+  { id: 'q60', anime: 'jojo', type: 'char', label: 'シーザー・ツェペリ', kana: 'シーザー・ツェペリ', en: 'Caesar Zeppeli', desc: '波紋使いの青年。ジョセフの友。', level: 3 },
   { id: 'q61', anime: 'jojo', type: 'char', label: 'リサリサ', kana: 'リサリサ', en: 'Lisa Lisa', desc: '波紋の師範。', level: 1 },
   { id: 'q62', anime: 'jojo', type: 'char', label: 'エシディシ', kana: 'エシディシ', en: 'Esidisi', desc: '柱の男の一人。', level: 2 },
   { id: 'q63', anime: 'jojo', type: 'char', label: 'アヴドゥル', kana: 'アヴドゥル', en: 'Avdol', desc: 'マジシャンズレッドの使い手。', level: 2 },
@@ -88,7 +88,7 @@ const QUESTIONS = [
   { id: 'q68', anime: 'jojo', type: 'char', label: 'アバッキオ', kana: 'アバッキオ', en: 'Abbacchio', desc: 'ムーディー・ブルースの使い手。', level: 2 },
   { id: 'q69', anime: 'jojo', type: 'char', label: 'ディアボロ', kana: 'ディアボロ', en: 'Diavolo', desc: 'キング・クリムゾンの使い手。', level: 2 },
   { id: 'q70', anime: 'jojo', type: 'char', label: 'エンリコ・プッチ', kana: 'エンリコ・プッチ', en: 'Enrico Pucci', desc: 'ホワイトスネイクの使い手。', level: 2 },
-  { id: 'q71', anime: 'jojo', type: 'char', label: 'エルメェス', kana: 'エルメェス', en: 'Ermes', desc: 'キスの使い手。', level: 2 },
+  { id: 'q71', anime: 'jojo', type: 'char', label: 'エルメェス', kana: 'エルメェス', en: 'Ermes', desc: 'キッスの使い手。', level: 2 },
   { id: 'q72', anime: 'jojo', type: 'char', label: 'ウェザー・リポート', kana: 'ウェザー・リポート', en: 'Weather Report', desc: '空条徐倫の仲間。スタンド名も同じ。', level: 3 },
   { id: 'q73', anime: 'jojo', type: 'char', label: 'アナスイ', kana: 'アナスイ', en: 'Anasui', desc: 'ダイバー・ダウンの使い手。', level: 1 },
   { id: 'q74', anime: 'jojo', type: 'char', label: 'エンポリオ', kana: 'エンポリオ', en: 'Emporio', desc: 'バーニング・ダウン・ザ・ハウスの使い手。', level: 2 },
@@ -96,11 +96,11 @@ const QUESTIONS = [
   { id: 'q76', anime: 'jojo', type: 'char', label: 'ジョニィ・ジョースター', kana: 'ジョニィ・ジョースター', en: 'Johnny Joestar', desc: 'タスクの使い手。', level: 3 },
   { id: 'q77', anime: 'jojo', type: 'char', label: 'ジャイロ・ツェペリ', kana: 'ジャイロ・ツェペリ', en: 'Gyro Zeppeli', desc: 'ボール・ブレイカーの使い手。', level: 3 },
   { id: 'q78', anime: 'jojo', type: 'char', label: 'ディエゴ・ブランドー', kana: 'ディエゴ・ブランドー', en: 'Diego Brando', desc: 'スケアリー・モンスターズの使い手。', level: 3 },
-  { id: 'q79', anime: 'jojo', type: 'char', label: 'ファニー・ヴァレンタイン', kana: 'ファニー・ヴァレンタイン', en: 'Funny Valentine', desc: 'ダーティー・ディード・ダン・ダート・チープの使い手。', level: 3 },
+  { id: 'q79', anime: 'jojo', type: 'char', label: 'ファニー・ヴァレンタイン', kana: 'ファニー・ヴァレンタイン', en: 'Funny Valentine', desc: 'D4Cの使い手。', level: 3 },
   { id: 'q80', anime: 'jojo', type: 'char', label: '広瀬康穂', kana: 'ヒロセヤスホ', en: 'Hirose Yasuho', desc: 'ペイズリー・パークの使い手。', level: 2 },
   { id: 'q81', anime: 'jojo', type: 'char', label: '透龍', kana: 'トオル', en: 'Tooru', desc: 'ワンダー・オブ・Uの使い手。', level: 1 },
-  { id: 'q82', anime: 'jojo', type: 'char', label: 'ジョディーオ・ジョースター', kana: 'ジョディーオ・ジョースター', en: 'Jodio Joestar', desc: 'ノヴェムバー・レインの使い手。', level: 3 },
-  { id: 'q83', anime: 'jojo', type: 'char', label: 'ドラゴナ・ジョースター', kana: 'ドラゴナ・ジョースター', en: 'Dragona Joestar', desc: 'スムース・オペレーターズの使い手。', level: 3 },
+  { id: 'q82', anime: 'jojo', type: 'char', label: 'ジョディオ・ジョースター', kana: 'ジョディオ・ジョースター', en: 'Jodio Joestar', desc: 'ノーヴェンバー・レインの使い手。', level: 3 },
+  { id: 'q83', anime: 'jojo', type: 'char', label: 'ドラゴナ・ジョースター', kana: 'ドラゴナ・ジョースター', en: 'Dragona Joestar', desc: 'スムース・オペレイターズの使い手。', level: 3 },
 
   /* ===== JOJO 主要スタンド ===== */
   { id: 'q84', anime: 'jojo', type: 'waza', label: 'マジシャンズレッド', kana: 'マジシャンズレッド', en: "Magician's Red", desc: 'アヴドゥルのスタンド。', level: 3 },
@@ -118,23 +118,23 @@ const QUESTIONS = [
   { id: 'q96', anime: 'jojo', type: 'waza', label: 'パープル・ヘイズ', kana: 'パープル・ヘイズ', en: 'Purple Haze', desc: 'フーゴのスタンド。', level: 2 },
   { id: 'q97', anime: 'jojo', type: 'waza', label: 'スパイス・ガール', kana: 'スパイス・ガール', en: 'Spice Girl', desc: 'トリッシュのスタンド。', level: 2 },
   { id: 'q98', anime: 'jojo', type: 'waza', label: 'ゴールド・エクスペリエンス・レクイエム', kana: 'ゴールド・エクスペリエンス・レクイエム', en: 'Gold Experience Requiem', desc: 'ジョルノの最終スタンド。', level: 3 },
-  { id: 'q99', anime: 'jojo', type: 'waza', label: 'キス', kana: 'キス', en: 'Kiss', desc: 'エルメェスのスタンド。', level: 1 },
+  { id: 'q99', anime: 'jojo', type: 'waza', label: 'キッス', kana: 'キッス', en: 'Kiss', desc: 'エルメェスのスタンド。', level: 1 },
   { id: 'q100', anime: 'jojo', type: 'waza', label: 'ダイバー・ダウン', kana: 'ダイバー・ダウン', en: 'Diver Down', desc: 'アナスイのスタンド。', level: 2 },
   { id: 'q101', anime: 'jojo', type: 'waza', label: 'C-MOON', kana: 'シー・ムーン', en: 'C-Moon', desc: 'プッチ神父のスタンド。', level: 2 },
   { id: 'q102', anime: 'jojo', type: 'waza', label: 'バーニング・ダウン・ザ・ハウス', kana: 'バーニング・ダウン・ザ・ハウス', en: 'Burning Down the House', desc: 'エンポリオのスタンド。', level: 3 },
   { id: 'q103', anime: 'jojo', type: 'waza', label: 'タスク', kana: 'タスク', en: 'Tusk', desc: 'ジョニィのスタンド。', level: 1 },
   { id: 'q104', anime: 'jojo', type: 'waza', label: 'ボール・ブレイカー', kana: 'ボール・ブレイカー', en: 'Ball Breaker', desc: 'ジャイロのスタンド。', level: 3 },
   { id: 'q105', anime: 'jojo', type: 'waza', label: 'スケアリー・モンスターズ', kana: 'スケアリー・モンスターズ', en: 'Scary Monsters', desc: 'ディエゴのスタンド。', level: 3 },
-  { id: 'q106', anime: 'jojo', type: 'waza', label: 'ダーティー・ディード・ダン・ダート・チープ', kana: 'ダーティー・ディード・ダン・ダート・チープ', en: 'Dirty Deeds Done Dirt Cheap', desc: 'ファニー・ヴァレンタインのスタンド。', level: 3 },
+  { id: 'q106', anime: 'jojo', type: 'waza', label: 'D4C', kana: 'ディー・フォー・シー', en: 'D4C', desc: 'ファニー・ヴァレンタインのスタンド。', level: 3 },
   { id: 'q107', anime: 'jojo', type: 'waza', label: 'ソフト＆ウェット', kana: 'ソフト＆ウェット', en: 'Soft & Wet', desc: '東方定助のスタンド。', level: 2 },
   { id: 'q108', anime: 'jojo', type: 'waza', label: 'ペイズリー・パーク', kana: 'ペイズリー・パーク', en: 'Paisley Park', desc: '広瀬康穂のスタンド。', level: 3 },
   { id: 'q109', anime: 'jojo', type: 'waza', label: 'ワンダー・オブ・U', kana: 'ワンダー・オブ・ユー', en: 'Wonder of U', desc: '透龍のスタンド。', level: 3 },
-  { id: 'q110', anime: 'jojo', type: 'waza', label: 'ノヴェムバー・レイン', kana: 'ノヴェムバー・レイン', en: 'November Rain', desc: 'ジョディーオのスタンド。', level: 3 },
-  { id: 'q111', anime: 'jojo', type: 'waza', label: 'スムース・オペレーターズ', kana: 'スムース・オペレーターズ', en: 'Smooth Operators', desc: 'ドラゴナのスタンド。', level: 3 },
+  { id: 'q110', anime: 'jojo', type: 'waza', label: 'ノーヴェンバー・レイン', kana: 'ノーヴェンバー・レイン', en: 'November Rain', desc: 'ジョディオのスタンド。', level: 3 },
+  { id: 'q111', anime: 'jojo', type: 'waza', label: 'スムース・オペレイターズ', kana: 'スムース・オペレイターズ', en: 'Smooth Operators', desc: 'ドラゴナのスタンド。', level: 3 },
 
   /* ===== 呪術廻戦 レベル1 ===== */
-  { id: 'q35', anime: 'jjk', type: 'char', label: '夏油傑',              kana: 'ゲトウ',       en: 'Geto',    desc: '呪術高専を去った術師。',               level: 1 },
-  { id: 'q36', anime: 'jjk', type: 'char', label: '冥冥',                kana: 'メイメイ',     en: 'Mei Mei', desc: '呪術高専の教師。',                     level: 1 },
+  { id: 'q35', anime: 'jjk', type: 'char', label: '夏油',              kana: 'ゲトウ',       en: 'Geto',    desc: '呪術高専を去った術師。',               level: 1 },
+  { id: 'q36', anime: 'jjk', type: 'char', label: '冥冥',                kana: 'メイメイ',     en: 'Mei Mei', desc: '個人で活動する一級呪術師。',                     level: 1 },
   { id: 'q37', anime: 'jjk', type: 'waza', label: '黒閃',                kana: 'コクセン',     en: 'Kokusen', desc: '黒い電光をまとう一撃。',               level: 1 },
   { id: 'q38', anime: 'jjk', type: 'term', label: '無限',                kana: 'ムゲン',       en: 'Mugen',   desc: '五条悟の術式。',                       level: 1 },
   { id: 'q39', anime: 'jjk', type: 'term', label: '六眼',                kana: 'リクガン',     en: 'Rikugan', desc: '五条悟の特別な目。',                   level: 1 },
@@ -144,23 +144,23 @@ const QUESTIONS = [
   { id: 'q41', anime: 'jjk', type: 'char', label: '虎杖悠仁',            kana: 'イタドリユウジ', en: 'Itadori Yuji', desc: '呪術高専の一年生。',                level: 2 },
   { id: 'q42', anime: 'jjk', type: 'char', label: '伏黒恵',              kana: 'フシグロメグミ', en: 'Fushiguro Megumi', desc: '十種影法術の使い手。',             level: 2 },
   { id: 'q43', anime: 'jjk', type: 'char', label: '五条悟',              kana: 'ゴジョウサトル', en: 'Gojo Satoru', desc: '最強の呪術師。',                     level: 2 },
-  { id: 'q44', anime: 'jjk', type: 'char', label: '禅院真希',            kana: 'ゼンインマキ', en: 'Zenin Maki', desc: '禅院家の術師。',                      level: 2 },
+  { id: 'q44', anime: 'jjk', type: 'char', label: '禪院真希',            kana: 'ゼンインマキ', en: 'Zenin Maki', desc: '禪院家の術師。',                      level: 2 },
   { id: 'q45', anime: 'jjk', type: 'char', label: '乙骨憂太',            kana: 'オッコツユウタ', en: 'Okkotsu Yuta', desc: '特級呪術師。',                      level: 2 },
-  { id: 'q46', anime: 'jjk', type: 'char', label: '狗巻棘',              kana: 'イヌマキトゲ', en: 'Inumaki Toge', desc: '言霊の使い手。',                      level: 2 },
+  { id: 'q46', anime: 'jjk', type: 'char', label: '狗巻棘',              kana: 'イヌマキトゲ', en: 'Inumaki Toge', desc: '呪言の使い手。',                      level: 2 },
   { id: 'q47', anime: 'jjk', type: 'char', label: '七海建人',            kana: 'ナナミケント', en: 'Nanami Kento', desc: 'サラリーマンの呪術師。',              level: 2 },
-  { id: 'q48', anime: 'jjk', type: 'char', label: '東堂葵',              kana: 'トウドウアオイ', en: 'Todo Aoi', desc: '呪術高専の二年生。',                  level: 2 },
+  { id: 'q48', anime: 'jjk', type: 'char', label: '東堂葵',              kana: 'トウドウアオイ', en: 'Todo Aoi', desc: '京都の呪術高専の三年生。',                  level: 2 },
   { id: 'q49', anime: 'jjk', type: 'term', label: '呪力',                kana: 'ジュリョク',   en: 'Juryoku', desc: '呪いのエネルギー。',                   level: 2 },
   { id: 'q50', anime: 'jjk', type: 'term', label: '呪術',                kana: 'ジュジュツ',   en: 'Jujutsu', desc: '呪力を操る技術。',                     level: 2 },
   { id: 'q51', anime: 'jjk', type: 'waza', label: '伏魔御厨子',          kana: 'フクマミヅシ', en: 'Fukuma Mizushi', desc: '両面宿儺の領域。',                  level: 2 },
 
   /* ===== 呪術廻戦 レベル3 ===== */
-  { id: 'q52', anime: 'jjk', type: 'char', label: '釘崎野薔薇',          kana: 'クギサキノバラ', en: 'Kugisaki Nobara', desc: '藁人形術の使い手。',               level: 3 },
+  { id: 'q52', anime: 'jjk', type: 'char', label: '釘崎野薔薇',          kana: 'クギサキノバラ', en: 'Kugisaki Nobara', desc: '藁人形術の使い手。',               level: 2 },
   { id: 'q53', anime: 'jjk', type: 'char', label: '両面宿儺',            kana: 'リョウメンスクナ', en: 'Ryomen Sukuna', desc: '呪いの王。',                       level: 3 },
   { id: 'q54', anime: 'jjk', type: 'waza', label: '領域展開',            kana: 'リョウイキテンカイ', en: 'Ryouiki Tenkai', desc: '術式を極限まで広げる必殺の技。', level: 3 },
   { id: 'q55', anime: 'jjk', type: 'waza', label: '無量空処',            kana: 'ムリョウクウショ', en: 'Muryo Kusho', desc: '五条悟の領域。',                     level: 3 },
   { id: 'q56', anime: 'jjk', type: 'waza', label: '無下限呪術',          kana: 'ムカゲンジュジュツ', en: 'Mukagen Jujutsu', desc: '五条悟の術式の核心。',           level: 3 },
   { id: 'q57', anime: 'jjk', type: 'waza', label: '虚式「茈」',          kana: 'キョシキムラサキ', en: 'Kyoshiki Murasaki', desc: '五条悟の必殺技。',               level: 3 },
-  { id: 'q58', anime: 'jjk', type: 'term', label: '反転術式',            kana: 'ハンテンジュツシキ', en: 'Hanten Jutsushiki', desc: '呪力を逆流させる術。',           level: 3 },
+  { id: 'q58', anime: 'jjk', type: 'term', label: '反転術式',            kana: 'ハンテンジュツシキ', en: 'Hanten Jutsushiki', desc: '負の呪力を掛け合わせ、正のエネルギーを生む技術。',           level: 3 },
   { id: 'q59', anime: 'jjk', type: 'term', label: '呪術廻戦',            kana: 'ジュジュツカイセン', en: 'Jujutsu Kaisen', desc: 'このアニメのタイトル。',           level: 3 },
 ];
 
@@ -199,8 +199,8 @@ const DESC_ZH = {
   q31: '迪亞波羅的替身。吞噬時間。',
   q32: '普奇神父的替身。竊取記憶。',
   q33: '普奇神父的替身。加速時間。',
-  q34: 'DIO 的最終替身。',
-  q60: '波紋的助教。喬瑟夫的朋友。',
+  q34: '遊戲《Eyes of Heaven》中天國 DIO 的替身。',
+  q60: '使用波紋的青年。喬瑟夫的朋友。',
   q61: '波紋的師父。',
   q62: '『柱之男』之一。',
   q63: '魔術師之紅的使者。',
@@ -253,7 +253,7 @@ const DESC_ZH = {
   q110: '喬迪歐的替身。',
   q111: '德拉戈娜的替身。',
   q35: '離開咒術高專的術師。',
-  q36: '咒術高專的教師。',
+  q36: '獨立活動的一級咒術師。',
   q37: '纏繞著黑電的一擊。',
   q38: '五條悟的術式。',
   q39: '五條悟的特殊眼眸。',
@@ -263,9 +263,9 @@ const DESC_ZH = {
   q43: '最強的咒術師。',
   q44: '禪院家的術師。',
   q45: '特級咒術師。',
-  q46: '言靈的使者。',
+  q46: '咒言的使用者。',
   q47: '上班族咒術師。',
-  q48: '咒術高專二年級生。',
+  q48: '京都咒術高專三年級生。',
   q49: '詛咒的能量。',
   q50: '操縱詛咒之力的技術。',
   q51: '兩面宿儺的領域。',
@@ -275,7 +275,7 @@ const DESC_ZH = {
   q55: '五條悟的領域。',
   q56: '五條悟術式的核心。',
   q57: '五條悟的必殺技。',
-  q58: '使詛咒之力逆流的術。',
+  q58: '將負的咒力相乘，產生正能量的技術。',
   q59: '這部動畫的標題。',
 };
 
@@ -286,8 +286,8 @@ function questionDesc(q) {
 
 /* ---------- クイズ設定値 ---------- */
 const ANIME_INFO = {
-  jojo: { name: 'ジョジョの奇妙な冒険', nameZh: 'JOJO的奇妙冒險', short: 'JOJO', shortZh: 'JOJO', cls: 'tag-jojo' },
-  jjk:  { name: '呪術廻戦',             nameZh: '咒術迴戰',     short: '呪術廻戦', shortZh: '咒術迴戰', cls: 'tag-jjk'  },
+  jojo: { short: 'JOJO', shortZh: 'JOJO', cls: 'tag-jojo' },
+  jjk:  { short: '呪術廻戦', shortZh: '咒術迴戰', cls: 'tag-jjk'  },
 };
 const TYPE_INFO = {
   char: 'キャラクター',
@@ -303,16 +303,16 @@ function typeLabel(type) {
   return I18N.get() === 'zh' ? (TYPE_INFO_ZH[type] || TYPE_INFO[type] || type) : (TYPE_INFO[type] || type);
 }
 const LEVEL_INFO = {
-  1: { name: 'レベル1', label: 'やさしい',   baseXP: 10, timeScore: 100 },
-  2: { name: 'レベル2', label: 'ふつう',     baseXP: 20, timeScore: 150 },
-  3: { name: 'レベル3', label: 'むずかしい', baseXP: 30, timeScore: 220 },
+  1: { baseXP: 10, timeScore: 100 },
+  2: { baseXP: 20, timeScore: 150 },
+  3: { baseXP: 30, timeScore: 220 },
 };
 
 /* ---------- プレイヤーランク ---------- */
 const RANKS = [
   { xp: 0,    name: '五十音みならい',   nameZh: '五十音見習' },
   { xp: 100,  name: 'かなのたまご',     nameZh: '假名寶寶' },
-  { xp: 250,  name: 'かなのつかいかた', nameZh: '假名行家' },
+  { xp: 250,  name: 'かなのつかい手', nameZh: '假名行家' },
   { xp: 450,  name: 'かなマスター',     nameZh: '假名大師' },
   { xp: 700,  name: '五十音の達人',     nameZh: '五十音達人' },
   { xp: 1000, name: '伝説の日本語つかい', nameZh: '傳說的日語使者' },
@@ -361,7 +361,6 @@ function missionProgress(data, mission) {
     case 'best_streak':    return d.bestStreak || 0;
     case 'correct_level':  return (d.correctByLevel && d.correctByLevel[mission.level]) || 0;
     case 'correct_anime':  return (d.correctByAnime && d.correctByAnime[mission.anime]) || 0;
-    case 'daily_streak':   return d.dailyStreak || 0;
     case 'stars_total':    return d.stars || 0;
     case 'ta_best':        return d.timeAttackBest || 0;
     case 'cards_unlocked': return (d.unlocked && d.unlocked.length) || 0;
@@ -386,11 +385,11 @@ const CARDS = [
   { id: 'c08', name: 'ザ・ワールド',       nameZh: 'THE WORLD',      rarity: 'SSR',      need: 78,  hue: 265, icon: 'clock',   desc: '時を止める者の証。',             descZh: '讓時間靜止之人的證明。' },
   { id: 'c09', name: '無下限の極み',       nameZh: '無下限的極致',   rarity: 'SSR',      need: 95,  hue: 190, icon: 'infinity',desc: '五条悟の術式の核心に触れた証。', descZh: '觸及五條悟術式核心的證明。' },
   { id: 'c10', name: '黄金の旋風',         nameZh: '黃金旋風',       rarity: 'SSR',      need: 115, hue: 40,  icon: 'arrow',   desc: '引き裂く者の黄金の刃。',         descZh: '撕裂者的黃金之刃。' },
-  { id: 'c11', name: '五十音の達人',       nameZh: '五十音達人',     rarity: 'SSR',      need: 140, hue: 100, icon: 'medal',   desc: 'ひらがなと片仮名を極めた達人の証。', descZh: '極致平假名與片假名之達人的證明。' },
+  { id: 'c11', name: '五十音の達人',       nameZh: '五十音達人',     rarity: 'SSR',      need: 140, hue: 100, icon: 'medal',   desc: 'たくさんの問題に挑戦した冒険者の証。', descZh: '挑戰眾多題目的冒險者之證。' },
   { id: 'c12', name: '伝説の日本語つかい', nameZh: '傳說的日語使者', rarity: 'SSR',      need: 170, hue: 55,  icon: 'crown',   desc: '五十音クエストの頂点に立つ者の証。', descZh: '站上五十音クエスト頂點之人的證明。' },
 ];
 const RARITY_STYLE = {
-  'ノーマル': { cls: 'rarity-normal', label: 'ノーマル' },
+  'ノーマル': { cls: 'rarity-normal' },
   'レア':     { cls: 'rarity-rare',   label: 'レア' },
   'SSR':      { cls: 'rarity-ssr',    label: 'SSR' },
 };
@@ -441,6 +440,16 @@ const CHART_SECTIONS = [
       { label: 'じゃ行', cells: [['じゃ','ja'],['じゅ','ju'],['じょ','jo']] },
       { label: 'びゃ行', cells: [['びゃ','bya'],['びゅ','byu'],['びょ','byo']] },
       { label: 'ぴゃ行', cells: [['ぴゃ','pya'],['ぴゅ','pyu'],['ぴょ','pyo']] },
+    ],
+  },
+  {
+    title: '小さい文字・長音・外来語', titleZh: '小字・促音・長音・外來語',
+    rows: [
+      { label: 'ァ・ィ・ゥ・ェ・ォ', cells: [['ぁ','a','あ'],['ぃ','i','い'],['ぅ','u','う'],['ぇ','e','え'],['ぉ','o','お']] },
+      { label: 'ッ・ー', cells: [['っ','kitte','きって'],['ー','kaado','カード']] },
+      { label: 'ヴ', cells: [['ゔ','vu'],['ゔぁ','va'],['ゔぃ','vi'],['ゔぇ','ve'],['ゔぉ','vo']] },
+      { label: 'ファ・ウィ', cells: [['ふぁ','fa'],['ふぃ','fi'],['ふぇ','fe'],['ふぉ','fo'],['うぃ','wi'],['うぇ','we'],['うぉ','wo']] },
+      { label: 'ティ・ツェ', cells: [['てぃ','ti'],['でぃ','di'],['とぅ','tu'],['どぅ','du'],['つぇ','tse'],['しぇ','she'],['ちぇ','che'],['じぇ','je']] },
     ],
   },
 ];
@@ -510,4 +519,25 @@ function dailyQuestionIds(dateKey) {
     dailyMemo.set(key, result);
   }
   return dailyMemo.get(targetKey).slice();
+}
+
+// Kana-faithful romanization, independent of a character's English/Italian name.
+// Long vowels repeat their vowel; n before a vowel/y uses an apostrophe.
+function kanaRomaji(text) {
+  const table = {};
+  CHART_SECTIONS.forEach(s => s.rows.forEach(r => r.cells.filter(Boolean).forEach(([kana, roman]) => { table[kana] = roman; })));
+  const chars = [...toHiragana(text)];
+  let out = '';
+  for (let i = 0; i < chars.length; i++) {
+    const c = chars[i], pair = c + (chars[i + 1] || '');
+    if (FIXED_CHARS.has(c)) { out += c === '＆' ? ' & ' : ' · '; continue; }
+    if (c === 'ー') { out += (out.match(/[aeiou](?=[^aeiou]*$)/) || ['-'])[0]; continue; }
+    if (c === 'っ') { const next = table[chars[i+1] + (chars[i+2] || '')] || table[chars[i+1]] || ''; out += next.startsWith('ch') ? 't' : next[0] || ''; continue; }
+    const roman = table[pair] || table[c];
+    if (!roman) throw new Error('Unsupported kana: ' + c);
+    if (c === 'ん' && /^[あいうえおやゆよ]/.test(chars[i+1] || '')) out += "n'";
+    else out += roman;
+    if (table[pair]) i++;
+  }
+  return out;
 }

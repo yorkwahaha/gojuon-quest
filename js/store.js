@@ -103,40 +103,90 @@ function awardXP(data, amount) {
 
 const SaveStore = {
   data: null,
+  status: 'ready',
+  lastRaw: null,
+  onStatus: null,
+
+  setStatus(status) {
+    this.status = status;
+    if (this.onStatus) this.onStatus(status);
+  },
+
+  canWrite() {
+    if (this.status === 'conflict' || this.status === 'readonly' || this.status === 'checking') return false;
+    try {
+      if (localStorage.getItem(SAVE_KEY) !== this.lastRaw) {
+        this.setStatus('conflict');
+        return false;
+      }
+    } catch (_) { /* save() reports unavailable storage; play may continue in memory. */ }
+    return true;
+  },
 
   load() {
     let data;
     try {
       const raw = localStorage.getItem(SAVE_KEY);
+      this.lastRaw = raw;
       data = raw ? sanitizeSave(JSON.parse(raw)) : freshDefaultSave();
     } catch (e) {
       console.warn('セーブデータの読み込みに失敗しました。初期化します。', e);
       data = freshDefaultSave();
+      this.status = 'unavailable';
     }
     this.data = data;
+    if (typeof window.addEventListener === 'function') {
+      window.addEventListener('storage', event => {
+        if ((event.key === SAVE_KEY || event.key === null) && event.newValue !== this.lastRaw) this.setStatus('conflict');
+      });
+    }
+    // One writer per browser origin. A second tab remains usable for reading.
+    if (typeof navigator !== 'undefined' && navigator.locks) {
+      this.setStatus('checking');
+      navigator.locks.request(SAVE_KEY, { ifAvailable: true }, lock => {
+        if (!lock) { this.setStatus('readonly'); return; }
+        if (this.status === 'conflict') return;
+        this.setStatus('ready');
+        return new Promise(resolve => window.addEventListener('pagehide', resolve, { once: true }));
+      }).catch(() => this.setStatus('readonly'));
+      window.addEventListener('pageshow', event => { if (event.persisted) this.setStatus('readonly'); });
+    }
     return this.data;
   },
 
   save() {
+    if (!this.canWrite()) return false;
     try {
-      localStorage.setItem(SAVE_KEY, JSON.stringify(this.data));
+      const raw = JSON.stringify(this.data);
+      localStorage.setItem(SAVE_KEY, raw);
+      this.lastRaw = raw;
+      this.setStatus('ready');
+      return true;
     } catch (e) {
       console.warn('セーブに失敗しました。', e);
+      this.setStatus('unavailable');
+      return false;
     }
   },
 
   reset() {
+    if (!this.canWrite()) return false;
     try {
       localStorage.removeItem(SAVE_KEY);
     } catch (e) {
       console.warn('リセットに失敗しました。', e);
+      this.setStatus('unavailable');
+      return false;
     }
     this.data = freshDefaultSave();
+    this.lastRaw = null;
+    return true;
   },
 
   // 正解時の共通処理：XP・連勝・コイン・カード解放・ランクアップを計算して保存
   // golden: キラキラ問題ならボーナス適用
   recordCorrect(level, anime, opts) {
+    if (!this.canWrite()) return null;
     const d = this.data;
     const golden = !!(opts && opts.golden);
 
@@ -166,6 +216,7 @@ const SaveStore = {
   },
 
   recordWrong() {
+    if (!this.canWrite()) return false;
     const d = this.data;
     d.streak = 0;
     d.wrong += 1;
@@ -173,22 +224,26 @@ const SaveStore = {
   },
 
   addXP(amount) {
+    if (!this.canWrite()) return null;
     const reward = awardXP(this.data, amount);
     this.save();
     return reward;
   },
 
   addStars(n) {
+    if (!this.canWrite()) return false;
     this.data.stars += n;
     this.save();
   },
 
   addCoins(n) {
+    if (!this.canWrite()) return false;
     this.data.coins += n;
     this.save();
   },
 
   recordTimeAttack(score) {
+    if (!this.canWrite()) return false;
     const d = this.data;
     d.timeAttackPlays += 1;
     const isRecord = score > d.timeAttackBest;
@@ -197,12 +252,15 @@ const SaveStore = {
     return isRecord;
   },
 
-  recordDailyClear(stars = 0) {
+  recordDailyClear(stars = 0, date = todayKey(0)) {
+    if (!this.canWrite()) return { already: true, streak: this.data.dailyStreak };
     const d = this.data;
-    const today = todayKey(0);
-    if (d.lastDaily === today) return { already: true, streak: d.dailyStreak };
-    d.dailyStreak = (d.lastDaily === todayKey(-1)) ? d.dailyStreak + 1 : 1;
-    d.lastDaily = today;
+    // A stale/cross-midnight session never consumes the new day's reward.
+    if (d.lastDaily >= date) return { already: true, streak: d.dailyStreak };
+    const previous = new Date(date + 'T12:00:00');
+    previous.setDate(previous.getDate() - 1);
+    d.dailyStreak = (d.lastDaily === dateKeyOf(previous)) ? d.dailyStreak + 1 : 1;
+    d.lastDaily = date;
     d.stars += stars;
     this.save();
     return { already: false, streak: d.dailyStreak };
@@ -222,6 +280,7 @@ const SaveStore = {
 
   // ミッションを受け取る。成功したら { coins } を返す。条件外・受取済みなら null
   claimMission(id) {
+    if (!this.canWrite()) return null;
     const d = this.data;
     const mission = MISSIONS.find((m) => m.id === id);
     if (!mission) return null;
@@ -235,7 +294,9 @@ const SaveStore = {
 
   // ガチャを1回引く。{ type:'card', card } | { type:'xp', amount, rankUp } | { type:'insufficient' }
   drawGacha() {
+    if (!this.canWrite()) return { type: 'blocked' };
     const d = this.data;
+    if (d.unlocked.length === CARDS.length && !rankForXP(d.xp).next) return { type: 'complete' };
     if (d.coins < GACHA_COST) return { type: 'insufficient' };
     d.coins -= GACHA_COST;
     d.gachaPulls += 1;
