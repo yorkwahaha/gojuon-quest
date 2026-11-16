@@ -7,7 +7,7 @@ const path = require('node:path');
 const vm = require('node:vm');
 const root = path.join(__dirname, '..');
 
-function boot({ audio = false, effects = false, storage = new Map() } = {}) {
+function boot({ audio = false, effects = false, online = false, storage = new Map() } = {}) {
   const elements = new Map(), jobs = new Map(), spoken = [], packs = [], tones = [];
   let now = Date.now(), timerId = 0;
   class Element {
@@ -90,7 +90,12 @@ function boot({ audio = false, effects = false, storage = new Map() } = {}) {
     const id = ++timerId; jobs.set(id, { fn, at: now + ms, ms, repeat }); return id;
   };
   class MockAudio extends Element {
-    constructor(file) { super(); this.file = file; this.paused = true; this.plays = 0; packs.push(this); }
+    constructor(file) {
+      super();
+      // Most tests exercise offline pack/TTS fallback; online tests opt in.
+      if (!online && file.startsWith('https://gojuon-voice.')) throw Error('controlled offline');
+      this.file = file; this.paused = true; this.plays = 0; packs.push(this);
+    }
     play() { this.paused = false; this.plays++; return new Promise((resolve, reject) => { this.resolve = resolve; this.reject = reject; }); }
     pause() { this.paused = true; }
   }
@@ -236,23 +241,24 @@ test('replacement speech pauses the old pack; stale rejection cannot start TTS',
   assert.equal(e.packs[0].paused, true); e.packs[0].reject(new Error('interrupted')); await Promise.resolve();
   assert.deepEqual(e.spoken, ['テスト']);
 });
-test('move playback uses a pre-generated versioned MP3 on every host', () => {
-  const e = boot({ audio: true });
+test('move playback prefers the Fish endpoint on every host', () => {
+  const e = boot({ audio: true, online: true });
   e.run("location.protocol='https:'; location.hostname='yorkwahaha.github.io'; AudioKit.shout('ざ・わーるど')");
-  assert.match(e.packs.at(-1).file, /^assets\/voice\/q12\.mp3/);
+  assert.match(e.packs.at(-1).file, /^https:\/\/gojuon-voice\.yorkwahaha\.workers\.dev\/api\/voice\?anime=jojo&kana=/);
+  assert.ok(e.packs.at(-1).file.includes(encodeURIComponent('ザ・ワールド')));
   assert.deepEqual(e.spoken, []);
 });
-test('a missing local move recording falls back to TTS without a generation API', () => {
+test('offline playback with a missing local move recording falls back to TTS', () => {
   const e = boot({ audio: true });
   e.run("delete VOICE_PACK['ザ・ワールド']; AudioKit.shout('ざ・わーるど')");
   assert.equal(e.packs.length, 0);
   assert.deepEqual(e.spoken, ['ザ・ワールド']);
 });
 
-test('the public voice allowlist is exactly the move questions', () => {
+test('the public voice allowlist is exactly the unique question readings by work', () => {
   const allow = JSON.parse(fs.readFileSync(path.join(root, 'worker/allowlist.json'), 'utf8'));
   const e = boot();
-  const moves = e.run("QUESTIONS.filter(q => q.type === 'waza').map(q => q.anime + '\\n' + q.kana).sort()");
+  const moves = e.run("[...new Set(QUESTIONS.map(q => q.anime + '\\n' + q.kana))].sort()");
   assert.equal(JSON.stringify(allow.map((item) => `${item.anime}\n${item.kana}`).sort()), JSON.stringify(moves));
 });
 test('muting voice stops playback and suppresses pending TTS fallback', async () => {

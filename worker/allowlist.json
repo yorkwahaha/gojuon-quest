@@ -1,6 +1,51 @@
 [
   {
     "anime": "jojo",
+    "kana": "ジョジョ",
+    "file": "assets/voice/q01.mp3?v=0c45a0f7f4a7"
+  },
+  {
+    "anime": "jojo",
+    "kana": "ディオ",
+    "file": "assets/voice/q02.mp3?v=d13eb066faf4"
+  },
+  {
+    "anime": "jojo",
+    "kana": "ワムウ",
+    "file": "assets/voice/q03.mp3?v=9e046572e9eb"
+  },
+  {
+    "anime": "jojo",
+    "kana": "カーズ",
+    "file": "assets/voice/q04.mp3?v=3257cd823aaa"
+  },
+  {
+    "anime": "jojo",
+    "kana": "ミスタ",
+    "file": "assets/voice/q05.mp3?v=76ce51783842"
+  },
+  {
+    "anime": "jojo",
+    "kana": "フーゴ",
+    "file": "assets/voice/q06.mp3?v=2f6f5ccf838e"
+  },
+  {
+    "anime": "jojo",
+    "kana": "ジョルノ",
+    "file": "assets/voice/q07.mp3?v=1b2833379aa6"
+  },
+  {
+    "anime": "jojo",
+    "kana": "ハモン",
+    "file": "assets/voice/q08.mp3?v=a6f29c16b6a6"
+  },
+  {
+    "anime": "jojo",
+    "kana": "スタンド",
+    "file": "assets/voice/q09.mp3?v=2d83bf32cb49"
+  },
+  {
+    "anime": "jojo",
     "kana": "オラオラ",
     "file": "assets/voice/q10.mp3?v=81c747516422"
   },
@@ -26,8 +71,68 @@
   },
   {
     "anime": "jojo",
+    "kana": "キシベロハン",
+    "file": "assets/voice/q15.mp3?v=5095504f465c"
+  },
+  {
+    "anime": "jojo",
+    "kana": "ブチャラティ",
+    "file": "assets/voice/q16.mp3?v=3f5c54ff6dc7"
+  },
+  {
+    "anime": "jojo",
+    "kana": "ナランチャ",
+    "file": "assets/voice/q17.mp3?v=b5203702c37d"
+  },
+  {
+    "anime": "jojo",
+    "kana": "トリッシュ",
+    "file": "assets/voice/q18.mp3?v=8052463b5c84"
+  },
+  {
+    "anime": "jojo",
+    "kana": "スピードワゴン",
+    "file": "assets/voice/q20.mp3?v=65cc2213bb37"
+  },
+  {
+    "anime": "jojo",
     "kana": "ストーン・フリー",
     "file": "assets/voice/q21.mp3?v=b0d5607b3aaa"
+  },
+  {
+    "anime": "jojo",
+    "kana": "ジョナサン・ジョースター",
+    "file": "assets/voice/q22.mp3?v=7aa88b780097"
+  },
+  {
+    "anime": "jojo",
+    "kana": "ジョセフ・ジョースター",
+    "file": "assets/voice/q23.mp3?v=681b2b4775d5"
+  },
+  {
+    "anime": "jojo",
+    "kana": "クウジョウジョウタロウ",
+    "file": "assets/voice/q24.mp3?v=670c91fad1b1"
+  },
+  {
+    "anime": "jojo",
+    "kana": "カキョウインノリアキ",
+    "file": "assets/voice/q25.mp3?v=33128409e47f"
+  },
+  {
+    "anime": "jojo",
+    "kana": "キラヨシカゲ",
+    "file": "assets/voice/q26.mp3?v=86c853a87543"
+  },
+  {
+    "anime": "jojo",
+    "kana": "ヒガシカタジョウスケ",
+    "file": "assets/voice/q27.mp3?v=b9d51eea5667"
+  },
+  {
+    "anime": "jojo",
+    "kana": "クウジョウジョリーン",
+    "file": "assets/voice/q28.mp3?v=3d2bab634f0a"
   },
   {
     "anime": "jojo",
@@ -58,6 +163,126 @@
     "anime": "jojo",
     "kana": "ザ・ワールド・オーバーヘブン",
     "file": "assets/voice/q34.mp3?v=89deda6500c1"
+  },
+  {
+    "anime": "jojo",
+    "kana": "シーザー・ツェペリ",
+    "file": "assets/voice/q60.mp3?v=3aa578f35fad"
+  },
+  {
+    "anime": "jojo",
+    "kana": "リサリサ",
+    "file": "assets/voice/q61.mp3?v=62ff0c6aebe0"
+  },
+  {
+    "anime": "jojo",
+    "kana": "エシディシ",
+    "file": "assets/voice/q62.mp3?v=1b0d991d64c4"
+  },
+  {
+    "anime": "jojo",
+    "kana": "アヴドゥル",
+    "file": "assets/voice/q63.mp3?v=975926a6e219"
+  },
+  {
+    "anime": "jojo",
+    "kana": "ポルナレフ",
+    "file": "assets/voice/q64.mp3?v=190f7aa8cab5"
+  },
+  {
+    "anime": "jojo",
+    "kana": "イギー",
+    "file": "assets/voice/q65.mp3?v=68a67c27d18b"
+  },
+  {
+    "anime": "jojo",
+    "kana": "ヒロセコウイチ",
+    "file": "assets/voice/q66.mp3?v=3d5422a8704b"
+  },
+  {
+    "anime": "jojo",
+    "kana": "ニジムラオクヤス",
+    "file": "assets/voice/q67.mp3?v=5210c7cdcb4e"
+  },
+  {
+    "anime": "jojo",
+    "kana": "アバッキオ",
+    "file": "assets/voice/q68.mp3?v=26bb2b9fc794"
+  },
+  {
+    "anime": "jojo",
+    "kana": "ディアボロ",
+    "file": "assets/voice/q69.mp3?v=7205f2c47f94"
+  },
+  {
+    "anime": "jojo",
+    "kana": "エンリコ・プッチ",
+    "file": "assets/voice/q70.mp3?v=e6784c8956d6"
+  },
+  {
+    "anime": "jojo",
+    "kana": "エルメェス",
+    "file": "assets/voice/q71.mp3?v=1a35382c28d5"
+  },
+  {
+    "anime": "jojo",
+    "kana": "ウェザー・リポート",
+    "file": "assets/voice/q72.mp3?v=b1e4b217bc4f"
+  },
+  {
+    "anime": "jojo",
+    "kana": "アナスイ",
+    "file": "assets/voice/q73.mp3?v=51f5d5aea23a"
+  },
+  {
+    "anime": "jojo",
+    "kana": "エンポリオ",
+    "file": "assets/voice/q74.mp3?v=cbfcaa64e3dd"
+  },
+  {
+    "anime": "jojo",
+    "kana": "フー・ファイターズ",
+    "file": "assets/voice/q75.mp3?v=802b4bf2b2f0"
+  },
+  {
+    "anime": "jojo",
+    "kana": "ジョニィ・ジョースター",
+    "file": "assets/voice/q76.mp3?v=a29e48eaa8fe"
+  },
+  {
+    "anime": "jojo",
+    "kana": "ジャイロ・ツェペリ",
+    "file": "assets/voice/q77.mp3?v=02a12a50161f"
+  },
+  {
+    "anime": "jojo",
+    "kana": "ディエゴ・ブランドー",
+    "file": "assets/voice/q78.mp3?v=7981ff7206ce"
+  },
+  {
+    "anime": "jojo",
+    "kana": "ファニー・ヴァレンタイン",
+    "file": "assets/voice/q79.mp3?v=d5ed3b83490c"
+  },
+  {
+    "anime": "jojo",
+    "kana": "ヒロセヤスホ",
+    "file": "assets/voice/q80.mp3?v=af7efdf9f5aa"
+  },
+  {
+    "anime": "jojo",
+    "kana": "トオル",
+    "file": "assets/voice/q81.mp3?v=f556be9f5d2e"
+  },
+  {
+    "anime": "jojo",
+    "kana": "ジョディオ・ジョースター",
+    "file": "assets/voice/q82.mp3?v=f6b35b9e0d88"
+  },
+  {
+    "anime": "jojo",
+    "kana": "ドラゴナ・ジョースター",
+    "file": "assets/voice/q83.mp3?v=93624587dcf3"
   },
   {
     "anime": "jojo",
@@ -201,13 +426,98 @@
   },
   {
     "anime": "jjk",
+    "kana": "ゲトウ",
+    "file": "assets/voice/q35.mp3?v=3837850581a0"
+  },
+  {
+    "anime": "jjk",
+    "kana": "メイメイ",
+    "file": "assets/voice/q36.mp3?v=74f5f38d2057"
+  },
+  {
+    "anime": "jjk",
     "kana": "コクセン",
     "file": "assets/voice/q37.mp3?v=7c6d88f825c0"
   },
   {
     "anime": "jjk",
+    "kana": "ムゲン",
+    "file": "assets/voice/q38.mp3?v=3cdd21672a29"
+  },
+  {
+    "anime": "jjk",
+    "kana": "リクガン",
+    "file": "assets/voice/q39.mp3?v=5c7a1921e803"
+  },
+  {
+    "anime": "jjk",
+    "kana": "ジュレイ",
+    "file": "assets/voice/q40.mp3?v=45458d11dfa8"
+  },
+  {
+    "anime": "jjk",
+    "kana": "イタドリユウジ",
+    "file": "assets/voice/q41.mp3?v=51aed3179c2a"
+  },
+  {
+    "anime": "jjk",
+    "kana": "フシグロメグミ",
+    "file": "assets/voice/q42.mp3?v=92ba5526551e"
+  },
+  {
+    "anime": "jjk",
+    "kana": "ゴジョウサトル",
+    "file": "assets/voice/q43.mp3?v=daa9b6103a61"
+  },
+  {
+    "anime": "jjk",
+    "kana": "ゼンインマキ",
+    "file": "assets/voice/q44.mp3?v=af03790e88b5"
+  },
+  {
+    "anime": "jjk",
+    "kana": "オッコツユウタ",
+    "file": "assets/voice/q45.mp3?v=2a9d99d9fab0"
+  },
+  {
+    "anime": "jjk",
+    "kana": "イヌマキトゲ",
+    "file": "assets/voice/q46.mp3?v=decbd7365b09"
+  },
+  {
+    "anime": "jjk",
+    "kana": "ナナミケント",
+    "file": "assets/voice/q47.mp3?v=05a6415b566b"
+  },
+  {
+    "anime": "jjk",
+    "kana": "トウドウアオイ",
+    "file": "assets/voice/q48.mp3?v=492d85cd0f77"
+  },
+  {
+    "anime": "jjk",
+    "kana": "ジュリョク",
+    "file": "assets/voice/q49.mp3?v=3689d1de9a5e"
+  },
+  {
+    "anime": "jjk",
+    "kana": "ジュジュツ",
+    "file": "assets/voice/q50.mp3?v=619cd8ff584b"
+  },
+  {
+    "anime": "jjk",
     "kana": "フクマミヅシ",
     "file": "assets/voice/q51.mp3?v=c7b7c752a8a3"
+  },
+  {
+    "anime": "jjk",
+    "kana": "クギサキノバラ",
+    "file": "assets/voice/q52.mp3?v=e556f60c8738"
+  },
+  {
+    "anime": "jjk",
+    "kana": "リョウメンスクナ",
+    "file": "assets/voice/q53.mp3?v=ab1c29d87249"
   },
   {
     "anime": "jjk",
@@ -228,5 +538,15 @@
     "anime": "jjk",
     "kana": "キョシキムラサキ",
     "file": "assets/voice/q57.mp3?v=1d25d3741c28"
+  },
+  {
+    "anime": "jjk",
+    "kana": "ハンテンジュツシキ",
+    "file": "assets/voice/q58.mp3?v=1e8d50c0fcf2"
+  },
+  {
+    "anime": "jjk",
+    "kana": "ジュジュツカイセン",
+    "file": "assets/voice/q59.mp3?v=2b9fa824e737"
   }
 ]

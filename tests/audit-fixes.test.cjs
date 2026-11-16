@@ -189,10 +189,12 @@ test('malformed URLs return 400 while valid requests remain available',()=>{
   assert.equal(request('/api/voice?anime=jojo&kana='+encodeURIComponent('キッス')).status,200);
   assert.equal(request('/api/voiceevil?anime=jojo&kana=キッス').status,404);
 });
-test('the public compatibility Worker redirects only known versioned static audio',async()=>{
-  let source=fs.readFileSync(path.join(root,'worker/index.js'),'utf8').replace("import allowlist from './allowlist.json';",'const allowlist='+JSON.stringify(require('../worker/allowlist.json'))+';').replace('export default {','const worker={');
+test('without a secret the public Worker redirects only known versioned static audio',async()=>{
+  let source=fs.readFileSync(path.join(root,'worker/index.js'),'utf8').replace("import allowlist from './allowlist.json';",'const allowlist='+JSON.stringify(require('../worker/allowlist.json'))+';')
+    .replace("import voiceConfig from '../tools/voice-config.cjs';",'const voiceConfig='+JSON.stringify(require('../tools/voice-config.cjs'))+';').replace('export default {','const worker={');
   let calls=0;
-  const worker=vm.runInNewContext(source+'\nworker',{Request,Response,URL,fetch:()=>{calls++;throw Error('network forbidden');}});
+  const worker=vm.runInNewContext(source+'\nworker',{Request,Response,URL,Headers,TextEncoder,crypto:require('node:crypto').webcrypto,
+    caches:{default:{match:async()=>null}},fetch:()=>{calls++;throw Error('network forbidden');}});
   for(let i=0;i<2;i++){
     const res=await worker.fetch(new Request('https://example.test/api/voice?anime=jojo&kana='+encodeURIComponent('キッス')));
     assert.equal(res.status,302);assert.match(res.headers.get('location'),/^https:\/\/yorkwahaha.github.io\/gojuon-quest\/assets\/voice\/q99.mp3\?v=/);

@@ -42,7 +42,7 @@ function handler(req, res) {
     if (url.pathname === '/api/voice') {
       const kana = toKatakana(url.searchParams.get('kana') || '');
       const anime = url.searchParams.get('anime');
-      const q = QUESTIONS.find(q => q.type === 'waza' && q.anime === anime && q.kana === kana);
+      const q = QUESTIONS.find(q => q.anime === anime && q.kana === kana);
       const asset = q && VOICE_PACK[kana];
       file = asset ? staticFile('/' + asset.split('?')[0]) : null;
     } else file = staticFile(rawPath);

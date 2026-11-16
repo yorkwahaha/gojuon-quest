@@ -12,6 +12,8 @@ async function main() {
   const browser = await chromium.launch({headless:true});
   try {
     const context = await browser.newContext({locale:'zh-TW',viewport:{width:1280,height:900}});
+    // General UI QA stays offline; browser-voice-smoke.cjs checks media routing.
+    await context.route('https://gojuon-voice.yorkwahaha.workers.dev/api/voice**', route => route.abort('failed'));
     const page = await context.newPage(); const errors=[];
     page.on('pageerror',error=>errors.push(error.message));
     await page.goto(origin);

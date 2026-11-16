@@ -1,7 +1,7 @@
 'use strict';
 /* ============================================================
    五十音クエスト — 効果音（Web Audio API）と音声読み上げ
-   ローカル音声パック優先、読み上げ失敗時はブラウザ合成へ。
+   Fish Audio 優先、失敗時はローカル音声パック、ブラウザ合成の順に再生。
    ============================================================ */
 
 const AudioKit = (() => {
@@ -198,8 +198,9 @@ const AudioKit = (() => {
   }
 
   // ---- 読み上げ ----
-  // Fish Audio で生成した音声パック（VOICE_PACK にかな→mp3の対応表）があれば再生し、
-  // なければブラウザの音声合成にフォールバックする
+  // Known question readings use the server's fixed free-model/voice policy.
+  // Never send an API key to the browser. Chart-only syllables stay on local TTS.
+  const VOICE_API = 'https://gojuon-voice.yorkwahaha.workers.dev/api/voice';
   let currentPackAudio = null;
   let voiceTimer = null;
 
@@ -215,9 +216,7 @@ const AudioKit = (() => {
     if ('speechSynthesis' in window) window.speechSynthesis.cancel();
   }
 
-  function speakWithPack(text) {
-    const file = typeof VOICE_PACK !== 'undefined' ? VOICE_PACK[text] : null;
-    if (!file) return false;
+  function playVoice(file, timeout, fallback) {
     try {
       const audio = new Audio(file);
       currentPackAudio = audio;
@@ -229,26 +228,41 @@ const AudioKit = (() => {
         audio.pause();
         currentPackAudio = null;
         if (error?.name === 'NotAllowedError' && typeof App !== 'undefined') App.toast(I18N.t('voice.retry'));
-        speakTTS(text);
+        fallback();
       };
       audio.addEventListener('error', fail);
-      voiceTimer = setTimeout(fail, 4000);
+      voiceTimer = setTimeout(fail, timeout);
       audio.play().then(() => {
         if (currentPackAudio === audio) clearTimeout(voiceTimer);
       }).catch(fail);
       return true;
     } catch (e) {
+      clearTimeout(voiceTimer);
       currentPackAudio = null;
       return false;
     }
+  }
+
+  function speakWithPack(text) {
+    const file = typeof VOICE_PACK !== 'undefined' ? VOICE_PACK[text] : null;
+    return !!file && playVoice(file, 4000, () => speakTTS(text));
+  }
+
+  function speakFallback(text) {
+    if (!speakWithPack(text)) speakTTS(text);
   }
 
   function speak(text) {
     stopVoice();
     if (!SaveStore.data || !SaveStore.data.voice || document.hidden) return;
     const key = toKatakana(text);
-    if (speakWithPack(key)) return;
-    speakTTS(key);
+    const question = typeof QUESTIONS !== 'undefined' ? QUESTIONS.find(q => q.kana === key) : null;
+    if (question) {
+      const url = VOICE_API + '?anime=' + encodeURIComponent(question.anime)
+        + '&kana=' + encodeURIComponent(key) + '&v=20261116-fish1';
+      if (playVoice(url, 9000, () => speakFallback(key))) return;
+    }
+    speakFallback(key);
   }
 
   function speakTTS(text) {
