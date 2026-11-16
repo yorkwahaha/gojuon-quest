@@ -60,7 +60,7 @@ const App = (() => {
     });
     currentScreen = screenId;
     AudioKit.setMusic(screenId === 'screen-quiz'
-      ? (Quiz.state.mode === 'timeattack' ? 'timeattack' : 'quiz') : 'home');
+      ? (Quiz.state.mode === 'timeattack' ? 'timeattack' : 'quiz') : 'home', Quiz.state.animeFilter);
     window.scrollTo(0, 0);
     if (screenId === 'screen-collection') Collection.refresh();
     if (screenId === 'screen-home') renderHome();

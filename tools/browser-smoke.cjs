@@ -22,6 +22,15 @@ async function main() {
     await other.waitForFunction(()=>SaveStore.status==='readonly');
     assert.equal(await other.locator('#saveWarning').isVisible(),true);await other.close();
     await page.locator('[data-nav="practice"]').click();
+    await Promise.all([
+      page.waitForRequest('**/assets/bgm/jojo.mp3'),
+      page.locator('#animeChips [data-value="jojo"]').click(),
+    ]);
+    await Promise.all([
+      page.waitForRequest('**/assets/bgm/jjk.mp3'),
+      page.locator('#animeChips [data-value="jjk"]').click(),
+    ]);
+    await page.locator('#animeChips [data-value="all"]').click();
     await page.evaluate(()=>{Quiz.state.pool=['q01'];});
     await page.locator('#btnStartQuiz').click();
     const chars=await page.evaluate(()=>[...Quiz.state.current.kana].filter(c=>!FIXED_CHARS.has(c)));
@@ -63,7 +72,7 @@ async function main() {
       if(process.env.QA_SCREENSHOT_DIR)await page.screenshot({path:path.join(process.env.QA_SCREENSHOT_DIR,'gojuon-'+viewport.width+'.png'),fullPage:true});
     }
     assert.deepEqual(errors,[]);
-    console.log(JSON.stringify({browser:'Chromium',checks:['single-writer tabs','keyboard answer focus','localized correct slots','settings Escape','chart keyboard tabs','unblocked timed rank','timer contrast','desktop/tablet/phone overflow'],pageErrors:errors}));
+    console.log(JSON.stringify({browser:'Chromium',checks:['single-writer tabs','series BGM request routing','keyboard answer focus','localized correct slots','settings Escape','chart keyboard tabs','unblocked timed rank','timer contrast','desktop/tablet/phone overflow'],pageErrors:errors}));
     await context.close();
   } finally {await browser.close();await new Promise(resolve=>server.close(resolve));}
 }

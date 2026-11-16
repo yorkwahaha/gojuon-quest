@@ -109,7 +109,7 @@ const AudioKit = (() => {
   const activeEffects = new Map();
 
   function play(name) {
-    if (!SaveStore.data || !SaveStore.data.sound || !Object.hasOwn(sfx, name)) return;
+    if (!SaveStore.data || !SaveStore.data.sound || document.hidden || !Object.hasOwn(sfx, name)) return;
     if (missingEffects.has(name)) { sfx[name](); return; }
     let audio;
     try { audio = new Audio(`assets/sfx/${name}.mp3`); }
@@ -136,7 +136,10 @@ const AudioKit = (() => {
     });
   }
 
-  const musicFiles = { home: 'assets/bgm/home.mp3', quiz: 'assets/bgm/quiz.mp3', timeattack: 'assets/bgm/timeattack.mp3' };
+  const musicFiles = {
+    home: 'assets/bgm/home.mp3', quiz: 'assets/bgm/quiz.mp3', timeattack: 'assets/bgm/timeattack.mp3',
+    jojo: 'assets/bgm/jojo.mp3', jjk: 'assets/bgm/jjk.mp3',
+  };
   const missingMusic = new Set();
   let musicName = 'home';
   let music = null;
@@ -172,7 +175,10 @@ const AudioKit = (() => {
     });
   }
 
-  function setMusic(name) {
+  function setMusic(name, anime = 'all') {
+    // An explicit series filter takes priority in every quiz mode.
+    // Missing series tracks stay silent rather than playing another series.
+    if (['quiz', 'timeattack'].includes(name) && ['jojo', 'jjk'].includes(anime)) name = anime;
     if (!Object.hasOwn(musicFiles, name)) return;
     if (musicName !== name) {
       if (music) music.pause();

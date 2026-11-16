@@ -73,7 +73,7 @@ node --test --experimental-test-coverage tests/regression.test.cjs tests/audit-f
 - XP・プレイヤーランク（五十音みならい→傳説の日本語つかい）、連續正解（れんさ）與最高紀錄
 - **Fish Audio 優先語音**：題目朗讀與招式喊技優先使用線上 `s2.1-pro-free`，快取相同讀音；失敗時播放 111 題共用的 110 個既有 MP3（`assets/voice/*.mp3`，約 2.64 MB），最後才用瀏覽器日語 TTS。聲線保存在 `tools/voice-config.cjs`：JOJO 正派／主角陣營 → `4359ff0bb0ad45139c35f4b664ae3f87`；反派／敵對陣營及共通名詞 → `5a8e46f1b94c4351aebb8a66b113cec5`，皆 0.92x。角色名平順朗讀，替身名與招式（例如 `オラオラ`）使用 `[shouting]` 喊技語氣。呪術廻戦維持 `827be896a6954a8199ce4b2baad6af36`（喊技語氣、1.0x）。播放遵循「設定 → よみあげ音声」開關。
 - Web Audio API 合成音效 + 瀏覽器語音合成（ja-JP）朗讀（語音パックが無い場合のフォールバック）
-- 可選 MP3 音效優先使用 `assets/sfx/` 的同名檔案，缺檔回到既有合成音效；`assets/bgm/` 預留首頁、一般遊玩、限時挑戰三首循環音樂，缺檔保持安靜。背景音樂、音效、朗讀皆可獨立開關
+- 可選 MP3 音效優先使用 `assets/sfx/` 的同名檔案，缺檔回到既有合成音效；`assets/bgm/` 預留首頁、混合題、混合限時、JOJO、咒術迴戰五首循環音樂。單選作品時立即使用該作品 BGM（含限時模式），缺檔保持安靜。背景音樂、音效、朗讀皆可獨立開關。完整圖片招式、JOJO 第 2／3／4 部題庫與補檔路徑見 [媒體清單](docs/MEDIA-CATALOG-2026-11-17.md)。
 - 進度（XP・星星・卡牌・每日挑戰紀錄）保存在瀏覽器 localStorage。支援 Web Locks 的瀏覽器同時只有一個分頁可寫入；其他分頁會顯示提示。無 Web Locks 時仍檢查存檔變更並阻止舊分頁覆蓋。儲存失敗會顯示提醒。
 
 ## 檔案結構
@@ -83,7 +83,7 @@ gojuon-quest/
 ├── index.html        # 所有畫面（首頁／クイズ／ミッション／五十音表／コレクション／結算／設定）
 ├── css/style.css     # 全部樣式（含響應式與減少動態偏好）
 ├── assets/voice/     # Fish Audio 生成的読み上げ音声（110個MP3・約2.64MB）
-├── assets/bgm/       # 選填 home.mp3 / quiz.mp3 / timeattack.mp3
+├── assets/bgm/       # 選填 home.mp3 / quiz.mp3 / timeattack.mp3 / jojo.mp3 / jjk.mp3
 ├── assets/sfx/       # 選填 click.mp3 / correct.mp3 等14種事件音效
 ├── tools/            # 開發用工具（generate-voice-pack.js：声音包生成スクリプト）
 ├── js/data.js        # 題庫・金幣/任務資料・ランク・五十音表（新增題目或任務請改這裡）

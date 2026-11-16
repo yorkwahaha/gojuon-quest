@@ -536,3 +536,71 @@ test('an invalid question id still exits safely through the empty-pool guard', (
   assert.equal(e.run('Quiz.state.locked'), 'done');
   assert.equal(e.get('screen-home').classList.contains('active'), true);
 });
+
+const latestMusic = e => e.packs.filter(p => p.file.startsWith('assets/bgm/')).at(-1);
+function chooseAnime(e, value) {
+  const box = e.get('animeChips');
+  box.fire('click', { target: box.children.find(el => el.dataset.value === value) });
+}
+
+test('series selection switches BGM immediately and all restores the ordinary quiz track', () => {
+  const e = boot({ audio: true }); e.document.fire('pointerdown'); e.run("App.go('practice')");
+  const quiz = latestMusic(e); assert.equal(quiz.file, 'assets/bgm/quiz.mp3');
+  chooseAnime(e, 'jojo'); const jojo = latestMusic(e);
+  assert.equal(quiz.paused, true); assert.equal(jojo.file, 'assets/bgm/jojo.mp3'); assert.equal(jojo.loop, true);
+  chooseAnime(e, 'jjk'); const jjk = latestMusic(e);
+  assert.equal(jojo.paused, true); assert.equal(jjk.file, 'assets/bgm/jjk.mp3');
+  chooseAnime(e, 'all'); assert.equal(jjk.paused, true); assert.equal(latestMusic(e).file, 'assets/bgm/quiz.mp3');
+  e.run("App.go('home')"); assert.equal(latestMusic(e).file, 'assets/bgm/home.mp3');
+});
+
+test('a single series overrides time attack music and all restores timeattack.mp3', () => {
+  const e = boot({ audio: true }); e.document.fire('pointerdown'); e.run("App.go('timeattack')");
+  chooseAnime(e, 'jojo'); assert.equal(latestMusic(e).file, 'assets/bgm/jojo.mp3');
+  chooseAnime(e, 'jjk'); assert.equal(latestMusic(e).file, 'assets/bgm/jjk.mp3');
+  chooseAnime(e, 'all'); assert.equal(latestMusic(e).file, 'assets/bgm/timeattack.mp3');
+});
+
+test('listening resets to all and retains the selected series BGM when questions start', () => {
+  const e = boot({ audio: true }); e.document.fire('pointerdown');
+  e.run("App.go('practice')"); chooseAnime(e, 'jojo'); e.run("App.go('listening')");
+  assert.equal(e.run('Quiz.state.animeFilter'), 'all'); assert.equal(latestMusic(e).file, 'assets/bgm/quiz.mp3');
+  chooseAnime(e, 'jjk'); e.get('btnStartQuiz').fire();
+  assert.equal(e.run('Quiz.state.current.anime'), 'jjk'); assert.equal(latestMusic(e).file, 'assets/bgm/jjk.mp3');
+});
+
+test('daily questions reset stale series and level filters so mixed BGM and locked UI agree', () => {
+  const e = boot({ audio: true }); e.document.fire('pointerdown'); e.run("App.go('practice')");
+  chooseAnime(e, 'jojo'); e.run("Quiz.state.levelFilter=3; App.go('daily')");
+  assert.equal(e.run('Quiz.state.animeFilter'), 'all'); assert.equal(e.run('Quiz.state.levelFilter'), 0);
+  assert.equal(e.get('animeChips').children.find(el => el.classList.contains('is-active')).dataset.value, 'all');
+  assert.equal(latestMusic(e).file, 'assets/bgm/quiz.mp3');
+});
+
+test('missing series BGM stays silent without resuming mixed music or synthesizing a replacement', async () => {
+  const e = boot({ audio: true }); e.run('SaveStore.data.sound=false'); e.document.fire('pointerdown');
+  e.run("App.go('practice')"); const quiz = latestMusic(e);
+  chooseAnime(e, 'jojo'); const jojo = latestMusic(e); jojo.fire('error'); jojo.reject(Error('missing'));
+  await Promise.resolve(); e.tick(5000); e.document.fire('pointerdown');
+  assert.equal(quiz.paused, true); assert.equal(jojo.paused, true); assert.equal(e.tones.length, 0);
+  const count = e.packs.length; chooseAnime(e, 'jojo'); assert.equal(e.packs.length, count);
+  chooseAnime(e, 'jjk'); const jjk = latestMusic(e); assert.equal(jjk.paused, false);
+  chooseAnime(e, 'jojo'); assert.equal(jjk.paused, true); assert.equal(e.packs.length, count + 1);
+});
+
+test('series changes while BGM is disabled take effect when unmuted and preserve background pause', () => {
+  const e = boot({ audio: true }); e.run('SaveStore.data.sound=false'); e.document.fire('pointerdown');
+  e.get('toggleBgm').checked = false; e.get('toggleBgm').fire('change'); const count = e.packs.length;
+  e.run("App.go('practice')"); chooseAnime(e, 'jojo'); assert.equal(e.packs.length, count);
+  e.get('toggleBgm').checked = true; e.get('toggleBgm').fire('change'); const jojo = latestMusic(e);
+  assert.equal(jojo.file, 'assets/bgm/jojo.mp3'); assert.equal(jojo.paused, false);
+  e.document.hidden = true; e.document.fire('visibilitychange'); assert.equal(jojo.paused, true);
+  e.document.hidden = false; e.document.fire('visibilitychange'); assert.equal(jojo.paused, false);
+  assert.equal(latestMusic(e), jojo);
+});
+
+test('hidden tabs cannot start a new MP3 or synthesized effect after active audio is cancelled', () => {
+  const e = boot({ audio: true }); e.document.hidden = true;
+  e.run("AudioKit.play('tick'); AudioKit.play('correct')"); e.tick(5000);
+  assert.equal(e.packs.length, 0); assert.equal(e.tones.length, 0);
+});

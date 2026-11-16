@@ -198,6 +198,9 @@ const Quiz = (() => {
     state.mode = mode || 'practice';
     resetSession();
     if (state.mode === 'daily') {
+      // Daily questions always mix both series; reflect that in UI and BGM.
+      state.animeFilter = 'all';
+      state.levelFilter = 0;
       state.dailyDate = todayKey(0);
       state.dailyQueue = dailyQuestionIds(state.dailyDate).slice();
     } else {
@@ -777,7 +780,11 @@ const Quiz = (() => {
 
   /* ---------- 初期化 ---------- */
   function init() {
-    wireSeg('animeChips', (v) => { state.animeFilter = v; refillPool(); });
+    wireSeg('animeChips', (v) => {
+      state.animeFilter = v;
+      refillPool();
+      AudioKit.setMusic(state.mode === 'timeattack' ? 'timeattack' : 'quiz', v);
+    });
     wireSeg('levelChips', (v) => { state.levelFilter = Number(v); refillPool(); });
     wireSeg('scriptChips', (v) => { state.script = v; });
 
