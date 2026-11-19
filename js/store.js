@@ -112,8 +112,9 @@ const SaveStore = {
     if (this.onStatus) this.onStatus(status);
   },
 
-  canWrite() {
+  canWrite(allowCorrupt = false) {
     if (this.status === 'conflict' || this.status === 'readonly' || this.status === 'checking') return false;
+    if (this.status === 'corrupt' && !allowCorrupt) return false;
     try {
       if (localStorage.getItem(SAVE_KEY) !== this.lastRaw) {
         this.setStatus('conflict');
@@ -124,17 +125,18 @@ const SaveStore = {
   },
 
   load() {
-    let data;
+    let loadStatus = 'ready';
+    this.lastRaw = null;
     try {
-      const raw = localStorage.getItem(SAVE_KEY);
-      this.lastRaw = raw;
-      data = raw ? sanitizeSave(JSON.parse(raw)) : freshDefaultSave();
-    } catch (e) {
-      console.warn('セーブデータの読み込みに失敗しました。初期化します。', e);
-      data = freshDefaultSave();
-      this.status = 'unavailable';
+      this.lastRaw = localStorage.getItem(SAVE_KEY);
+      const parsed = this.lastRaw === null ? {} : JSON.parse(this.lastRaw);
+      if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) throw new TypeError('Invalid save');
+      this.data = sanitizeSave(parsed);
+    } catch {
+      console.warn('セーブデータの読み込みに失敗しました。');
+      this.data = freshDefaultSave();
+      loadStatus = this.lastRaw === null ? 'unavailable' : 'corrupt';
     }
-    this.data = data;
     if (typeof window.addEventListener === 'function') {
       window.addEventListener('storage', event => {
         if ((event.key === SAVE_KEY || event.key === null) && event.newValue !== this.lastRaw) this.setStatus('conflict');
@@ -146,19 +148,20 @@ const SaveStore = {
       navigator.locks.request(SAVE_KEY, { ifAvailable: true }, lock => {
         if (!lock) { this.setStatus('readonly'); return; }
         if (this.status === 'conflict') return;
-        this.setStatus('ready');
+        this.setStatus(loadStatus);
         return new Promise(resolve => window.addEventListener('pagehide', resolve, { once: true }));
       }).catch(() => this.setStatus('readonly'));
       window.addEventListener('pageshow', event => { if (event.persisted) this.setStatus('readonly'); });
-    }
+    } else this.setStatus(loadStatus);
     return this.data;
   },
 
-  save() {
+  save(data = this.data) {
     if (!this.canWrite()) return false;
     try {
-      const raw = JSON.stringify(this.data);
+      const raw = JSON.stringify(data);
       localStorage.setItem(SAVE_KEY, raw);
+      this.data = data;
       this.lastRaw = raw;
       this.setStatus('ready');
       return true;
@@ -170,16 +173,17 @@ const SaveStore = {
   },
 
   reset() {
-    if (!this.canWrite()) return false;
+    if (!this.canWrite(true)) return false;
     try {
       localStorage.removeItem(SAVE_KEY);
     } catch (e) {
       console.warn('リセットに失敗しました。', e);
-      this.setStatus('unavailable');
+      if (this.status !== 'corrupt') this.setStatus('unavailable');
       return false;
     }
     this.data = freshDefaultSave();
     this.lastRaw = null;
+    this.setStatus('ready');
     return true;
   },
 
@@ -252,9 +256,9 @@ const SaveStore = {
     return isRecord;
   },
 
-  recordDailyClear(stars = 0, date = todayKey(0)) {
-    if (!this.canWrite()) return { already: true, streak: this.data.dailyStreak };
-    const d = this.data;
+  recordDailyClear(stars = 0, date = todayKey(0), { xp = 0, coins = 0 } = {}) {
+    if (!this.canWrite()) return null;
+    const d = { ...this.data };
     // A stale/cross-midnight session never consumes the new day's reward.
     if (d.lastDaily >= date) return { already: true, streak: d.dailyStreak };
     const previous = new Date(date + 'T12:00:00');
@@ -262,8 +266,10 @@ const SaveStore = {
     d.dailyStreak = (d.lastDaily === dateKeyOf(previous)) ? d.dailyStreak + 1 : 1;
     d.lastDaily = date;
     d.stars += stars;
-    this.save();
-    return { already: false, streak: d.dailyStreak };
+    d.coins += coins;
+    const reward = awardXP(d, xp);
+    if (!this.save(d)) return null;
+    return { already: false, streak: d.dailyStreak, ...reward };
   },
 
   checkCardUnlocks() {

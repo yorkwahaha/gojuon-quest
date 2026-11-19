@@ -37,6 +37,17 @@ test('an occupied browser writer lock blocks all reward and purchase entry point
   assert.equal(e.run("SaveStore.recordCorrect(1,'jojo')"),null);
   assert.equal(e.run('SaveStore.drawGacha().type'),'blocked');
 });
+test('a rejected writer-lock request protects stored progress', async () => {
+  const e = boot();
+  e.run("SaveStore.recordCorrect(1,'jojo')");
+  const raw = e.storage.get('gojuon-quest-save-v1');
+  e.run("window.addEventListener=()=>{}; navigator.locks={request:()=>Promise.reject(Error('lock unavailable'))}; SaveStore.load()");
+  assert.equal(e.run('SaveStore.status'), 'checking');
+  await Promise.resolve();
+  assert.equal(e.run('SaveStore.status'), 'readonly');
+  assert.equal(e.run('SaveStore.reset()'), false);
+  assert.equal(e.storage.get('gojuon-quest-save-v1'), raw);
+});
 test('failed storage writes show a persistent warning and failed reset does not reload',()=>{
   const e=boot();e.run('console.warn=()=>{}; localStorage.setItem=()=>{throw Error("full")}; localStorage.removeItem=()=>{throw Error("denied")}; location.reload=()=>{window.reloaded=true}');
   assert.equal(e.run('SaveStore.save()'),false);
@@ -83,8 +94,28 @@ test('corrupt saves stay protected after acquiring the writer lock and can be ex
   assert.equal(e.get('saveWarning').hidden, false);
   assert.equal(e.run('SaveStore.save()'), false);
   assert.equal(e.storage.get('gojuon-quest-save-v1'), '{');
+  e.run('var realRemove=localStorage.removeItem; localStorage.removeItem=()=>{throw Error("denied")}');
+  assert.equal(e.run('SaveStore.reset()'), false);
+  assert.equal(e.run('SaveStore.status'), 'corrupt');
+  assert.equal(e.run('SaveStore.save()'), false);
+  e.run('localStorage.removeItem=realRemove');
   assert.equal(e.run('SaveStore.reset()'), true);
   assert.equal(e.storage.has('gojuon-quest-save-v1'), false);
+});
+
+test('non-object JSON is held for recovery and an unreadable storage area reports unavailable', () => {
+  for (const raw of ['null', '42', '[]', '']) {
+    const e = boot();
+    e.storage.set('gojuon-quest-save-v1', raw);
+    e.run('console.warn=()=>{}; SaveStore.load()');
+    assert.equal(e.run('SaveStore.status'), 'corrupt');
+    assert.equal(e.run('SaveStore.save()'), false);
+    assert.equal(e.storage.get('gojuon-quest-save-v1'), raw);
+  }
+  const e = boot();
+  e.run('console.warn=()=>{}; localStorage.getItem=()=>{throw Error("denied")}; SaveStore.load()');
+  assert.equal(e.run('SaveStore.status'), 'unavailable');
+  assert.equal(e.get('saveWarning').hidden, false);
 });
 
 test('daily completion persists all rewards in one write and can retry a save failure', () => {
@@ -272,19 +303,4 @@ test('malformed URLs return 400 while valid requests remain available',()=>{
   assert.equal(request('/%').status,400);assert.equal(request('/').status,200);
   assert.equal(request('/api/voice?anime=jojo&kana='+encodeURIComponent('キッス')).status,200);
   assert.equal(request('/api/voiceevil?anime=jojo&kana=キッス').status,404);
-});
-test('without a secret the public Worker redirects only known versioned static audio',async()=>{
-  let source=fs.readFileSync(path.join(root,'worker/index.js'),'utf8').replace("import allowlist from './allowlist.json';",'const allowlist='+JSON.stringify(require('../worker/allowlist.json'))+';')
-    .replace("import voiceConfig from '../tools/voice-config.cjs';",'const voiceConfig='+JSON.stringify(require('../tools/voice-config.cjs'))+';')
-    .replace("import voiceStyle from '../tools/voice-style.cjs';",'').replace('export default {','const worker={');
-  let calls=0;
-  const worker=vm.runInNewContext(source+'\nworker',{Request,Response,URL,Headers,TextEncoder,crypto:require('node:crypto').webcrypto,
-    voiceStyle:require('../tools/voice-style.cjs'),
-    caches:{default:{match:async()=>null}},fetch:()=>{calls++;throw Error('network forbidden');}});
-  for(let i=0;i<2;i++){
-    const res=await worker.fetch(new Request('https://example.test/api/voice?anime=jojo&kana='+encodeURIComponent('キッス')));
-    assert.equal(res.status,302);assert.match(res.headers.get('location'),/^https:\/\/yorkwahaha.github.io\/gojuon-quest\/assets\/voice\/q99.mp3\?v=/);
-  }
-  assert.equal(calls,0);
-  assert.equal((await worker.fetch(new Request('https://example.test/api/voice?anime=jojo&kana=not-allowed'))).status,404);
 });

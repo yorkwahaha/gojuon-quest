@@ -110,9 +110,10 @@ const AudioKit = (() => {
 
   function play(name) {
     if (!SaveStore.data || !SaveStore.data.sound || document.hidden || !Object.hasOwn(sfx, name)) return;
-    if (missingEffects.has(name)) { sfx[name](); return; }
+    const file = `assets/sfx/${name}.mp3`;
+    if (!OPTIONAL_MEDIA.has(file) || missingEffects.has(name)) { sfx[name](); return; }
     let audio;
-    try { audio = new Audio(`assets/sfx/${name}.mp3`); }
+    try { audio = new Audio(file); }
     catch (_) { sfx[name](); return; }
     let settled = false;
     let timer;
@@ -150,7 +151,7 @@ const AudioKit = (() => {
       if (music) music.pause();
       return;
     }
-    if (missingMusic.has(musicName)) return;
+    if (!OPTIONAL_MEDIA.has(musicFiles[musicName]) || missingMusic.has(musicName)) return;
     if (!music) {
       const name = musicName;
       try { music = new Audio(musicFiles[name]); } catch (_) { return; }
@@ -204,9 +205,7 @@ const AudioKit = (() => {
   }
 
   // ---- 読み上げ ----
-  // Known question readings use the server's fixed free-model/voice policy.
-  // Never send an API key to the browser. Chart-only syllables stay on local TTS.
-  const VOICE_API = 'https://gojuon-voice.yorkwahaha.workers.dev/api/voice';
+  // Known readings use the recorded pack. Chart-only syllables use local TTS.
   let currentPackAudio = null;
   let voiceTimer = null;
 
@@ -249,26 +248,13 @@ const AudioKit = (() => {
     }
   }
 
-  function speakWithPack(text) {
-    const file = typeof VOICE_PACK !== 'undefined' ? VOICE_PACK[text] : null;
-    return !!file && playVoice(file, 4000, () => speakTTS(text));
-  }
-
-  function speakFallback(text) {
-    if (!speakWithPack(text)) speakTTS(text);
-  }
-
   function speak(text) {
     stopVoice();
     if (!SaveStore.data || !SaveStore.data.voice || document.hidden) return;
     const key = toKatakana(text);
-    const question = typeof QUESTIONS !== 'undefined' ? QUESTIONS.find(q => q.kana === key) : null;
-    if (question) {
-      const url = VOICE_API + '?anime=' + encodeURIComponent(question.anime)
-        + '&kana=' + encodeURIComponent(key) + '&v=20261116-fish2';
-      if (playVoice(url, 9000, () => speakFallback(key))) return;
-    }
-    speakFallback(key);
+    const file = VOICE_PACK[key];
+    if (file && playVoice(file, 4000, () => speakTTS(key))) return;
+    speakTTS(key);
   }
 
   function speakTTS(text) {
@@ -298,10 +284,5 @@ const AudioKit = (() => {
     window.speechSynthesis.onvoiceschanged = pickJapaneseVoice;
   }
 
-  // わざ発動の読み上げ。平仮名表示でも、サーバーが片仮名で Fish に頼み、快取した同じ檔を鳴らす。
-  function shout(text) {
-    speak(text);
-  }
-
-  return { init, setMusic, syncSettings, play, speak, shout, stopVoice };
+  return { init, setMusic, syncSettings, play, speak, shout: speak, stopVoice };
 })();

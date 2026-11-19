@@ -280,6 +280,7 @@ const App = (() => {
       if (!SaveStore.canWrite()) return;
       SaveStore.data.voice = e.target.checked;
       SaveStore.save();
+      Quiz.syncVoice();
       if (e.target.checked) AudioKit.speak('こんにちは');
       else AudioKit.stopVoice();
     });

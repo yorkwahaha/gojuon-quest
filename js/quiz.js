@@ -159,9 +159,9 @@ const Quiz = (() => {
     setSegValue('animeChips', state.animeFilter);
     setSegValue('levelChips', state.levelFilter);
     setSegValue('scriptChips', state.script);
+    syncVoice();
     const lockFilters = state.mode === 'daily';
     $('dailyLockNote').hidden = !lockFilters;
-    $('dailyLockNote').textContent = I18N.t(state.mode === 'listening' ? 'setup.listeningLock' : 'setup.lockNote');
     ['animeChips', 'levelChips'].forEach((id) => {
       const group = $(id).closest('.setup-group');
       group.classList.toggle('is-locked', lockFilters);
@@ -192,6 +192,13 @@ const Quiz = (() => {
       : state.mode === 'daily' ? I18N.t('setup.dailyStart')
       : I18N.t('setup.start');
     $('quizModeLabel').textContent = I18N.t(modeKey);
+  }
+
+  function syncVoice() {
+    const blocked = state.mode === 'listening' && !SaveStore.data.voice;
+    $('listeningVoiceNotice').hidden = !blocked;
+    $('btnStartQuiz').disabled = blocked;
+    $('btnKanaReplay').disabled = blocked;
   }
 
   function start(mode) {
@@ -233,7 +240,7 @@ const Quiz = (() => {
       state.dailyDate = todayKey(0);
       state.dailyQueue = dailyQuestionIds(state.dailyDate).slice();
     }
-    if (state.mode === 'listening' && !SaveStore.data.voice) App.toast(I18N.t('voice.disabled'));
+    if (state.mode === 'listening' && !SaveStore.data.voice) return;
     $('setupPanel').hidden = true;
     $('playPanel').hidden = false;
     if (state.mode === 'timeattack') {
@@ -241,7 +248,7 @@ const Quiz = (() => {
       updateTimerHUD();
       startTimer();
     }
-    nextQuestion();
+    nextQuestion(true);
   }
 
   function stopTimer() {
@@ -319,10 +326,10 @@ const Quiz = (() => {
     if (resultView && !$('resultModal').hidden) renderResult();
   }
 
-  function nextQuestion() {
+  function nextQuestion(focusTiles = false) {
     if (state.locked === 'done' || (state.mode === 'daily' && state.questionCount >= DAILY_QUESTION_COUNT)) return;
     FX.stopCutin();
-    AudioKit.stopVoice();
+    if (state.mode !== 'timeattack') AudioKit.stopVoice();
     state.answerReward = null;
     const q = drawNextQuestion();
     if (!q) { endSession(); return; }
@@ -364,6 +371,7 @@ const Quiz = (() => {
     $('quizFeedback').className = 'quiz-feedback';
     renderSlots();
     renderTiles();
+    if (focusTiles) $('tilePool').children[0]?.focus();
 
     // ききとりチャレンジは出題と同時に読み上げる（「なまえを きく」で何度でも聞ける）
     if (state.mode === 'listening') speakKana(q);
@@ -508,6 +516,7 @@ const Quiz = (() => {
       AudioKit.shout(q.kana);
       // カットインが終わってから答え合わせパネルを表示
       $('revealPanel').hidden = !compactCutin;
+      if (compactCutin) $('btnNext').focus();
       FX.wazaCutin({
         name: shown,
         label: q.label,
@@ -525,7 +534,7 @@ const Quiz = (() => {
       });
     } else {
       $('revealPanel').hidden = false;
-      if (state.mode !== 'timeattack') $('btnNext').focus();
+      $('btnNext').focus();
     }
     $('quizFeedback').textContent = '';
 
@@ -632,7 +641,7 @@ const Quiz = (() => {
       finishTimeAttack();
       return;
     }
-    nextQuestion();
+    nextQuestion(document.activeElement === $('btnNext'));
   }
 
   function speakKana(q) {
@@ -719,15 +728,19 @@ const Quiz = (() => {
 
   function finishDaily() {
     if (state.locked === 'done') return;
-    stop();
     const m = state.sessionMistakes;
     const grade = m === 0 ? 3 : m <= 2 ? 2 : 1;
-    const clearResult = SaveStore.recordDailyClear(grade, state.dailyDate);
+    const perfectCoins = m === 0 ? PERFECT_BONUS_COINS : 0;
+    const clearResult = SaveStore.recordDailyClear(grade, state.dailyDate, { xp: 50, coins: perfectCoins });
+    if (!clearResult) {
+      if (SaveStore.status === 'unavailable') App.toast(I18N.t('result.dailySaveFailed'));
+      return;
+    }
+    stop();
     const earnedStars = clearResult.already ? 0 : grade;
     const bonus = clearResult.already ? 0 : 50;
-    const xpReward = bonus > 0 ? SaveStore.addXP(bonus) : null;
-    if (xpReward) state.sessionCoins += xpReward.bonusCoins;
-    const perfect = clearResult.already ? 0 : perfectBonusIfAny();
+    const perfect = clearResult.already ? 0 : perfectCoins;
+    state.sessionCoins += perfect + (clearResult.bonusCoins || 0);
     FX.confetti(40);
     showResult(() => ({
       title: clearResult.already ? I18N.t('result.dailyReview') : I18N.t('result.dailyClear'),
@@ -746,7 +759,7 @@ const Quiz = (() => {
       ],
     }));
     App.refreshHeader();
-    if (xpReward && xpReward.rankUp) App.showLevelUp(xpReward.rankUp);
+    if (clearResult.rankUp) App.showLevelUp(clearResult.rankUp);
   }
 
   function quitSession() {
@@ -789,6 +802,14 @@ const Quiz = (() => {
     wireSeg('scriptChips', (v) => { state.script = v; });
 
     $('btnStartQuiz').addEventListener('click', () => { AudioKit.play('click'); beginPlay(); });
+    $('btnEnableListeningVoice').addEventListener('click', () => {
+      if (!SaveStore.canWrite()) return;
+      SaveStore.data.voice = true;
+      SaveStore.save();
+      syncVoice();
+      $('btnStartQuiz').focus();
+    });
+    $('btnVoicePractice').addEventListener('click', () => App.go('practice'));
     $('quizBack').addEventListener('click', () => { AudioKit.play('click'); quitSession(); });
 
     $('btnHint').addEventListener('click', () => {
@@ -812,5 +833,5 @@ const Quiz = (() => {
     $('btnNext').addEventListener('click', () => { AudioKit.play('click'); advanceFromReveal(); });
   }
 
-  return { init, start, stop, state, refreshLocale };
+  return { init, start, stop, state, refreshLocale, syncVoice };
 })();

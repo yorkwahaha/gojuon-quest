@@ -7,7 +7,7 @@ const path = require('node:path');
 const vm = require('node:vm');
 const root = path.join(__dirname, '..');
 
-function boot({ audio = false, effects = false, online = false, storage = new Map() } = {}) {
+function boot({ audio = false, effects = false, media = false, storage = new Map() } = {}) {
   const elements = new Map(), jobs = new Map(), spoken = [], packs = [], tones = [];
   let now = Date.now(), timerId = 0;
   class Element {
@@ -92,8 +92,6 @@ function boot({ audio = false, effects = false, online = false, storage = new Ma
   class MockAudio extends Element {
     constructor(file) {
       super();
-      // Most tests exercise offline pack/TTS fallback; online tests opt in.
-      if (!online && file.startsWith('https://gojuon-voice.')) throw Error('controlled offline');
       this.file = file; this.paused = true; this.plays = 0; packs.push(this);
     }
     play() { this.paused = false; this.plays++; return new Promise((resolve, reject) => { this.resolve = resolve; this.reject = reject; }); }
@@ -120,6 +118,7 @@ function boot({ audio = false, effects = false, online = false, storage = new Ma
     vm.runInContext(fs.readFileSync(filename, 'utf8'), context, { filename });
   };
   for (const name of ['i18n', 'data', 'store', 'voice-manifest']) load(name);
+  if (media) run("for (const track of ['home','quiz','timeattack','jojo','jjk']) OPTIONAL_MEDIA.add('assets/bgm/'+track+'.mp3'); for (const effect of ['click','correct','wrong','cutin']) OPTIONAL_MEDIA.add('assets/sfx/'+effect+'.mp3');");
   if (audio) load('audio'); else run('const AudioKit = { init() {}, setMusic() {}, syncSettings() {}, play() {}, speak() {}, stopVoice() {}, shout() {} };');
   if (effects) load('fx');
   else run('const FX = { confetti() {}, coinRain() {}, comboSplash() {}, prepareAttack() {}, stopCutin() {}, wazaCutin({onDone}) { onDone(); } };');
@@ -241,11 +240,10 @@ test('replacement speech pauses the old pack; stale rejection cannot start TTS',
   assert.equal(e.packs[0].paused, true); e.packs[0].reject(new Error('interrupted')); await Promise.resolve();
   assert.deepEqual(e.spoken, ['テスト']);
 });
-test('move playback prefers the Fish endpoint on every host', () => {
-  const e = boot({ audio: true, online: true });
+test('move playback prefers the recorded pack on every host', () => {
+  const e = boot({ audio: true });
   e.run("location.protocol='https:'; location.hostname='yorkwahaha.github.io'; AudioKit.shout('ざ・わーるど')");
-  assert.match(e.packs.at(-1).file, /^https:\/\/gojuon-voice\.yorkwahaha\.workers\.dev\/api\/voice\?anime=jojo&kana=/);
-  assert.ok(e.packs.at(-1).file.includes(encodeURIComponent('ザ・ワールド')));
+  assert.match(e.packs.at(-1).file, /^assets\/voice\/q12\.mp3\?v=/);
   assert.deepEqual(e.spoken, []);
 });
 test('offline playback with a missing local move recording falls back to TTS', () => {
@@ -439,7 +437,7 @@ test('a full attack keeps Tab inside its continue control', () => {
 });
 
 test('MP3 effects take priority and missing files fall back once, then use synthesis directly', async () => {
-  const e = boot({ audio: true }); e.run("AudioKit.play('correct')");
+  const e = boot({ audio: true, media: true }); e.run("AudioKit.play('correct')");
   const clip = e.packs.at(-1);
   assert.equal(clip.file, 'assets/sfx/correct.mp3');
   assert.equal(e.tones.length, 0);
@@ -451,7 +449,7 @@ test('MP3 effects take priority and missing files fall back once, then use synth
 });
 
 test('MP3 timeout falls back without replaying after a late rejection', async () => {
-  const e = boot({ audio: true }); e.run("AudioKit.play('click')");
+  const e = boot({ audio: true, media: true }); e.run("AudioKit.play('click')");
   const clip = e.packs.at(-1); e.tick(1500);
   assert.equal(e.tones.length, 1); assert.equal(clip.paused, true);
   clip.reject(new Error('late')); await Promise.resolve();
@@ -459,7 +457,7 @@ test('MP3 timeout falls back without replaying after a late rejection', async ()
 });
 
 test('muting stops MP3 effects and suppresses delayed synthesis', async () => {
-  const e = boot({ audio: true }); e.run("AudioKit.play('wrong')");
+  const e = boot({ audio: true, media: true }); e.run("AudioKit.play('wrong')");
   const clip = e.packs.at(-1);
   e.get('toggleSound').checked = false; e.get('toggleSound').fire('change');
   assert.equal(clip.paused, true);
@@ -468,7 +466,7 @@ test('muting stops MP3 effects and suppresses delayed synthesis', async () => {
 });
 
 test('BGM starts on interaction, loops, switches screens and has an independent saved toggle', () => {
-  const e = boot({ audio: true }); assert.equal(e.packs.length, 0);
+  const e = boot({ audio: true, media: true }); assert.equal(e.packs.length, 0);
   e.document.fire('pointerdown'); const home = e.packs.at(-1);
   assert.equal(home.file, 'assets/bgm/home.mp3'); assert.equal(home.loop, true);
   e.run("App.go('timeattack')"); const battle = e.packs.at(-1);
@@ -480,7 +478,7 @@ test('BGM starts on interaction, loops, switches screens and has an independent 
 });
 
 test('BGM pauses when hidden, resumes when visible, and missing music stays silent', async () => {
-  const e = boot({ audio: true }); e.document.fire('pointerdown'); const clip = e.packs.at(-1);
+  const e = boot({ audio: true, media: true }); e.document.fire('pointerdown'); const clip = e.packs.at(-1);
   clip.resolve(); await Promise.resolve();
   e.document.hidden = true; e.document.fire('visibilitychange'); assert.equal(clip.paused, true);
   e.document.hidden = false; e.document.fire('visibilitychange'); assert.equal(clip.paused, false);
@@ -496,13 +494,13 @@ test('daily replay completion still shows the clear stamp', () => {
 });
 
 test('successful MP3 playback never also triggers synthesized audio', async () => {
-  const e = boot({ audio: true }); e.run("AudioKit.play('cutin')");
+  const e = boot({ audio: true, media: true }); e.run("AudioKit.play('cutin')");
   const clip = e.packs.at(-1); clip.resolve(); await Promise.resolve(); e.tick(2000);
   clip.fire('ended'); assert.equal(e.tones.length, 0);
 });
 
 test('autoplay rejection allows a later MP3 retry and never marks the file missing', async () => {
-  const e = boot({ audio: true }); e.run("AudioKit.play('click')");
+  const e = boot({ audio: true, media: true }); e.run("AudioKit.play('click')");
   const error = new Error('gesture required'); error.name = 'NotAllowedError';
   e.packs.at(-1).reject(error); await Promise.resolve(); await Promise.resolve();
   const count = e.packs.length; e.run("AudioKit.play('click')");
@@ -510,7 +508,7 @@ test('autoplay rejection allows a later MP3 retry and never marks the file missi
 });
 
 test('an old BGM failure cannot stop the newly selected track', async () => {
-  const e = boot({ audio: true }); e.document.fire('pointerdown'); const old = e.packs.at(-1);
+  const e = boot({ audio: true, media: true }); e.document.fire('pointerdown'); const old = e.packs.at(-1);
   e.run("App.go('practice')"); const current = e.packs.at(-1);
   old.fire('error'); old.reject(new Error('old request')); await Promise.resolve();
   assert.equal(current.file, 'assets/bgm/quiz.mp3'); assert.equal(current.paused, false);
@@ -544,7 +542,7 @@ function chooseAnime(e, value) {
 }
 
 test('series selection switches BGM immediately and all restores the ordinary quiz track', () => {
-  const e = boot({ audio: true }); e.document.fire('pointerdown'); e.run("App.go('practice')");
+  const e = boot({ audio: true, media: true }); e.document.fire('pointerdown'); e.run("App.go('practice')");
   const quiz = latestMusic(e); assert.equal(quiz.file, 'assets/bgm/quiz.mp3');
   chooseAnime(e, 'jojo'); const jojo = latestMusic(e);
   assert.equal(quiz.paused, true); assert.equal(jojo.file, 'assets/bgm/jojo.mp3'); assert.equal(jojo.loop, true);
@@ -555,14 +553,14 @@ test('series selection switches BGM immediately and all restores the ordinary qu
 });
 
 test('a single series overrides time attack music and all restores timeattack.mp3', () => {
-  const e = boot({ audio: true }); e.document.fire('pointerdown'); e.run("App.go('timeattack')");
+  const e = boot({ audio: true, media: true }); e.document.fire('pointerdown'); e.run("App.go('timeattack')");
   chooseAnime(e, 'jojo'); assert.equal(latestMusic(e).file, 'assets/bgm/jojo.mp3');
   chooseAnime(e, 'jjk'); assert.equal(latestMusic(e).file, 'assets/bgm/jjk.mp3');
   chooseAnime(e, 'all'); assert.equal(latestMusic(e).file, 'assets/bgm/timeattack.mp3');
 });
 
 test('listening resets to all and retains the selected series BGM when questions start', () => {
-  const e = boot({ audio: true }); e.document.fire('pointerdown');
+  const e = boot({ audio: true, media: true }); e.document.fire('pointerdown');
   e.run("App.go('practice')"); chooseAnime(e, 'jojo'); e.run("App.go('listening')");
   assert.equal(e.run('Quiz.state.animeFilter'), 'all'); assert.equal(latestMusic(e).file, 'assets/bgm/quiz.mp3');
   chooseAnime(e, 'jjk'); e.get('btnStartQuiz').fire();
@@ -570,7 +568,7 @@ test('listening resets to all and retains the selected series BGM when questions
 });
 
 test('daily questions reset stale series and level filters so mixed BGM and locked UI agree', () => {
-  const e = boot({ audio: true }); e.document.fire('pointerdown'); e.run("App.go('practice')");
+  const e = boot({ audio: true, media: true }); e.document.fire('pointerdown'); e.run("App.go('practice')");
   chooseAnime(e, 'jojo'); e.run("Quiz.state.levelFilter=3; App.go('daily')");
   assert.equal(e.run('Quiz.state.animeFilter'), 'all'); assert.equal(e.run('Quiz.state.levelFilter'), 0);
   assert.equal(e.get('animeChips').children.find(el => el.classList.contains('is-active')).dataset.value, 'all');
@@ -578,7 +576,7 @@ test('daily questions reset stale series and level filters so mixed BGM and lock
 });
 
 test('missing series BGM stays silent without resuming mixed music or synthesizing a replacement', async () => {
-  const e = boot({ audio: true }); e.run('SaveStore.data.sound=false'); e.document.fire('pointerdown');
+  const e = boot({ audio: true, media: true }); e.run('SaveStore.data.sound=false'); e.document.fire('pointerdown');
   e.run("App.go('practice')"); const quiz = latestMusic(e);
   chooseAnime(e, 'jojo'); const jojo = latestMusic(e); jojo.fire('error'); jojo.reject(Error('missing'));
   await Promise.resolve(); e.tick(5000); e.document.fire('pointerdown');
@@ -589,7 +587,7 @@ test('missing series BGM stays silent without resuming mixed music or synthesizi
 });
 
 test('series changes while BGM is disabled take effect when unmuted and preserve background pause', () => {
-  const e = boot({ audio: true }); e.run('SaveStore.data.sound=false'); e.document.fire('pointerdown');
+  const e = boot({ audio: true, media: true }); e.run('SaveStore.data.sound=false'); e.document.fire('pointerdown');
   e.get('toggleBgm').checked = false; e.get('toggleBgm').fire('change'); const count = e.packs.length;
   e.run("App.go('practice')"); chooseAnime(e, 'jojo'); assert.equal(e.packs.length, count);
   e.get('toggleBgm').checked = true; e.get('toggleBgm').fire('change'); const jojo = latestMusic(e);
@@ -600,7 +598,7 @@ test('series changes while BGM is disabled take effect when unmuted and preserve
 });
 
 test('hidden tabs cannot start a new MP3 or synthesized effect after active audio is cancelled', () => {
-  const e = boot({ audio: true }); e.document.hidden = true;
+  const e = boot({ audio: true, media: true }); e.document.hidden = true;
   e.run("AudioKit.play('tick'); AudioKit.play('correct')"); e.tick(5000);
   assert.equal(e.packs.length, 0); assert.equal(e.tones.length, 0);
 });

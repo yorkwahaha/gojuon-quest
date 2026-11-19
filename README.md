@@ -16,8 +16,8 @@
 使用 Node.js 內建測試工具，不需安裝套件：
 
 ```bash
-node --test tests/regression.test.cjs tests/audit-fixes.test.cjs
-node --test --experimental-test-coverage tests/regression.test.cjs tests/audit-fixes.test.cjs
+node --test
+node --test --experimental-test-coverage
 ```
 
 測試使用受控 DOM、時鐘與音訊替身，驗證測驗／存檔／寶箱的邏輯；不代表真實瀏覽器、手機、發音或視覺驗收。
@@ -40,7 +40,7 @@ node --test --experimental-test-coverage tests/regression.test.cjs tests/audit-f
 
 | 模式 | 說明 |
 |------|------|
-| ききとりチャレンジ（聽音挑戰） | **首頁「馬上開始玩」的預設玩法**。不限時；聽讀音，把打散的假名照正確順序排回去（拼字玩法，不是選擇題）。可選作品與難度。自動朗讀答案，可隨時按「聽讀音」重播。答錯失去 1 顆愛心，**愛心共 3 顆，用完就結束；零限制連擊**（連勝紀錄與其他模式共用）|
+| ききとりチャレンジ（聽音挑戰） | **首頁「馬上開始玩」的預設玩法**。不限時；聽讀音，把打散的假名照正確順序排回去。可選作品與難度。自動朗讀題目，可按「聽讀音」重播。若發音已關閉，可在開始畫面開啟或改玩自由練習。答錯失去 1 顆愛心，**愛心共 3 顆，用完就結束**（連勝紀錄與其他模式共用）。 |
 | ならべかえ れんしゅう | 自由練習。可選作品（JOJO／咒術迴戰／全部）、難度（Lv.1〜3）、文字（平假名／片假名）|
 | タイムアタック | 60 秒限時作答，依等級給分，可獲得星星與最佳成績紀錄 |
 | デイリーチャレンジ | 每日 5 題（依日期固定題組），當日首次完成可得 +50 XP・星星・連續天數紀錄。重玩保留逐題 XP／金幣，通關加碼每日限領一次 |
@@ -71,10 +71,10 @@ node --test --experimental-test-coverage tests/regression.test.cjs tests/audit-f
 
 - 題目提示使用忠實對應假名的羅馬字（長音重複母音）；揭曉顯示原文、假名與原語／英文名稱，兩者分開處理
 - XP・プレイヤーランク（五十音みならい→傳説の日本語つかい）、連續正解（れんさ）與最高紀錄
-- **Fish Audio 優先語音**：題目朗讀與招式喊技優先使用線上 `s2.1-pro-free`，快取相同讀音；失敗時播放 111 題共用的 110 個既有 MP3（`assets/voice/*.mp3`，約 2.64 MB），最後才用瀏覽器日語 TTS。聲線保存在 `tools/voice-config.cjs`：JOJO 正派／主角陣營 → `4359ff0bb0ad45139c35f4b664ae3f87`；反派／敵對陣營及共通名詞 → `5a8e46f1b94c4351aebb8a66b113cec5`，皆 0.92x。角色名平順朗讀，替身名與招式（例如 `オラオラ`）使用 `[shouting]` 喊技語氣。呪術廻戦維持 `827be896a6954a8199ce4b2baad6af36`（喊技語氣、1.0x）。播放遵循「設定 → よみあげ音声」開關。
+- **預錄語音**：111 題共用 110 個經 Fish Audio 生成的 MP3（`assets/voice/*.mp3`，約 2.64 MB）。JOJO 角色依陣營使用對應聲線，替身名與招式使用喊技語氣。呪術廻戦沿用既有喊技聲線。播放遵循「設定 → よみあげ音声」開關。
 - Web Audio API 合成音效 + 瀏覽器語音合成（ja-JP）朗讀（語音パックが無い場合のフォールバック）
 - 可選 MP3 音效優先使用 `assets/sfx/` 的同名檔案，缺檔回到既有合成音效；`assets/bgm/` 預留首頁、混合題、混合限時、JOJO、咒術迴戰五首循環音樂。單選作品時立即使用該作品 BGM（含限時模式），缺檔保持安靜。背景音樂、音效、朗讀皆可獨立開關。完整圖片招式、JOJO 第 2／3／4 部題庫與補檔路徑見 [媒體清單](docs/MEDIA-CATALOG-2026-11-17.md)。
-- 進度（XP・星星・卡牌・每日挑戰紀錄）保存在瀏覽器 localStorage。支援 Web Locks 的瀏覽器同時只有一個分頁可寫入；其他分頁會顯示提示。無 Web Locks 時仍檢查存檔變更並阻止舊分頁覆蓋。儲存失敗會顯示提醒。
+- 進度（XP・星星・卡牌・每日挑戰紀錄）保存在瀏覽器 localStorage。支援 Web Locks 的瀏覽器同時只有一個分頁可寫入；其他分頁會顯示提示。無 Web Locks 時仍檢查存檔變更並阻止舊分頁覆蓋。存檔損毀時會保留原始資料並顯示提醒。
 
 ## 檔案結構
 
@@ -124,15 +124,14 @@ node tools/generate-voice-pack.js --only=jojo --force  # JOJOだけ作り直す
 
 ## 存檔、跨日與語音維護
 
-- 每日場次以實際開始的題組日期計算通關；跨午夜完成仍算原日，不占用新一天獎勵。已領過或更舊的日期不重領。開始前會重新確認日期。
-- 限時模式以最後一塊填入當下判題，動畫不影響截止；設定視窗開啟時倒數仍繼續。返回後的按鈕「重新開始」會開新場次。
-- 一般朗讀與招式喊技皆先請求 `https://gojuon-voice.yorkwahaha.workers.dev/api/voice`；9 秒未啟動或播放失敗轉本機 MP3，本機檔再等 4 秒仍未啟動或失敗轉日語 TTS。五十音表的題庫外單音節保留瀏覽器 TTS。
-- Worker 使用伺服器 secret `FISH_API_KEY`，只接受白名單中的 110 組作品／讀音，不能由呼叫者選模型、文字或聲線；7 秒上游逾時、MP3 格式與 1 MB 大小上限。新生成與快取的回應標頭分別為 `X-Voice-Source: fish-generated`／`fish-cache`；失敗回既有 MP3 redirect。快取為 Cloudflare 區域性暫存，並非永久保存。
-- 免費模型固定為 `s2.1-pro-free`，不自動切付費型號。依官方截至本次公布的免費期，`2026-12-01T00:00:00Z` 起停止新生成，仍可播放快取與既有音檔；若未來官方延長，再確認更新 `freeUntil`。金鑰不放前端或版本庫。
-- `node tools/voice-server.js` 啟動 loopback 本機預覽，前端同樣優先請求上述 Worker；本機 `/api/voice` 直接提供既有音檔。可公開檔案限 index、CSS、JS 與素材；禁止隱藏檔、工具與逃出根目錄的路徑。
-- 語音聲線配置統一在 `tools/voice-config.cjs`，`tools/voice-style.cjs` 共用正反派與喊技解析；JOJO 題目的 `voiceSide` 由 `js/data.js` 明確指定，生成後同步到伺服器白名單，呼叫者不能覆寫。生成器比較讀音／模型／聲線／語氣指紋，檢查 MP3 與解碼成功才原子替換。`tools/voice-pack-metadata.json` 保存產物對應，不含金鑰。manifest 與 Worker allowlist 由生成器同步產生，URL 帶音檔 hash。
-- 僅同步已有完整音檔（不需要 API key）：`node tools/generate-voice-pack.js --sync-only`。
+- 每日場次以實際開始的題組日期計算。通關日期與獎勵一併儲存，寫入失敗可再按結算重試。已領過或更舊的日期不重領。
+- 限時模式以最後一塊填入當下判題，設定視窗開啟時倒數仍繼續。自動切題後，已啟動的喊技可繼續播放，鍵盤焦點會從下一題按鈕移到新題的字塊。
+- 一般朗讀與招式喊技直接播放同站 MP3。播放失敗或 4 秒未啟動時，改用瀏覽器日語 TTS。五十音表中未收錄在語音包的讀音也使用瀏覽器 TTS。
+- 公開 Worker 的 `/api/voice` 將白名單內的已錄製讀音轉址到版本化靜態音檔。生成只在明確執行本機維護命令時進行。
+- `node tools/voice-server.js` 啟動本機預覽。前端直接播放音檔，本機 `/api/voice` 也可提供既有音檔。可公開檔案限 index、CSS、JS 與素材。
+- 聲線和語氣配置見 `tools/voice-config.cjs` 與 `tools/voice-style.cjs`。生成器用讀音、模型、聲線與語氣指紋判定是否要重產，確認 MP3 可解碼後才替換。音檔 URL 帶內容 hash。
+- 補上選用 BGM 或音效後，執行 `node tools/generate-voice-pack.js --sync-only` 更新素材清單，再與音檔一起提交。此命令可同步既有音檔與 Worker 白名單，無需 API key。
 - 僅生成指定題號：`node tools/generate-voice-pack.js --ids=q82,q99,q106,q110,q111`。實際生成才需要環境變數 `FISH_API_KEY`，並使用 ffmpeg 驗證可解碼性。
-- 可選真實 Chromium 驗證：安裝／提供 `playwright-core` 與對應瀏覽器後執行 `node tools/browser-smoke.cjs`；共享執行環境可設定 `PLAYWRIGHT_MODULE`、`PLAYWRIGHT_BROWSERS_PATH`。遊戲本身不依賴這些套件。
+- 可選 Chromium 驗證可用 `node tools/browser-smoke.cjs` 與 `node tools/browser-voice-smoke.cjs`。共享執行環境可用 `PLAYWRIGHT_MODULE` 指定 `playwright-core`，並用 `PLAYWRIGHT_EXECUTABLE_PATH` 指定已安裝的 Chromium。
 
 卡片與玩家階級是遊玩獎勵，並非兩種假名均已精通的能力認證。聲音關閉或裝置沒有日語 TTS 時，需開啟發音或使用可播放語音包的瀏覽器。
