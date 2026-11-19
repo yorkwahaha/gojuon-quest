@@ -108,6 +108,14 @@ test('Worker generates the hero Stand voice and shout with only the free model t
   assert.equal(second.headers.get('X-Voice-Source'), 'fish-cache'); assert.equal(h.calls.length, 1);
 });
 
+test('public voice requests serve the recorded pack even when a provider credential is configured', async () => {
+  const h = workerHarness();
+  const res = await h.request('きっす');
+  assert.equal(res.status, 302);
+  assert.match(res.headers.get('Location'), /assets\/voice\/q99\.mp3\?v=/);
+  assert.equal(h.calls.length, 0);
+});
+
 test('Worker preserves the JJK shouting prefix and recorded voice, ignoring caller overrides', async () => {
   const h = workerHarness(); const q = require('../worker/allowlist.json').find(q => q.anime === 'jjk');
   assert.equal((await h.request(q.kana, 'jjk', 'GET', '&model=paid&reference_id=other&text=arbitrary')).status, 200);

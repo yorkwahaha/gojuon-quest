@@ -73,6 +73,90 @@ test('older daily sessions cannot roll the last clear date backward or claim twi
   assert.equal(e.run("SaveStore.recordDailyClear(3,'2026-11-16').already"),true);
   assert.equal(e.run('SaveStore.data.lastDaily'),'2026-11-17');
 });
+
+test('corrupt saves stay protected after acquiring the writer lock and can be explicitly reset', async () => {
+  const e = boot();
+  e.storage.set('gojuon-quest-save-v1', '{');
+  e.run('console.warn=()=>{}; window.addEventListener=()=>{}; navigator.locks={request:async(name,opts,fn)=>fn({})}; SaveStore.load()');
+  await Promise.resolve();
+  assert.equal(e.run('SaveStore.status'), 'corrupt');
+  assert.equal(e.get('saveWarning').hidden, false);
+  assert.equal(e.run('SaveStore.save()'), false);
+  assert.equal(e.storage.get('gojuon-quest-save-v1'), '{');
+  assert.equal(e.run('SaveStore.reset()'), true);
+  assert.equal(e.storage.has('gojuon-quest-save-v1'), false);
+});
+
+test('daily completion persists all rewards in one write and can retry a save failure', () => {
+  const e = boot();
+  begin(e, 'daily');
+  for (let i = 0; i < 5; i++) {
+    answer(e);
+    if (i < 4) e.get('btnNext').fire();
+  }
+  const before = JSON.parse(e.storage.get('gojuon-quest-save-v1'));
+  e.run('console.warn=()=>{}; var realSet=localStorage.setItem; localStorage.setItem=()=>{throw Error("full")}');
+  e.get('btnNext').fire();
+  assert.equal(e.get('resultModal').hidden, true);
+  assert.equal(e.run('SaveStore.data.lastDaily'), before.lastDaily);
+  assert.equal(e.run('SaveStore.data.xp'), before.xp);
+  e.run('var writes=0; localStorage.setItem=(k,v)=>{writes++; realSet(k,v)}');
+  e.get('btnNext').fire();
+  const saved = JSON.parse(e.storage.get('gojuon-quest-save-v1'));
+  const ranked = e.run(`rankForXP(${saved.xp}).index > rankForXP(${before.xp}).index`);
+  assert.equal(e.run('writes'), 1);
+  assert.equal(saved.lastDaily, e.run('Quiz.state.dailyDate'));
+  assert.equal(saved.xp, before.xp + 50);
+  assert.equal(saved.stars, before.stars + 3 + (ranked ? 1 : 0));
+  assert.equal(saved.coins, before.coins + 30 + (ranked ? 25 : 0));
+  assert.equal(e.get('resultModal').hidden, false);
+});
+
+test('timed quiz advances with keyboard focus and keeps the recorded shout playing', () => {
+  const e = boot({ audio: true });
+  e.run("App.go('timeattack'); Quiz.state.pool=['q01','q12']");
+  e.get('btnStartQuiz').fire();
+  fill(e);
+  const clip = e.packs.find(p => p.file.startsWith('assets/voice/q12.mp3'));
+  assert.ok(clip);
+  assert.equal(e.document.activeElement, e.get('btnNext'));
+  e.tick(1100);
+  assert.equal(e.run('Quiz.state.current.id'), 'q01');
+  assert.equal(clip.paused, false);
+  assert.equal(e.document.activeElement, e.get('tilePool').children[0]);
+});
+
+test('disabled voice blocks listening until the player enables voice or chooses practice', () => {
+  const e = boot();
+  e.run("SaveStore.data.voice=false; App.go('listening')");
+  assert.equal(e.get('listeningVoiceNotice').hidden, false);
+  e.get('btnStartQuiz').fire();
+  assert.equal(e.get('playPanel').hidden, true);
+  e.get('btnVoicePractice').fire();
+  assert.equal(e.run('Quiz.state.mode'), 'practice');
+  e.run("App.go('listening')");
+  e.get('btnEnableListeningVoice').fire();
+  assert.equal(e.run('SaveStore.data.voice'), true);
+  assert.equal(e.get('listeningVoiceNotice').hidden, true);
+  assert.equal(e.document.activeElement, e.get('btnStartQuiz'));
+  e.get('btnStartQuiz').fire();
+  assert.equal(e.get('playPanel').hidden, false);
+});
+
+test('golden question label is translated by the existing locale binding', () => {
+  const e = boot();
+  const markup = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+  assert.match(markup, /id="goldenTag"[^>]+data-i18n="play.golden"/);
+  assert.equal(e.run("I18N.t('play.golden')"), '金色加碼題');
+});
+
+test('published media list skips absent music and starts synthesized effects without requesting MP3s', () => {
+  const e = boot({ audio: true });
+  e.document.fire('pointerdown');
+  e.run("AudioKit.play('click')");
+  assert.equal(e.packs.length, 0);
+  assert.ok(e.tones.length > 0);
+});
 test('pending pack playback falls back once and ignores a late rejection',async()=>{
   const e=boot({audio:true});e.run("AudioKit.speak('ザ・ワールド')");const clip=e.packs[0];e.tick(4000);
   assert.deepEqual(Array.from(e.spoken),['ザ・ワールド']);clip.reject(Error('late'));await Promise.resolve();await Promise.resolve();
