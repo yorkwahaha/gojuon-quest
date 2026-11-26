@@ -44,6 +44,7 @@ const Quiz = (() => {
   const $ = (id) => document.getElementById(id);
   const pendingTimers = new Set();
   let resultView = null;
+  let listeningPlayback = 'ready';
 
   function later(fn, ms) {
     const id = setTimeout(() => { pendingTimers.delete(id); fn(); }, ms);
@@ -201,9 +202,33 @@ const Quiz = (() => {
     $('btnKanaReplay').disabled = blocked;
   }
 
+  function renderListeningPlayback() {
+    const failed = listeningPlayback === 'failed';
+    $('listeningPlaybackStatus').textContent = listeningPlayback === 'ready' ? '' :
+      I18N.t(failed ? 'voice.unavailable' : 'voice.loading');
+    $('btnVoiceFailurePractice').hidden = !failed;
+  }
+
+  function playListeningQuestion() {
+    const question = state.current;
+    const waiting = listeningPlayback !== 'ready';
+    if (waiting) listeningPlayback = 'pending';
+    renderListeningPlayback();
+    AudioKit.speak(question.kana, played => {
+      if (state.current !== question || state.locked === 'done') return;
+      if (!waiting && !played) return;
+      listeningPlayback = played ? 'ready' : 'failed';
+      renderListeningPlayback();
+      renderTiles();
+      if (played && document.activeElement === $('btnKanaReplay')) $('tilePool').children[0]?.focus();
+    });
+  }
+
   function start(mode) {
     state.mode = mode || 'practice';
     resetSession();
+    listeningPlayback = 'ready';
+    renderListeningPlayback();
     if (state.mode === 'daily') {
       // Daily questions always mix both series; reflect that in UI and BGM.
       state.animeFilter = 'all';
@@ -321,6 +346,7 @@ const Quiz = (() => {
     if (state.mode === 'listening') renderListeningHearts();
     if (state.slots.length) renderSlots();
     if (state.tiles.length) renderTiles();
+    if (state.mode === 'listening') renderListeningPlayback();
     const dailyDone = state.mode === 'daily' && state.questionCount >= DAILY_QUESTION_COUNT;
     $('btnNextText').textContent = dailyDone ? I18N.t('reveal.toResult') : I18N.t('reveal.next');
     if (resultView && !$('resultModal').hidden) renderResult();
@@ -334,6 +360,7 @@ const Quiz = (() => {
     const q = drawNextQuestion();
     if (!q) { endSession(); return; }
     state.current = q;
+    listeningPlayback = state.mode === 'listening' ? 'pending' : 'ready';
     if (q.type === 'waza') FX.prepareAttack(q.id);
     state.questionCount += 1;
     state.locked = false;
@@ -371,10 +398,13 @@ const Quiz = (() => {
     $('quizFeedback').className = 'quiz-feedback';
     renderSlots();
     renderTiles();
-    if (focusTiles) $('tilePool').children[0]?.focus();
+    if (focusTiles || state.mode === 'listening') {
+      if (state.mode === 'listening') $('btnKanaReplay').focus();
+      else $('tilePool').children[0]?.focus();
+    }
 
     // ききとりチャレンジは出題と同時に読み上げる（「なまえを きく」で何度でも聞ける）
-    if (state.mode === 'listening') speakKana(q);
+    if (state.mode === 'listening') playListeningQuestion();
   }
 
   /* ---------- 描画 ---------- */
@@ -411,7 +441,7 @@ const Quiz = (() => {
       btn.dataset.tileId = tile.id;
       btn.className = 'tile' + (tile.used ? ' is-used' : '') + (state.golden ? ' is-golden' : '');
       btn.textContent = inScript(tile.char, state.script);
-      btn.disabled = tile.used;
+      btn.disabled = tile.used || (state.mode === 'listening' && listeningPlayback !== 'ready');
       btn.setAttribute('aria-label', I18N.t('play.tileAria', { kana: inScript(tile.char, state.script) }));
       btn.addEventListener('click', () => placeTile(tile));
       pool.appendChild(btn);
@@ -424,7 +454,7 @@ const Quiz = (() => {
 
   /* ---------- 入力処理 ---------- */
   function placeTile(tile) {
-    if (state.locked || tile.used) return;
+    if (state.locked || tile.used || (state.mode === 'listening' && listeningPlayback !== 'ready')) return;
     if (state.mode === 'timeattack' && clock() >= state.timerEndsAt) { finishTimeAttack(); return; }
     if (!SaveStore.canWrite()) { stop(); return; }
     const idx = state.slots.findIndex((s) => !s.fixed && !s.tile);
@@ -467,7 +497,7 @@ const Quiz = (() => {
   function onCorrect() {
     const q = state.current;
     const res = SaveStore.recordCorrect(q.level, q.anime, { golden: state.golden });
-    if (!res) { stop(); return; }
+    if (!res) { resetAnswer(); return; }
     state.answerReward = res;
     state.sessionCorrect += 1;
     state.sessionCombo += 1;
@@ -598,7 +628,7 @@ const Quiz = (() => {
   }
 
   function onWrong() {
-    if (SaveStore.recordWrong() === false) { stop(); return; }
+    if (!SaveStore.recordWrong()) { resetAnswer(); return; }
     state.sessionMistakes += 1;
     state.sessionCombo = 0;
     AudioKit.play('wrong');
@@ -622,13 +652,20 @@ const Quiz = (() => {
         return;
       }
       // タイルをすべてプールへ返す
-      state.slots.forEach((s) => { if (!s.fixed && s.tile) { s.tile.used = false; s.tile = null; } });
-      state.locked = false;
       $('quizFeedback').textContent = '';
       $('quizFeedback').className = 'quiz-feedback';
-      renderSlots();
-      renderTiles();
+      resetAnswer();
     }, 780);
+  }
+
+  function resetAnswer() {
+    if (state.locked === 'done') return;
+    const focus = document.activeElement;
+    state.slots.forEach(s => { if (s.tile) { s.tile.used = false; s.tile = null; } });
+    state.locked = false;
+    renderSlots();
+    renderTiles();
+    if (!focus || focus === document.body || focus.dataset?.tileId !== undefined) $('tilePool').children[0]?.focus();
   }
 
   function advanceFromReveal() {
@@ -649,15 +686,6 @@ const Quiz = (() => {
   }
 
   /* ---------- 終了処理 ---------- */
-  function perfectBonusIfAny() {
-    if (state.sessionMistakes === 0 && state.sessionCorrect > 0) {
-      SaveStore.addCoins(PERFECT_BONUS_COINS);
-      state.sessionCoins += PERFECT_BONUS_COINS;
-      return PERFECT_BONUS_COINS;
-    }
-    return 0;
-  }
-
   function endSession() {
     stop();
     App.go('home');
@@ -704,14 +732,15 @@ const Quiz = (() => {
     if (state.locked === 'done') return;
     stop();
     const score = state.score;
-    const isRecord = SaveStore.recordTimeAttack(score);
     const earnedStars = TA_STAR_THRESHOLDS.reduce((n, th) => n + (score >= th ? 1 : 0), 0);
-    if (earnedStars > 0) SaveStore.addStars(earnedStars);
-    const perfect = perfectBonusIfAny();
+    const perfect = state.sessionMistakes === 0 && state.sessionCorrect > 0 ? PERFECT_BONUS_COINS : 0;
+    const isRecord = SaveStore.recordTimeAttack(score, earnedStars, perfect);
+    if (isRecord !== null) state.sessionCoins += perfect;
     showResult(() => ({
       title: I18N.t('result.taUp'),
-      sub: isRecord ? I18N.t('result.taNewRecord') : I18N.t('result.taBest', { score: SaveStore.data.timeAttackBest }),
-      stars: earnedStars,
+      sub: isRecord === null ? I18N.t('result.taSaveFailed') :
+        isRecord ? I18N.t('result.taNewRecord') : I18N.t('result.taBest', { score: SaveStore.data.timeAttackBest }),
+      stars: isRecord === null ? 0 : earnedStars,
       stamp: false,
       retryLabel: 'result.retry',
       rows: [
@@ -719,7 +748,7 @@ const Quiz = (() => {
         [I18N.t('result.correct'), I18N.t('result.correctCount', { n: state.sessionCorrect })],
         [I18N.t('result.miss'), I18N.t('result.missCount', { n: state.sessionMistakes })],
         [I18N.t('result.xp'), `+${state.sessionXP}`],
-        [I18N.t('result.coins'), `+${state.sessionCoins}${perfect ? I18N.t('result.perfect') : ''}`],
+        [I18N.t('result.coins'), `+${state.sessionCoins}${isRecord !== null && perfect ? I18N.t('result.perfect') : ''}`],
       ],
     }));
     App.refreshHeader();
@@ -803,13 +832,12 @@ const Quiz = (() => {
 
     $('btnStartQuiz').addEventListener('click', () => { AudioKit.play('click'); beginPlay(); });
     $('btnEnableListeningVoice').addEventListener('click', () => {
-      if (!SaveStore.canWrite()) return;
-      SaveStore.data.voice = true;
-      SaveStore.save();
+      if (!SaveStore.save({ ...SaveStore.data, voice: true })) return;
       syncVoice();
       $('btnStartQuiz').focus();
     });
     $('btnVoicePractice').addEventListener('click', () => App.go('practice'));
+    $('btnVoiceFailurePractice').addEventListener('click', () => App.go('practice'));
     $('quizBack').addEventListener('click', () => { AudioKit.play('click'); quitSession(); });
 
     $('btnHint').addEventListener('click', () => {
@@ -828,7 +856,7 @@ const Quiz = (() => {
     // ききとりチャレンジ：読み上げをいつでも聞き直せる
     $('btnKanaReplay').addEventListener('click', () => {
       AudioKit.play('click');
-      if (state.current) AudioKit.speak(state.current.kana);
+      if (state.current) playListeningQuestion();
     });
     $('btnNext').addEventListener('click', () => { AudioKit.play('click'); advanceFromReveal(); });
   }

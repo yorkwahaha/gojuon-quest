@@ -580,6 +580,7 @@ button.slot:hover { border-color: rgba(255, 210, 63, .55); background: rgba(255,
 
 .quiz-feedback { min-height: 1.6em; font-weight: 800; color: var(--ink-dim); font-size: .95rem; margin: 0; }
 .quiz-feedback.is-error { color: var(--red-soft); }
+#listeningPlaybackStatus:empty { min-height: 0; }
 
 /* 答え合わせオーバーレイ */
 .reveal {

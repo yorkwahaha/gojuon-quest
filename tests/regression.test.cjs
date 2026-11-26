@@ -117,9 +117,9 @@ function boot({ audio = false, effects = false, media = false, storage = new Map
     const filename = path.join(root, 'js', file + '.js');
     vm.runInContext(fs.readFileSync(filename, 'utf8'), context, { filename });
   };
-  for (const name of ['i18n', 'data', 'store', 'voice-manifest']) load(name);
+  for (const name of ['i18n', 'data', 'store', 'voice-manifest', 'media-manifest']) load(name);
   if (media) run("for (const track of ['home','quiz','timeattack','jojo','jjk']) OPTIONAL_MEDIA.add('assets/bgm/'+track+'.mp3'); for (const effect of ['click','correct','wrong','cutin']) OPTIONAL_MEDIA.add('assets/sfx/'+effect+'.mp3');");
-  if (audio) load('audio'); else run('const AudioKit = { init() {}, setMusic() {}, syncSettings() {}, play() {}, speak() {}, stopVoice() {}, shout() {} };');
+  if (audio) load('audio'); else run('const AudioKit = { init() {}, setMusic() {}, syncSettings() {}, play() {}, speak(text, onPlayback) { onPlayback?.(true); }, stopVoice() {}, shout() {} };');
   if (effects) load('fx');
   else run('const FX = { confetti() {}, coinRain() {}, comboSplash() {}, prepareAttack() {}, stopCutin() {}, wazaCutin({onDone}) { onDone(); } };');
   for (const name of ['quiz', 'chart', 'collection', 'missions', 'gacha', 'app']) load(name);
@@ -436,24 +436,38 @@ test('a full attack keeps Tab inside its continue control', () => {
   assert.equal(prevented, true);
 });
 
-test('MP3 effects take priority and missing files fall back once, then use synthesis directly', async () => {
+test('every game effect has a shipped MP3 in the media list', () => {
+  const e = boot({ audio: true });
+  const scripts = fs.readdirSync(path.join(root, 'js')).filter(file => file.endsWith('.js'));
+  const calls = scripts.map(file => fs.readFileSync(path.join(root, 'js', file), 'utf8')).join('\n');
+  const effects = new Set([...calls.matchAll(/AudioKit\.play\([^\n]*?\)/g)].flatMap(call =>
+    [...call[0].matchAll(/'([a-z]+)'/g)].map(match => match[1])));
+  assert.equal(effects.size, 14);
+  for (const effect of effects) {
+    const file = `assets/sfx/${effect}.mp3`;
+    assert.ok(e.run(`OPTIONAL_MEDIA.has('${file}')`), file);
+    assert.ok(fs.statSync(path.join(root, file)).size > 0, file);
+  }
+});
+
+test('a failed MP3 stays quiet and the next event can retry', async () => {
   const e = boot({ audio: true, media: true }); e.run("AudioKit.play('correct')");
   const clip = e.packs.at(-1);
   assert.equal(clip.file, 'assets/sfx/correct.mp3');
   assert.equal(e.tones.length, 0);
   clip.fire('error'); clip.reject(new Error('missing')); await Promise.resolve();
-  assert.equal(e.tones.length, 3);
+  assert.equal(e.tones.length, 0);
+  assert.equal(clip.paused, true);
   const requests = e.packs.length; e.run("AudioKit.play('correct')");
-  assert.equal(e.packs.length, requests);
-  assert.equal(e.tones.length, 6);
+  assert.equal(e.packs.length, requests + 1);
 });
 
-test('MP3 timeout falls back without replaying after a late rejection', async () => {
+test('MP3 timeout cancels without a late synthesized effect', async () => {
   const e = boot({ audio: true, media: true }); e.run("AudioKit.play('click')");
   const clip = e.packs.at(-1); e.tick(1500);
-  assert.equal(e.tones.length, 1); assert.equal(clip.paused, true);
+  assert.equal(clip.paused, true);
   clip.reject(new Error('late')); await Promise.resolve();
-  assert.equal(e.tones.length, 1);
+  assert.equal(e.tones.length, 0);
 });
 
 test('muting stops MP3 effects and suppresses delayed synthesis', async () => {
@@ -504,7 +518,7 @@ test('autoplay rejection allows a later MP3 retry and never marks the file missi
   const error = new Error('gesture required'); error.name = 'NotAllowedError';
   e.packs.at(-1).reject(error); await Promise.resolve(); await Promise.resolve();
   const count = e.packs.length; e.run("AudioKit.play('click')");
-  assert.equal(e.packs.length, count + 1); assert.equal(e.tones.length, 1);
+  assert.equal(e.packs.length, count + 1); assert.equal(e.tones.length, 0);
 });
 
 test('an old BGM failure cannot stop the newly selected track', async () => {

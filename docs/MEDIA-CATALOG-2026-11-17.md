@@ -138,7 +138,7 @@ BGM 循環播放、預設音量 16%，首次點擊／按鍵後才啟動。缺檔
 
 ## 放檔與驗證
 
-檔名皆用小寫英文字母，區分大小寫。目前尚未提供正式 SFX／BGM MP3。放入指定目錄後，在專案根目錄執行 `node tools/generate-voice-pack.js --sync-only`，再重新整理。發布時一併提交 MP3 與更新後的 `js/voice-manifest.js`。
+檔名皆用小寫英文字母，區分大小寫。14 種 SFX 已提供 MP3，素材來源見 [音效清單](../assets/sfx/README.md)。BGM 目錄可補入自備曲目。更新檔案後，在專案根目錄執行 `node tools/generate-voice-pack.js --media-only`，再重新整理。發布時一併提交 MP3 與更新後的 `js/media-manifest.js`。
 
 2026-11-17 驗證記錄為 124 項通過，涵蓋作品切歌、每日模式重置、缺曲靜音、背景暫停與缺音效時的合成回退。11 月 19 日更新見 [修復驗證](RELEASE-2026-11-19.tdd.md)。
 

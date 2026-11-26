@@ -72,8 +72,8 @@ node --test --experimental-test-coverage
 - 題目提示使用忠實對應假名的羅馬字（長音重複母音）；揭曉顯示原文、假名與原語／英文名稱，兩者分開處理
 - XP・プレイヤーランク（五十音みならい→傳説の日本語つかい）、連續正解（れんさ）與最高紀錄
 - **預錄語音**：111 題共用 110 個經 Fish Audio 生成的 MP3（`assets/voice/*.mp3`，約 2.64 MB）。JOJO 角色依陣營使用對應聲線，替身名與招式使用喊技語氣。呪術廻戦沿用既有喊技聲線。播放遵循「設定 → よみあげ音声」開關。
-- Web Audio API 合成音效 + 瀏覽器語音合成（ja-JP）朗讀（語音パックが無い場合のフォールバック）
-- 可選 MP3 音效優先使用 `assets/sfx/` 的同名檔案，缺檔回到既有合成音效；`assets/bgm/` 預留首頁、混合題、混合限時、JOJO、咒術迴戰五首循環音樂。單選作品時立即使用該作品 BGM（含限時模式），缺檔保持安靜。背景音樂、音效、朗讀皆可獨立開關。完整圖片招式、JOJO 第 2／3／4 部題庫與補檔路徑見 [媒體清單](docs/MEDIA-CATALOG-2026-11-17.md)。
+- 14 種遊戲音效使用 `assets/sfx/` 的 MP3，缺檔、播放失敗或逾時時略過。題目朗讀使用語音包，備援為瀏覽器語音合成（ja-JP）。
+- `assets/bgm/` 預留首頁、混合題、混合限時、JOJO、咒術迴戰五首循環音樂。單選作品時立即使用該作品 BGM（含限時模式），缺檔保持安靜。背景音樂、音效、朗讀皆可獨立開關。完整圖片招式、JOJO 第 2／3／4 部題庫與補檔路徑見 [媒體清單](docs/MEDIA-CATALOG-2026-11-17.md)。
 - 進度（XP・星星・卡牌・每日挑戰紀錄）保存在瀏覽器 localStorage。支援 Web Locks 的瀏覽器同時只有一個分頁可寫入；其他分頁會顯示提示。無 Web Locks 時仍檢查存檔變更並阻止舊分頁覆蓋。存檔損毀時會保留原始資料並顯示提醒。
 
 ## 檔案結構
@@ -84,13 +84,14 @@ gojuon-quest/
 ├── css/style.css     # 全部樣式（含響應式與減少動態偏好）
 ├── assets/voice/     # Fish Audio 生成的読み上げ音声（110個MP3・約2.64MB）
 ├── assets/bgm/       # 選填 home.mp3 / quiz.mp3 / timeattack.mp3 / jojo.mp3 / jjk.mp3
-├── assets/sfx/       # 選填 click.mp3 / correct.mp3 等14種事件音效
+├── assets/sfx/       # click.mp3 / correct.mp3 等 14 種事件音效
 ├── tools/            # 開發用工具（generate-voice-pack.js：声音包生成スクリプト）
 ├── js/data.js        # 題庫・金幣/任務資料・ランク・五十音表（新增題目或任務請改這裡）
 ├── js/quiz.js        # クイズ引擎（れんしゅう／ききとりチャレンジ／タイムアタック／デイリー 共用。ききとりは音声出題・ハート制・無限連擊）
 ├── js/store.js       # localStorage 存檔：XP・金幣・任務受領・ガチャ・解鎖計算（載入時型別校驗、壞檔自動修復）
 ├── js/audio.js       # 音声パック再生（VOICE_PACK優先・失敗時はブラウザ合成へ）＋効果音＋TTS
 ├── js/voice-manifest.js  # かな→MP3 対応表（tools/generate-voice-pack.js が自動生成）
+├── js/media-manifest.js  # BGM 與音效清單（tools/generate-voice-pack.js が自動生成）
 ├── js/fx.js          # 共用演出：紙吹雪・コイン雨・大字スプラッシュ・わざ発動カットイン
 ├── js/missions.js    # ミッション畫面（領取ボタン＋進度條）
 ├── js/gacha.js       # おたからボックス（3段ヒビ割れ→隨機カード）
@@ -126,11 +127,11 @@ node tools/generate-voice-pack.js --only=jojo --force  # JOJOだけ作り直す
 
 - 每日場次以實際開始的題組日期計算。通關日期與獎勵一併儲存，寫入失敗可再按結算重試。已領過或更舊的日期不重領。
 - 限時模式以最後一塊填入當下判題，設定視窗開啟時倒數仍繼續。自動切題後，已啟動的喊技可繼續播放，鍵盤焦點會從下一題按鈕移到新題的字塊。
-- 一般朗讀與招式喊技直接播放同站 MP3。播放失敗或 4 秒未啟動時，改用瀏覽器日語 TTS。五十音表中未收錄在語音包的讀音也使用瀏覽器 TTS。
+- 一般朗讀與招式喊技直接播放同站 MP3。播放失敗或 4 秒未啟動時，改用瀏覽器日語 TTS。聽音挑戰在語音開始播放後才開放字塊，語音失敗時可重播或前往自由練習。五十音表中未收錄在語音包的讀音也使用瀏覽器 TTS。
 - 公開 Worker 的 `/api/voice` 將白名單內的已錄製讀音轉址到版本化靜態音檔。生成只在明確執行本機維護命令時進行。
 - `node tools/voice-server.js` 啟動本機預覽。前端直接播放音檔，本機 `/api/voice` 也可提供既有音檔。可公開檔案限 index、CSS、JS 與素材。
 - 聲線和語氣配置見 `tools/voice-config.cjs` 與 `tools/voice-style.cjs`。生成器用讀音、模型、聲線與語氣指紋判定是否要重產，確認 MP3 可解碼後才替換。音檔 URL 帶內容 hash。
-- 補上選用 BGM 或音效後，執行 `node tools/generate-voice-pack.js --sync-only` 更新素材清單，再與音檔一起提交。此命令可同步既有音檔與 Worker 白名單，無需 API key。
+- 補上 BGM 或音效後，執行 `node tools/generate-voice-pack.js --media-only` 更新素材清單，再與音檔一起提交。`--sync-only` 也會同步既有朗讀音檔與 Worker 白名單，兩個命令均無需 API key。
 - 僅生成指定題號：`node tools/generate-voice-pack.js --ids=q82,q99,q106,q110,q111`。實際生成才需要環境變數 `FISH_API_KEY`，並使用 ffmpeg 驗證可解碼性。
 - 可選 Chromium 驗證可用 `node tools/browser-smoke.cjs` 與 `node tools/browser-voice-smoke.cjs`。共享執行環境可用 `PLAYWRIGHT_MODULE` 指定 `playwright-core`，並用 `PLAYWRIGHT_EXECUTABLE_PATH` 指定已安裝的 Chromium。
 

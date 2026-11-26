@@ -1,140 +1,26 @@
 'use strict';
-/* ============================================================
-   五十音クエスト — 効果音（Web Audio API）と音声読み上げ
-   Fish Audio 優先、失敗時はローカル音声パック、ブラウザ合成の順に再生。
-   ============================================================ */
-
+// Effects play local MP3s. The recorded voice pack has a browser TTS fallback.
 const AudioKit = (() => {
-  let ctx = null;
-
-  function getContext() {
-    if (!ctx) {
-      const AC = window.AudioContext || window.webkitAudioContext;
-      if (!AC) return null;
-      ctx = new AC();
-    }
-    // 自動再生ポリシー対策：必要なときに resume
-    if (ctx.state === 'suspended') ctx.resume().catch(() => {});
-    return ctx;
-  }
-
-  // 単音を鳴らす
-  function tone(freq, startAt, duration, type, peak) {
-    const audio = getContext();
-    if (!audio) return;
-    const t0 = audio.currentTime + startAt;
-    const osc = audio.createOscillator();
-    const gain = audio.createGain();
-    osc.type = type || 'sine';
-    osc.frequency.setValueAtTime(freq, t0);
-    gain.gain.setValueAtTime(0.0001, t0);
-    gain.gain.linearRampToValueAtTime(peak || 0.22, t0 + 0.012);
-    gain.gain.exponentialRampToValueAtTime(0.0001, t0 + duration);
-    osc.connect(gain).connect(audio.destination);
-    osc.start(t0);
-    osc.stop(t0 + duration + 0.05);
-  }
-
-  // ---- 効果音プリセット ----
-  const sfx = {
-    click() {
-      tone(660, 0, 0.08, 'triangle', 0.12);
-    },
-    place() {
-      tone(880, 0, 0.09, 'triangle', 0.14);
-      tone(1320, 0.03, 0.1, 'triangle', 0.08);
-    },
-    correct() {
-      // C5→E5→G5 の明るいアルペジオ
-      tone(523.25, 0.00, 0.18, 'triangle', 0.22);
-      tone(659.25, 0.09, 0.18, 'triangle', 0.22);
-      tone(783.99, 0.18, 0.34, 'triangle', 0.24);
-    },
-    wrong() {
-      tone(196, 0.00, 0.22, 'sawtooth', 0.14);
-      tone(147, 0.14, 0.30, 'sawtooth', 0.14);
-    },
-    unlock() {
-      // キラキラ上昇音
-      const notes = [1046.5, 1318.5, 1568.0, 2093.0];
-      notes.forEach((f, i) => tone(f, i * 0.09, 0.24, 'sine', 0.2));
-    },
-    fanfare() {
-      const seq = [[523.25, 0], [523.25, 0.12], [523.25, 0.24], [659.25, 0.36], [783.99, 0.52], [1046.5, 0.72]];
-      seq.forEach(([f, t]) => tone(f, t, 0.34, 'square', 0.12));
-    },
-    tick() {
-      tone(1200, 0, 0.05, 'square', 0.07);
-    },
-    star() {
-      tone(1568, 0, 0.12, 'sine', 0.18);
-      tone(2093, 0.10, 0.2, 'sine', 0.18);
-    },
-    coin() {
-      // コインのキラッという音
-      tone(1318.5, 0.00, 0.07, 'square', 0.10);
-      tone(1760.0, 0.05, 0.16, 'square', 0.12);
-    },
-    levelup() {
-      // ランクアップの華やかな上昇音
-      const seq = [[523.25, 0], [659.25, 0.10], [783.99, 0.20], [1046.5, 0.32], [1318.5, 0.44]];
-      seq.forEach(([f, t]) => tone(f, t, 0.30, 'triangle', 0.22));
-    },
-    claim() {
-      // ミッション受け取りのキラキラ
-      const notes = [1046.5, 1568.0, 2093.0];
-      notes.forEach((f, i) => tone(f, i * 0.08, 0.22, 'sine', 0.2));
-    },
-    crack() {
-      // ガチャの割れる音（ノイズ気味）
-      tone(180, 0.00, 0.08, 'sawtooth', 0.2);
-      tone(120, 0.07, 0.10, 'sawtooth', 0.18);
-    },
-    legendary() {
-      // SSR排出の大ファンファーレ
-      const seq = [[523.25, 0], [523.25, 0.13], [659.25, 0.26], [783.99, 0.39], [1046.5, 0.55], [1318.5, 0.72]];
-      seq.forEach(([f, t]) => tone(f, t, 0.36, 'square', 0.13));
-    },
-    cutin() {
-      // わざ発動：低音ドン＋キラキラの余韻
-      tone(65.4, 0.00, 0.50, 'sine', 0.5);
-      tone(130.8, 0.02, 0.38, 'triangle', 0.28);
-      tone(196.0, 0.05, 0.30, 'sawtooth', 0.10);
-      [1568.0, 2093.0, 2637.0].forEach((f, i) => tone(f, 0.24 + i * 0.08, 0.30, 'sine', 0.14));
-    },
-  };
-
-  // Optional files. A failed file is retried after the next page reload.
-  const missingEffects = new Set();
   const activeEffects = new Map();
 
   function play(name) {
-    if (!SaveStore.data || !SaveStore.data.sound || document.hidden || !Object.hasOwn(sfx, name)) return;
     const file = `assets/sfx/${name}.mp3`;
-    if (!OPTIONAL_MEDIA.has(file) || missingEffects.has(name)) { sfx[name](); return; }
+    if (!SaveStore.data?.sound || document.hidden || !OPTIONAL_MEDIA.has(file)) return;
     let audio;
-    try { audio = new Audio(file); }
-    catch (_) { sfx[name](); return; }
-    let settled = false;
-    let timer;
-    function finish(fallback = false, missing = false) {
-      if (settled) return;
-      settled = true;
+    try { audio = new Audio(file); } catch (_) { return; }
+
+    const timer = setTimeout(cancel, 1500);
+    function finish() {
       clearTimeout(timer);
-      activeEffects.delete(audio);
-      if (missing) missingEffects.add(name);
-      if (fallback) {
-        audio.pause();
-        if (SaveStore.data.sound && !document.hidden) sfx[name]();
-      }
+      return activeEffects.delete(audio);
     }
-    activeEffects.set(audio, () => { finish(); audio.pause(); });
-    audio.addEventListener('ended', () => finish());
-    audio.addEventListener('error', () => finish(true, true));
-    timer = setTimeout(() => finish(true, true), 1500);
-    audio.play().then(() => clearTimeout(timer)).catch(error => {
-      finish(true, error.name === 'NotSupportedError');
-    });
+    function cancel() {
+      if (finish()) audio.pause();
+    }
+    activeEffects.set(audio, cancel);
+    audio.addEventListener('ended', finish, { once: true });
+    audio.addEventListener('error', cancel, { once: true });
+    audio.play().then(() => clearTimeout(timer), cancel);
   }
 
   const musicFiles = {
@@ -207,21 +93,23 @@ const AudioKit = (() => {
   // ---- 読み上げ ----
   // Known readings use the recorded pack. Chart-only syllables use local TTS.
   let currentPackAudio = null;
+  let currentUtterance = null;
   let voiceTimer = null;
 
   function stopVoice() {
     clearTimeout(voiceTimer);
     voiceTimer = null;
+    currentUtterance = null;
     if (currentPackAudio) {
       const old = currentPackAudio;
       currentPackAudio = null;
       old.pause();
       old.currentTime = 0;
     }
-    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    window.speechSynthesis?.cancel();
   }
 
-  function playVoice(file, timeout, fallback) {
+  function playVoice(file, fallback, onPlayback) {
     try {
       const audio = new Audio(file);
       currentPackAudio = audio;
@@ -232,13 +120,15 @@ const AudioKit = (() => {
         clearTimeout(voiceTimer);
         audio.pause();
         currentPackAudio = null;
-        if (error?.name === 'NotAllowedError' && typeof App !== 'undefined') App.toast(I18N.t('voice.retry'));
+        if (!onPlayback && error?.name === 'NotAllowedError' && typeof App !== 'undefined') App.toast(I18N.t('voice.retry'));
         fallback();
       };
       audio.addEventListener('error', fail);
-      voiceTimer = setTimeout(fail, timeout);
+      voiceTimer = setTimeout(fail, 4000);
       audio.play().then(() => {
-        if (currentPackAudio === audio) clearTimeout(voiceTimer);
+        if (currentPackAudio !== audio) return;
+        clearTimeout(voiceTimer);
+        onPlayback?.(true);
       }).catch(fail);
       return true;
     } catch (e) {
@@ -248,25 +138,40 @@ const AudioKit = (() => {
     }
   }
 
-  function speak(text) {
+  function speak(text, onPlayback) {
     stopVoice();
-    if (!SaveStore.data || !SaveStore.data.voice || document.hidden) return;
+    if (!SaveStore.data?.voice || document.hidden) { onPlayback?.(false); return; }
     const key = toKatakana(text);
     const file = VOICE_PACK[key];
-    if (file && playVoice(file, 4000, () => speakTTS(key))) return;
-    speakTTS(key);
+    const fallback = () => speakTTS(key, onPlayback);
+    if (file && playVoice(file, fallback, onPlayback)) return;
+    fallback();
   }
 
-  function speakTTS(text) {
-    if (!('speechSynthesis' in window)) return;
+  function speakTTS(text, onPlayback) {
+    const synth = window.speechSynthesis;
+    if (!synth || typeof SpeechSynthesisUtterance !== 'function') { onPlayback?.(false); return; }
     const u = new SpeechSynthesisUtterance(text);
     u.lang = 'ja-JP';
     u.rate = 0.82;   // 子どもが聞き取りやすい少しゆっくりめ
     u.pitch = 1.05;
     const voice = pickJapaneseVoice();
     if (voice) u.voice = voice;
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(u);
+    currentUtterance = u;
+    if (onPlayback) {
+      u.onstart = () => {
+        if (currentUtterance !== u) return;
+        clearTimeout(voiceTimer);
+        onPlayback(true);
+      };
+      u.onerror = () => {
+        if (currentUtterance !== u) return;
+        stopVoice();
+        onPlayback(false);
+      };
+      voiceTimer = setTimeout(u.onerror, 4000);
+    }
+    try { synth.speak(u); } catch (_) { if (onPlayback) u.onerror(); }
   }
   let jaVoice = null;
   function pickJapaneseVoice() {

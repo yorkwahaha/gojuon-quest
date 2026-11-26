@@ -48,8 +48,24 @@ function handler(req, res) {
     } else file = staticFile(rawPath);
     if (!file) { send(404); return; }
     const buf = fs.readFileSync(file);
-    res.writeHead(200, { 'Content-Type': TYPES[path.extname(file)], 'Content-Length': buf.length,
-      'Cache-Control': 'no-cache', 'X-Content-Type-Options': 'nosniff', 'Access-Control-Allow-Origin': '*' });
+    const ext = path.extname(file);
+    const headers = { 'Content-Type': TYPES[ext], 'Content-Length': buf.length,
+      'Cache-Control': 'no-cache', 'X-Content-Type-Options': 'nosniff', 'Access-Control-Allow-Origin': '*' };
+    if (ext === '.mp3') {
+      headers['Accept-Ranges'] = 'bytes';
+      const range = req.method === 'GET' && /^bytes=(\d*)-(\d*)$/i.exec(req.headers.range || '');
+      if (range && (range[1] || range[2])) {
+        const start = range[1] ? Number(range[1]) : Math.max(0, buf.length - Number(range[2]));
+        const end = range[1] && range[2] ? Math.min(buf.length - 1, Number(range[2])) : buf.length - 1;
+        if (start > end) {
+          res.writeHead(416, { ...headers, 'Content-Length': 0, 'Content-Range': `bytes */${buf.length}` });
+          res.end(); return;
+        }
+        res.writeHead(206, { ...headers, 'Content-Length': end - start + 1, 'Content-Range': `bytes ${start}-${end}/${buf.length}` });
+        res.end(buf.subarray(start, end + 1)); return;
+      }
+    }
+    res.writeHead(200, headers);
     res.end(req.method === 'HEAD' ? undefined : buf);
   } catch (error) {
     if (!res.headersSent) send(error instanceof URIError || error instanceof TypeError ? 400 : 500);

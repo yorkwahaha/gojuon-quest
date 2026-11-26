@@ -14,8 +14,8 @@ async function main() {
   try {
     const context = await browser.newContext({locale:'zh-TW',viewport:{width:1280,height:900}});
     const assets = ['assets/bgm/jojo.mp3', 'assets/bgm/jjk.mp3'];
-    const manifest = fs.readFileSync(path.join(__dirname,'../js/voice-manifest.js'),'utf8');
-    await context.route('**/js/voice-manifest.js*', route => route.fulfill({
+    const manifest = fs.readFileSync(path.join(__dirname,'../js/media-manifest.js'),'utf8');
+    await context.route('**/js/media-manifest.js*', route => route.fulfill({
       contentType:'text/javascript', body:manifest + assets.map(file => 'OPTIONAL_MEDIA.add(' + JSON.stringify(file) + ');').join('\n'),
     }));
     await context.route('**/assets/bgm/*.mp3', route => route.fulfill({

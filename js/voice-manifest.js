@@ -112,4 +112,3 @@ const VOICE_PACK = {
  "ハンテンジュツシキ": "assets/voice/q58.mp3?v=1e8d50c0fcf2",
  "ジュジュツカイセン": "assets/voice/q59.mp3?v=2b9fa824e737"
 };
-const OPTIONAL_MEDIA = new Set([]);

@@ -243,8 +243,7 @@ const App = (() => {
       e.preventDefault();
       if (!SaveStore.canWrite()) return;
       const value = $('nameInput').value.trim();
-      SaveStore.data.playerName = value || 'クエスター';
-      SaveStore.save();
+      if (!SaveStore.save({ ...SaveStore.data, playerName: value || 'クエスター' })) return;
       nameForm.hidden = true;
       AudioKit.play('correct');
       renderHome();

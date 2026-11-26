@@ -7,7 +7,7 @@
   <meta name="description" content="アニメ（ジョジョ／呪術廻戦）のキャラクター名・わざ名をならべかえて、ひらがなとカタカナを楽しく覚えよう！小学生の五十音トレーニングゲーム。" />
   <title>五十音クエスト | アニメではじめる ひらがな・カタカナ</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23ffd23f'/%3E%3Ccircle cx='32' cy='32' r='24' fill='%23161333'/%3E%3Ctext x='32' y='43' font-size='30' text-anchor='middle' fill='%23ffd23f' font-family='sans-serif' font-weight='900'%3E五%3C/text%3E%3C/svg%3E" />
-  <link rel="stylesheet" href="css/style.css?v=20261116" />
+  <link rel="stylesheet" href="css/style.css?v=20261126" />
 </head>
 <body>
 
@@ -280,6 +280,8 @@
               <svg><use href="#i-speaker"/></svg><span data-i18n="play.replay">なまえを きく</span>
             </button>
             <p class="clue-romaji" id="clueRomaji" hidden></p>
+            <p id="listeningPlaybackStatus" class="quiz-feedback" role="status"></p>
+            <button class="btn btn-small" id="btnVoiceFailurePractice" type="button" hidden data-i18n="voice.practice">ならべかえ練習へ</button>
           </div>
 
           <div class="slots-wrap" id="slotsWrap" aria-label="こたえのマス"></div>
@@ -547,17 +549,18 @@
   <!-- 紙吹雪コンテナ -->
   <div class="confetti-layer" id="confettiLayer" aria-hidden="true"></div>
 
-  <script src="js/i18n.js?v=20261119"></script>
+  <script src="js/i18n.js?v=20261126"></script>
   <script src="js/data.js?v=20261119"></script>
-  <script src="js/store.js?v=20261119"></script>
-  <script src="js/voice-manifest.js?v=20261119"></script>
-  <script src="js/audio.js?v=20261119"></script>
+  <script src="js/store.js?v=20261126"></script>
+  <script src="js/voice-manifest.js?v=20261126"></script>
+  <script src="js/media-manifest.js?v=20261126"></script>
+  <script src="js/audio.js?v=20261126"></script>
   <script src="js/fx.js?v=20261116"></script>
-  <script src="js/quiz.js?v=20261119"></script>
+  <script src="js/quiz.js?v=20261126"></script>
   <script src="js/chart.js?v=20261116"></script>
   <script src="js/collection.js?v=20261116"></script>
   <script src="js/missions.js?v=20261116"></script>
   <script src="js/gacha.js?v=20261116"></script>
-  <script src="js/app.js?v=20261119"></script>
+  <script src="js/app.js?v=20261126"></script>
 </body>
 </html>

@@ -55,6 +55,40 @@ test('failed storage writes show a persistent warning and failed reset does not 
   e.get('btnResetSave').fire();e.get('btnResetSave').fire();
   assert.equal(e.run('window.reloaded'),undefined);
 });
+test('failed writes leave answer, mission, gacha and timed settlement rewards untouched', () => {
+  const e = boot();
+  const before = e.run('SaveStore.data.coins=240; SaveStore.data.correct=10; JSON.stringify(SaveStore.data)');
+  e.run('console.warn=()=>{}; localStorage.setItem=()=>{throw Error("full")}');
+  assert.equal(e.run("SaveStore.recordCorrect(1,'jojo')"), null);
+  assert.equal(e.run('SaveStore.recordWrong()'), false);
+  assert.equal(e.run('SaveStore.claimMission(MISSIONS.find(m=>missionProgress(SaveStore.data,m)>=m.need).id)'), null);
+  assert.equal(e.run('SaveStore.drawGacha().type'), 'blocked');
+  assert.equal(e.run('SaveStore.recordTimeAttack(1600, 3, 30)'), null);
+  assert.equal(e.run('JSON.stringify(SaveStore.data)'), before);
+});
+test('listening waits for playback and offers replay or practice when both audio paths fail', async () => {
+  const e = boot({ audio:true });
+  e.run('delete window.speechSynthesis');
+  select(e, 'listening', 'q01');
+  assert.ok(e.get('tilePool').children.every(tile => tile.disabled));
+  e.packs.findLast(clip => clip.file.startsWith('assets/voice/')).fire('error');
+  assert.equal(e.get('btnVoiceFailurePractice').hidden, false);
+  assert.match(e.get('listeningPlaybackStatus').textContent, /聽讀音/);
+  e.get('btnKanaReplay').fire();
+  e.packs.findLast(clip => clip.file.startsWith('assets/voice/')).resolve();
+  await Promise.resolve();
+  assert.equal(e.get('btnVoiceFailurePractice').hidden, true);
+  assert.ok(e.get('tilePool').children.some(tile => !tile.disabled));
+});
+test('keyboard focus returns to a tile after an incorrect answer clears the board', () => {
+  const e = boot(); select(e, 'practice', 'q01');
+  for(const char of [...e.run('Quiz.state.current.kana')].reverse()) {
+    const i = e.run(`Quiz.state.tiles.findIndex(t=>!t.used&&t.char===${JSON.stringify(char)})`);
+    const tile = e.get('tilePool').children[i]; tile.focus(); tile.fire();
+  }
+  e.tick(1100);
+  assert.equal(e.document.activeElement, e.get('tilePool').children[0]);
+});
 test('a timed answer completed at 59.9 seconds counts before settlement',()=>{
   const e=boot();select(e,'timeattack','q01');e.tick(59900);fill(e);
   assert.equal(e.run('Quiz.state.score'),100);e.tick(100);
@@ -181,12 +215,13 @@ test('golden question label is translated by the existing locale binding', () =>
   assert.equal(e.run("I18N.t('play.golden')"), '金色加碼題');
 });
 
-test('published media list skips absent music and starts synthesized effects without requesting MP3s', () => {
+test('missing music and effects stay quiet without requesting MP3s', () => {
   const e = boot({ audio: true });
+  e.run("OPTIONAL_MEDIA.delete('assets/sfx/click.mp3')");
   e.document.fire('pointerdown');
   e.run("AudioKit.play('click')");
   assert.equal(e.packs.length, 0);
-  assert.ok(e.tones.length > 0);
+  assert.equal(e.tones.length, 0);
 });
 test('pending pack playback falls back once and ignores a late rejection',async()=>{
   const e=boot({audio:true});e.run("AudioKit.speak('ザ・ワールド')");const clip=e.packs[0];e.tick(4000);
@@ -274,6 +309,44 @@ test('pack synchronization completes without calling a paid API',()=>{
   const out=execFileSync(process.execPath,['tools/generate-voice-pack.js','--sync-only'],{cwd:root,encoding:'utf8',env:{...process.env,FISH_API_KEY:''}});
   assert.match(out,/"generated":0,"failed":0/);
 });
+test('media-only synchronization does not read voice metadata or touch its manifests', async () => {
+  const pack = require('../tools/voice-pack.cjs'), writes = [];
+  const fakeFs = {
+    existsSync: () => true,
+    readFileSync: () => { throw Error('unavailable voice metadata'); },
+    readdirSync: dir => path.basename(dir) === 'sfx' ? [{name:'click.mp3',isFile:()=>true}] : [],
+  };
+  const source = fs.readFileSync(path.join(root,'tools/generate-voice-pack.js'),'utf8');
+  await vm.runInNewContext(source, {
+    require:name => name === 'node:fs' ? fakeFs : name === './voice-pack.cjs' ?
+      {...pack, atomicWrite:(...args)=>writes.push(args)} : require(name),
+    __dirname:path.join(root,'tools'), process:{argv:['node','generate-voice-pack.js','--media-only']},
+    console:{log(){},error(){}},
+  });
+  assert.equal(writes.length, 1);
+  assert.equal(path.basename(writes[0][0]), 'media-manifest.js');
+  assert.match(writes[0][1], /assets\/sfx\/click\.mp3/);
+});
+
+test('preview serves byte ranges for local MP3s', async () => {
+  const { createServer } = require('node:http');
+  const server = createServer(require('../tools/voice-server.js').handler);
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  try {
+    const url = `http://127.0.0.1:${server.address().port}/assets/sfx/click.mp3`;
+    const source = fs.readFileSync(path.join(root,'assets/sfx/click.mp3'));
+    const range = await fetch(url, {headers:{Range:'bytes=0-1'}});
+    assert.equal(range.status, 206);
+    assert.equal(range.headers.get('content-range'), `bytes 0-1/${source.length}`);
+    assert.deepEqual(Buffer.from(await range.arrayBuffer()), source.subarray(0,2));
+    const suffix = await fetch(url, {headers:{Range:'bytes=-4'}});
+    assert.deepEqual(Buffer.from(await suffix.arrayBuffer()), source.subarray(-4));
+    const missing = await fetch(url, {headers:{Range:`bytes=${source.length}-`}});
+    assert.equal(missing.status, 416);
+    assert.equal(missing.headers.get('content-range'), `bytes */${source.length}`);
+    await missing.arrayBuffer();
+  } finally { await new Promise(resolve => server.close(resolve)); }
+});
 for(const failure of ['provider failure','corrupt successful response'])test('generator preserves the previous files after '+failure,async()=>{
   const target=path.join(root,'assets/voice/q99.mp3'),metadataFile=path.join(root,'tools/voice-pack-metadata.json');
   const pack=require('../tools/voice-pack.cjs'),writes=[];
@@ -294,7 +367,7 @@ for(const failure of ['provider failure','corrupt successful response'])test('ge
 const {handler}=require('../tools/voice-server.js');
 function request(url,method='GET'){
   const res={status:0,headers:{},writeHead(status,headers){this.status=status;this.headers=headers;},end(body){this.body=body;}};
-  handler({url,method},res);return res;
+  handler({url,method,headers:{}},res);return res;
 }
 for(const url of ['/.env','/.git/config','/tools/voice-pack-metadata.json','/..%5cgojuon-quest-other%5cprobe.txt','/%2e%2e/js/data.js','/assets/%2e%2e/.env']){
   test('local preview blocks private or escaping path '+url,()=>assert.equal(request(url).status,404));

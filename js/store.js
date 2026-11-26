@@ -191,7 +191,8 @@ const SaveStore = {
   // golden: キラキラ問題ならボーナス適用
   recordCorrect(level, anime, opts) {
     if (!this.canWrite()) return null;
-    const d = this.data;
+    const d = { ...this.data, correctByLevel: { ...this.data.correctByLevel },
+      correctByAnime: { ...this.data.correctByAnime }, unlocked: [...this.data.unlocked] };
     const golden = !!(opts && opts.golden);
 
     d.streak += 1;
@@ -214,46 +215,30 @@ const SaveStore = {
     const coinsGained = answerCoins + bonusCoins;
     d.coins += answerCoins;
 
-    const newlyUnlocked = this.checkCardUnlocks();
-    this.save();
+    const newlyUnlocked = CARDS.filter(card => !d.unlocked.includes(card.id) && d.correct >= card.need);
+    d.unlocked.push(...newlyUnlocked.map(card => card.id));
+    if (!this.save(d)) return null;
     return { gained, coinsGained, newlyUnlocked, streak: d.streak, rankUp, golden };
   },
 
   recordWrong() {
-    if (!this.canWrite()) return false;
-    const d = this.data;
-    d.streak = 0;
-    d.wrong += 1;
-    this.save();
+    return this.save({ ...this.data, streak: 0, wrong: this.data.wrong + 1 });
   },
 
-  addXP(amount) {
+  addXP(amount, d = { ...this.data }) {
     if (!this.canWrite()) return null;
-    const reward = awardXP(this.data, amount);
-    this.save();
-    return reward;
+    const reward = awardXP(d, amount);
+    return this.save(d) ? reward : null;
   },
 
-  addStars(n) {
-    if (!this.canWrite()) return false;
-    this.data.stars += n;
-    this.save();
-  },
-
-  addCoins(n) {
-    if (!this.canWrite()) return false;
-    this.data.coins += n;
-    this.save();
-  },
-
-  recordTimeAttack(score) {
-    if (!this.canWrite()) return false;
-    const d = this.data;
+  recordTimeAttack(score, stars = 0, coins = 0) {
+    const d = { ...this.data };
     d.timeAttackPlays += 1;
+    d.stars += stars;
+    d.coins += coins;
     const isRecord = score > d.timeAttackBest;
     if (isRecord) d.timeAttackBest = score;
-    this.save();
-    return isRecord;
+    return this.save(d) ? isRecord : null;
   },
 
   recordDailyClear(stars = 0, date = todayKey(0), { xp = 0, coins = 0 } = {}) {
@@ -272,36 +257,23 @@ const SaveStore = {
     return { already: false, streak: d.dailyStreak, ...reward };
   },
 
-  checkCardUnlocks() {
-    const d = this.data;
-    const newly = [];
-    for (const card of CARDS) {
-      if (!d.unlocked.includes(card.id) && d.correct >= card.need) {
-        d.unlocked.push(card.id);
-        newly.push(card);
-      }
-    }
-    return newly;
-  },
-
   // ミッションを受け取る。成功したら { coins } を返す。条件外・受取済みなら null
   claimMission(id) {
     if (!this.canWrite()) return null;
-    const d = this.data;
+    const d = { ...this.data, missionsClaimed: [...this.data.missionsClaimed] };
     const mission = MISSIONS.find((m) => m.id === id);
     if (!mission) return null;
     if (d.missionsClaimed.includes(id)) return null;
     if (missionProgress(d, mission) < mission.need) return null;
     d.missionsClaimed.push(id);
     d.coins += mission.rewardCoins;
-    this.save();
-    return { coins: mission.rewardCoins, mission };
+    return this.save(d) ? { coins: mission.rewardCoins, mission } : null;
   },
 
   // ガチャを1回引く。{ type:'card', card } | { type:'xp', amount, rankUp } | { type:'insufficient' }
   drawGacha() {
     if (!this.canWrite()) return { type: 'blocked' };
-    const d = this.data;
+    const d = { ...this.data, unlocked: [...this.data.unlocked] };
     if (d.unlocked.length === CARDS.length && !rankForXP(d.xp).next) return { type: 'complete' };
     if (d.coins < GACHA_COST) return { type: 'insufficient' };
     d.coins -= GACHA_COST;
@@ -311,12 +283,11 @@ const SaveStore = {
     if (locked.length > 0) {
       const pick = locked[Math.floor(Math.random() * locked.length)];
       d.unlocked.push(pick.id);
-      this.save();
-      return { type: 'card', card: pick };
+      return this.save(d) ? { type: 'card', card: pick } : { type: 'blocked' };
     }
     // 全部集め済みならXPパックに変換
     const xpAmount = 150;
-    const reward = this.addXP(xpAmount);
-    return { type: 'xp', amount: xpAmount, rankUp: reward.rankUp };
+    const reward = this.addXP(xpAmount, d);
+    return reward ? { type: 'xp', amount: xpAmount, rankUp: reward.rankUp } : { type: 'blocked' };
   },
 };
